@@ -1,7 +1,7 @@
 # chess
 chess project
 - [X] create github repo
-- [ ] clone in dev
+- [X] clone in dev
 - [ ] create intellij proj
 - [ ] init chess starter code
 - [ ] get chess to compile
