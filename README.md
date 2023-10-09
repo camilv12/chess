@@ -3,6 +3,6 @@ chess project
 - [X] create github repo
 - [X] clone in dev
 - [X] create intellij proj
-- [ ] init chess starter code
-- [ ] get chess to compile
-- [ ] get chess to run
+- [X] init chess starter code
+- [X] get chess to compile
+- [X] get chess to run
