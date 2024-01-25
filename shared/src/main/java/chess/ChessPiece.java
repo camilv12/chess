@@ -229,4 +229,41 @@ public class ChessPiece {
     public int hashCode() {
         return Objects.hash(pieceColor, type);
     }
+
+    @Override
+    public String toString() {
+        switch (pieceColor) {
+            case BLACK:
+                switch (type) {
+                    case KING:
+                        return "k";
+                    case QUEEN:
+                        return "q";
+                    case BISHOP:
+                        return "b";
+                    case KNIGHT:
+                        return "n";
+                    case ROOK:
+                        return "r";
+                    case PAWN:
+                        return "p";
+                }
+            case WHITE:
+                switch (type) {
+                    case KING:
+                        return "K";
+                    case QUEEN:
+                        return "Q";
+                    case BISHOP:
+                        return "B";
+                    case KNIGHT:
+                        return "N";
+                    case ROOK:
+                        return "R";
+                    case PAWN:
+                        return "P";
+                }
+        }
+        return null;
+    }
 }
