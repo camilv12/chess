@@ -59,6 +59,7 @@ public class ChessPiece {
                 // Implement King's moves
                 break;
             case QUEEN:
+                movesList = queenMoves(board,myPosition);
                 // Implement Queen's moves
                 break;
             case BISHOP:
@@ -69,26 +70,45 @@ public class ChessPiece {
                 // Implement Knight's moves
                 break;
             case ROOK:
-                // Implement Rook's moves
+                movesList = rookMoves(board,myPosition);
                 break;
             case PAWN:
                 // Implement Pawn's moves
                 break;
-        }
-        for(ChessMove moves : movesList){
-            System.out.println(moves.toString());
         }
         return movesList;
     }
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new ArrayList<>();
-        addMovesInDirection(moves,board,myPosition,1,1); //Down-Right
-        addMovesInDirection(moves,board,myPosition,1,-1); //Down-Left
-        addMovesInDirection(moves,board,myPosition,-1,1); //Up-Right
-        addMovesInDirection(moves,board,myPosition,-1,-1); //Up-Left
+        addMovesInDirection(moves,board,myPosition,1,1); //Up-Right
+        addMovesInDirection(moves,board,myPosition,1,-1); //Up-Left
+        addMovesInDirection(moves,board,myPosition,-1,1); //Down-Right
+        addMovesInDirection(moves,board,myPosition,-1,-1); //Down-Left
         return moves;
     }
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+        addMovesInDirection(moves,board,myPosition,1,0); //Up
+        addMovesInDirection(moves,board,myPosition,-1,0); //Down
+        addMovesInDirection(moves,board,myPosition,0,-1); //Left
+        addMovesInDirection(moves,board,myPosition,0,1); //Right
+        return moves;
+    }
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+        addMovesInDirection(moves,board,myPosition,1,0); //Up
+        addMovesInDirection(moves,board,myPosition,-1,0); //Down
+        addMovesInDirection(moves,board,myPosition,0,-1); //Left
+        addMovesInDirection(moves,board,myPosition,0,1); //Right
+        addMovesInDirection(moves,board,myPosition,1,1); //Up-Right
+        addMovesInDirection(moves,board,myPosition,1,-1); //Up-Left
+        addMovesInDirection(moves,board,myPosition,-1,1); //Down-Right
+        addMovesInDirection(moves,board,myPosition,-1,-1); //Down-Left
+        return moves;
+    }
+
+
 
     private void addMovesInDirection(Collection<ChessMove> moves, ChessBoard board, ChessPosition position, int rowIncrement, int colIncrement) {
         //Increments the rows and columns by a certain number: 1, 0, or -1
