@@ -56,8 +56,7 @@ public class ChessPiece {
         Collection<ChessMove> movesList = new ArrayList<>();
         switch (type) {
             case KING:
-                // Implement King's moves
-                break;
+                return kingMoves(board,myPosition);
             case QUEEN:
                 return queenMoves(board, myPosition);
             case BISHOP:
@@ -199,5 +198,21 @@ public class ChessPiece {
         moves.add(new ChessMove(myPosition,nextPosition,ChessPiece.PieceType.BISHOP));
         moves.add(new ChessMove(myPosition,nextPosition,ChessPiece.PieceType.ROOK));
         moves.add(new ChessMove(myPosition,nextPosition,ChessPiece.PieceType.KNIGHT));
+    }
+
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        int[][] directions = {{1, 1},{1,0},{1,-1},{0,1},{0,-1},{-1,1},{-1,0},{-1,-1}};
+        for(int[] direction : directions){
+            int row = myPosition.getRow() + direction[0];
+            int col = myPosition.getColumn() + direction[1];
+            if (row >= 1 && row <= 8 && col >= 1 && col <= 8) {
+                ChessPosition nextPosition = new ChessPosition(row, col);
+                if (!board.isOccupied(nextPosition) || board.getPiece(nextPosition).getTeamColor() != this.getTeamColor()) {
+                    moves.add(new ChessMove(myPosition, nextPosition, null));
+                }
+            }
+        }
+        return moves;
     }
 }
