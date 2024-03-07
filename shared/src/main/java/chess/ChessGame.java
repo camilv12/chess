@@ -52,7 +52,33 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
-        return piece.pieceMoves(board,startPosition);
+        Collection<ChessMove> potentialMoves = piece.pieceMoves(board,startPosition);
+        Collection<ChessMove> legalMoves = new ArrayList<>();
+        if(piece == null){
+            return legalMoves;
+        }
+        // TODO: Forced Movement - Forces King to move out of check
+        legalMoves.addAll(movesWithoutCheck(potentialMoves));
+        // TODO: Return no moves for trapped pieces
+        // TODO: Pieces must move to eliminate a check
+        return legalMoves;
+    }
+
+    private Collection<ChessMove> movesWithoutCheck(Collection<ChessMove> potentialMoves){
+        Collection<ChessMove> legalMoves = new ArrayList<>();
+        for(ChessMove move : potentialMoves){
+            ChessPiece startPiece = board.getPiece(move.getStartPosition());
+            ChessPiece endPiece = board.getPiece(move.getEndPosition());
+            quickMove(move);
+            if(!isInCheck(startPiece.getTeamColor())){
+                legalMoves.add(move);
+            }
+            revertMove(move,startPiece);
+            if (endPiece != null) {
+                board.addPiece(move.getEndPosition(), endPiece);
+            }
+        }
+        return legalMoves;
     }
 
     /**
@@ -91,6 +117,15 @@ public class ChessGame {
         }
 
         turn = (turn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+    }
+    private void quickMove(ChessMove move){
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        board.removePiece(move.getStartPosition());
+        board.addPiece(move.getEndPosition(), piece);
+    }
+    private void revertMove(ChessMove move, ChessPiece piece){
+        board.removePiece(move.getEndPosition());
+        board.addPiece(move.getStartPosition(), piece);
     }
 
     private boolean isTeamTurn(ChessPiece piece) {
@@ -136,7 +171,7 @@ public class ChessGame {
         return false;
     }
     private boolean canAttackKing(ChessPosition opponentPosition, ChessPosition kingPosition){
-        Collection<ChessMove> attackMoves = validMoves(opponentPosition);
+        Collection<ChessMove> attackMoves = board.getPiece(opponentPosition).pieceMoves(board,opponentPosition);
         for(ChessMove attack : attackMoves){
             if(attack.getEndPosition().equals(kingPosition)){
                 return true;
@@ -162,19 +197,15 @@ public class ChessGame {
                 ChessPiece startPiece = board.getPiece(move.getStartPosition());
                 ChessPiece endPiece = board.getPiece(move.getEndPosition());
 
-                board.removePiece(move.getStartPosition());
-                board.addPiece(move.getEndPosition(), startPiece);
-
+                quickMove(move);
                 if(!isInCheck(teamColor)){
-                    board.removePiece(move.getEndPosition());
-                    board.addPiece(move.getStartPosition(), startPiece);
+                    revertMove(move, startPiece);
                     if(endPiece != null){
                         board.addPiece(move.getEndPosition(), endPiece);
                     }
                     return false;
                 }
-                board.removePiece(move.getEndPosition());
-                board.addPiece(move.getStartPosition(), startPiece);
+                revertMove(move, startPiece);
                 if(endPiece != null){
                     board.addPiece(move.getEndPosition(), endPiece);
                 }
@@ -215,20 +246,15 @@ public class ChessGame {
                 ChessPiece startPiece = board.getPiece(move.getStartPosition());
                 ChessPiece endPiece = board.getPiece(move.getEndPosition());
 
-                board.removePiece(move.getStartPosition());
-                board.addPiece(move.getEndPosition(), startPiece);
-
+                quickMove(move);
                 if(!isInCheck(teamColor)){
-                    board.removePiece(move.getEndPosition());
-                    board.addPiece(move.getStartPosition(), startPiece);
+                    revertMove(move,startPiece);
                     if(endPiece != null){
                         board.addPiece(move.getEndPosition(), endPiece);
                     }
                     return false;
                 }
-
-                board.removePiece(move.getEndPosition());
-                board.addPiece(move.getStartPosition(), startPiece);
+                revertMove(move,startPiece);
                 if(endPiece != null){
                     board.addPiece(move.getEndPosition(), endPiece);
                 }
