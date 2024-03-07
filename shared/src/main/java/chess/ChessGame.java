@@ -156,7 +156,6 @@ public class ChessGame {
             return false;
         }
         Collection<ChessPosition> teamPositions =  teamPositions(teamColor);
-        boolean check = true;
         for(ChessPosition position : teamPositions){
             Collection<ChessMove> movesList = validMoves(position);
             for(ChessMove move : movesList){
@@ -181,7 +180,7 @@ public class ChessGame {
                 }
             }
         }
-        return check;
+        return true;
     }
 
     private Collection<ChessPosition> teamPositions(TeamColor teamColor){
@@ -206,7 +205,36 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if(isInCheck(teamColor)){
+            return false;
+        }
+        Collection<ChessPosition> teamPositions =  teamPositions(teamColor);
+        for(ChessPosition position : teamPositions){
+            Collection<ChessMove> movesList = validMoves(position);
+            for(ChessMove move : movesList){
+                ChessPiece startPiece = board.getPiece(move.getStartPosition());
+                ChessPiece endPiece = board.getPiece(move.getEndPosition());
+
+                board.removePiece(move.getStartPosition());
+                board.addPiece(move.getEndPosition(), startPiece);
+
+                if(!isInCheck(teamColor)){
+                    board.removePiece(move.getEndPosition());
+                    board.addPiece(move.getStartPosition(), startPiece);
+                    if(endPiece != null){
+                        board.addPiece(move.getEndPosition(), endPiece);
+                    }
+                    return false;
+                }
+
+                board.removePiece(move.getEndPosition());
+                board.addPiece(move.getStartPosition(), startPiece);
+                if(endPiece != null){
+                    board.addPiece(move.getEndPosition(), endPiece);
+                }
+            }
+        }
+        return true;
     }
 
     /**
