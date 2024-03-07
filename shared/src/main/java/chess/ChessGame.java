@@ -9,16 +9,20 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private ChessBoard board;
+    private TeamColor turn;
 
     public ChessGame() {
-
+        board = new ChessBoard();
+        board.resetBoard();
+        turn = TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return turn;
     }
 
     /**
@@ -27,7 +31,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        turn = team;
     }
 
     /**
@@ -46,7 +50,27 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(startPosition);
+
+        Collection<ChessMove> moveList = piece.pieceMoves(board,startPosition);
+        for(ChessMove move : moveList){
+            if(isMoveLegal(move,piece.getTeamColor())){
+                moveList.add(move);
+            }
+        }
+        return moveList;
+    }
+
+    // Placeholder for a method to check if a move is legal, considering check, etc.
+    // This is a complex method that requires knowledge of the whole board state,
+    // including the positions of all pieces and the rules of chess.
+    private boolean isMoveLegal(ChessMove move, TeamColor teamColor) {
+        // Implement the logic to determine if the move is legal.
+        // This includes but is not limited to:
+        // - Making sure the move does not leave the king in check.
+        // - Ensuring the path is clear for moves that require it (e.g., rooks, bishops, queen).
+        // - Special rules like en passant, castling, and promotion.
+        return true; // Placeholder return statement
     }
 
     /**
@@ -56,7 +80,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        board.removePiece(move.getStartPosition());
+        board.addPiece(move.getEndPosition(), piece);
     }
 
     /**
@@ -96,7 +122,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -105,6 +131,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return board;
     }
 }

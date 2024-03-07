@@ -13,7 +13,7 @@ public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
 
     public ChessBoard() {
-        
+
     }
 
     /**
@@ -78,7 +78,7 @@ public class ChessBoard {
     }
     public void removePiece(ChessPosition position){
         if(getPiece(position) != null){
-            squares[position.getRow()][position.getColumn()] = null;
+            squares[8-position.getRow()][position.getColumn()-1] = null;
         }
     }
     public void clearBoard(){
