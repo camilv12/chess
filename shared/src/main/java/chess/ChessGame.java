@@ -116,6 +116,9 @@ public class ChessGame {
         boolean rookMoved = isKingside ?
                 ((teamColor == TeamColor.WHITE) ? kingsideRookMovedWhite : kingsideRookMovedBlack) :
                 ((teamColor == TeamColor.WHITE) ? queensideRookMovedWhite : queensideRookMovedBlack);
+        if(kingMoved || rookMoved){
+            return false;
+        }
         int row = (teamColor == TeamColor.WHITE) ? 1 : 8;
         int kingEndColumn = isKingside ? 7 : 3;
         int rookEndColumn = isKingside ? 6 : 4;
