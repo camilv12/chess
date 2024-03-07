@@ -51,26 +51,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
-
-        Collection<ChessMove> moveList = piece.pieceMoves(board,startPosition);
-        for(ChessMove move : moveList){
-            if(isMoveLegal(move,piece.getTeamColor())){
-                moveList.add(move);
-            }
-        }
-        return moveList;
-    }
-
-    // Placeholder for a method to check if a move is legal, considering check, etc.
-    // This is a complex method that requires knowledge of the whole board state,
-    // including the positions of all pieces and the rules of chess.
-    private boolean isMoveLegal(ChessMove move, TeamColor teamColor) {
-        // Implement the logic to determine if the move is legal.
-        // This includes but is not limited to:
-        // - Making sure the move does not leave the king in check.
-        // - Ensuring the path is clear for moves that require it (e.g., rooks, bishops, queen).
-        // - Special rules like en passant, castling, and promotion.
-        return true; // Placeholder return statement
+        return piece.pieceMoves(board,startPosition);
     }
 
     /**
@@ -81,8 +62,31 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece piece = board.getPiece(move.getStartPosition());
+        if (piece == null){
+            throw new InvalidMoveException("There is no piece here.");
+        }
+        Collection<ChessMove> movesList = validMoves(move.getStartPosition());
+        if(!movesList.contains(move)){
+            throw new InvalidMoveException("This move is not allowed for the piece.");
+        }
+        if(!isTeamTurn(piece)){
+            throw new InvalidMoveException("It is not " + piece.getTeamColor() + "'s turn.");
+        }
+
         board.removePiece(move.getStartPosition());
         board.addPiece(move.getEndPosition(), piece);
+
+        if (isInCheck(piece.getTeamColor())) {
+            board.addPiece(move.getStartPosition(), piece);
+            board.removePiece(move.getEndPosition());
+            throw new InvalidMoveException("This move puts the king in check.");
+        }
+
+        turn = (turn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+    }
+
+    private boolean isTeamTurn(ChessPiece piece) {
+        return piece.getTeamColor() == turn;
     }
 
     /**
@@ -92,7 +96,45 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPosition = findKingPosition(teamColor,board);
+        TeamColor opponentColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+        return isKingAttacked(kingPosition, opponentColor, board);
+    }
+
+    private ChessPosition findKingPosition(TeamColor teamColor, ChessBoard board){
+        for(int row = 1; row <= 8; row++){
+            for(int col = 1; col <= 8; col++){
+                ChessPosition position = new ChessPosition(row,col);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING){
+                    return position;
+                }
+            }
+        }
+        return null;
+    }
+    private boolean isKingAttacked(ChessPosition kingPosition, TeamColor opponentColor, ChessBoard board){
+        for(int row = 1; row <= 8; row++){
+            for(int col = 1; col <= 8; col++){
+                ChessPosition opponentPosition = new ChessPosition(row,col);
+                ChessPiece opponentPiece = board.getPiece(opponentPosition);
+                if(opponentPiece != null && opponentPiece.getTeamColor() == opponentColor){
+                    if(canAttackKing(opponentPosition,kingPosition)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    private boolean canAttackKing(ChessPosition opponentPosition, ChessPosition kingPosition){
+        Collection<ChessMove> attackMoves = validMoves(opponentPosition);
+        for(ChessMove attack : attackMoves){
+            if(attack.getEndPosition().equals(kingPosition)){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
