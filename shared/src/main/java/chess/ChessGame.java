@@ -82,6 +82,13 @@ public class ChessGame {
             throw new InvalidMoveException("This move puts the king in check.");
         }
 
+        if(move.getPromotionPiece() != null){
+            board.removePiece(move.getEndPosition());
+            ChessPiece.PieceType promotionType = move.getPromotionPiece();
+            ChessPiece promotedPiece = new ChessPiece(piece.getTeamColor(), promotionType);
+            board.addPiece(move.getEndPosition(),promotedPiece);
+        }
+
         turn = (turn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
