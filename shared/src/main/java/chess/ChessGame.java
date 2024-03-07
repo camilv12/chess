@@ -73,7 +73,7 @@ public class ChessGame {
             }
             if (canCastle(teamColor, false)){
                 int row = (teamColor == TeamColor.WHITE) ? 1 : 8;
-                legalMoves.add(new ChessMove(startPosition,new ChessPosition(row,7),null));
+                legalMoves.add(new ChessMove(startPosition,new ChessPosition(row,3),null));
             }
         }
         return legalMoves;
@@ -155,6 +155,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece piece = board.getPiece(move.getStartPosition());
+        boolean castling = false;
         if (piece == null){
             throw new InvalidMoveException("There is no piece here.");
         }
@@ -165,15 +166,25 @@ public class ChessGame {
         if(!isTeamTurn(piece)){
             throw new InvalidMoveException("It is not " + piece.getTeamColor() + "'s turn.");
         }
-
+        if(piece.getPieceType() == ChessPiece.PieceType.KING &&
+                (move.getEndPosition().getColumn() == 3 || move.getEndPosition().getColumn() == 7)){
+            castling = true;
+        }
         quickMove(move);
-
+        if(castling){
+            boolean queenside = (move.getEndPosition().getColumn() == 3);
+            int rookRow = move.getStartPosition().getRow();
+            int rookStart = (queenside) ? 1 : 8;
+            int rookEnd = (queenside) ? 4 : 6;
+            ChessPosition rookStartPos = new ChessPosition(rookRow,rookStart);
+            ChessPosition rookEndPos = new ChessPosition(rookRow,rookEnd);
+            quickMove(new ChessMove(rookStartPos,rookEndPos,null));
+        }
         if (isInCheck(piece.getTeamColor())) {
             board.addPiece(move.getStartPosition(), piece);
             board.removePiece(move.getEndPosition());
             throw new InvalidMoveException("This move puts the king in check.");
         }
-
         if(move.getPromotionPiece() != null){
             board.removePiece(move.getEndPosition());
             ChessPiece.PieceType promotionType = move.getPromotionPiece();
