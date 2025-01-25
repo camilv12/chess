@@ -58,7 +58,13 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        return startPosition +
-                " to " + endPosition;
+        if (promotionPiece == null) {
+            return startPosition +
+                    " to " + endPosition;
+        }
+        else{
+            return startPosition +
+                    " to " + endPosition + " - PAWN promoted to " + promotionPiece;
+        }
     }
 }

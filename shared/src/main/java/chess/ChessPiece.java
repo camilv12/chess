@@ -199,7 +199,7 @@ public class ChessPiece {
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> validMoves = new ArrayList<>();
         pawnForward(board, myPosition, validMoves);
-
+        pawnCapture(board,myPosition,validMoves);
         return validMoves;
     }
 
@@ -254,6 +254,33 @@ public class ChessPiece {
         if(piece == null) {
             ChessPosition newPosition = ChessPosition.indexToPosition(row, col);
             validMoves.add(new ChessMove(myPosition, newPosition, null));
+        }
+    }
+    private void pawnCapture(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> validMoves){
+        int[] positions = ChessPosition.positionToIndex(myPosition);
+        int forward = (this.pieceColor == ChessGame.TeamColor.WHITE) ? -1 : 1;
+        int[][] directions = {{forward, -1},{forward, 1}};
+        for(int[] dir : directions){
+            int row = positions[0] + dir[0];
+            int col = positions[1] + dir[1];
+            if (row < 0 || row >= board.getBoard().length || col < 0 || col >= board.getBoard()[0].length){
+                continue;
+            }
+            ChessPiece piece = board.getBoard()[row][col];
+            if (piece != null){
+                if (!piece.getTeamColor().equals(this.pieceColor)){
+                    ChessPosition newPosition = ChessPosition.indexToPosition(row, col);
+                    if(row == 0 || row == board.getBoard().length - 1){
+                        validMoves.add(new ChessMove(myPosition,newPosition,PieceType.QUEEN));
+                        validMoves.add(new ChessMove(myPosition,newPosition,PieceType.ROOK));
+                        validMoves.add(new ChessMove(myPosition,newPosition,PieceType.BISHOP));
+                        validMoves.add(new ChessMove(myPosition,newPosition,PieceType.KNIGHT));
+                    }
+                    else{
+                        validMoves.add(new ChessMove(myPosition,newPosition,null));
+                    }
+                }
+            }
         }
     }
 }
