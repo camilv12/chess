@@ -196,5 +196,64 @@ public class ChessPiece {
         return validMoves;
     }
 
-    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){throw new RuntimeException("Not implemented");}
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        pawnForward(board, myPosition, validMoves);
+
+        return validMoves;
+    }
+
+    private void pawnForward(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> validMoves){
+        int[] positions = ChessPosition.positionToIndex(myPosition);
+
+        int forward = (this.pieceColor == ChessGame.TeamColor.WHITE) ? -1 : 1;
+        int firstRow = (this.pieceColor == ChessGame.TeamColor.WHITE) ? 6 : 1;
+
+        int row = positions[0] + forward;
+        int col = positions[1];
+
+        //Check if out of bounds
+        if(row < 0 || row >= board.getBoard().length){
+            return;
+        }
+
+        //Check if any piece blocks (cannot capture forward)
+        ChessPiece piece = board.getBoard()[row][col];
+        if(piece == null){
+            ChessPosition newPosition = ChessPosition.indexToPosition(row, col);
+            if(row == 0 || row == board.getBoard().length - 1){
+                validMoves.add(new ChessMove(myPosition,newPosition,PieceType.QUEEN));
+                validMoves.add(new ChessMove(myPosition,newPosition,PieceType.ROOK));
+                validMoves.add(new ChessMove(myPosition,newPosition,PieceType.BISHOP));
+                validMoves.add(new ChessMove(myPosition,newPosition,PieceType.KNIGHT));
+            }
+            else {
+                validMoves.add(new ChessMove(myPosition, newPosition, null));
+                if(positions[0] == firstRow){
+                    pawnFirstMove(board, myPosition, validMoves);
+                }
+            }
+        }
+
+
+    }
+    private void pawnFirstMove(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> validMoves){
+        int[] positions = ChessPosition.positionToIndex(myPosition);
+
+        int forward = (this.pieceColor == ChessGame.TeamColor.WHITE) ? -2 : 2;
+        int row = positions[0] + forward;
+        int col = positions[1];
+
+        // Trivial check if out of bounds
+        if(row < 0 || row >= board.getBoard().length){
+            return;
+        }
+
+        // Check if any piece blocks
+        ChessPiece piece = board.getBoard()[row][col];
+        if(piece == null) {
+            ChessPosition newPosition = ChessPosition.indexToPosition(row, col);
+            validMoves.add(new ChessMove(myPosition, newPosition, null));
+        }
+    }
 }
