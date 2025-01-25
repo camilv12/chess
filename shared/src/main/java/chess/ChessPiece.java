@@ -64,6 +64,12 @@ public class ChessPiece {
             case KING -> {
                 return kingMoves(board, myPosition);
             }
+            case KNIGHT -> {
+                return knightMoves(board, myPosition);
+            }
+            case PAWN ->{
+                return pawnMoves(board, myPosition);
+            }
         }
         throw new RuntimeException("Not implemented");
     }
@@ -161,5 +167,34 @@ public class ChessPiece {
         return validMoves;
     }
 
-    //private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){throw new RuntimeException("Not implemented");}
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
+        // Moves in an L shape, which is any combination of -2/2 and -1/1
+        int [][] directions = {{-2,1},{-2,-1},{-1,2},{-1,-2},{2,1},{2,-1},{1,2},{1,-2}};
+        Collection<ChessMove> validMoves = new ArrayList<>();
+
+        int[] positions = ChessPosition.positionToIndex(myPosition);
+
+        for(int[] dir : directions){
+            int row = positions[0] + dir[0];
+            int col = positions[1] + dir[1];
+            // Skip if out of bounds
+            if (row < 0 || row >= board.getBoard().length || col < 0 || col >= board.getBoard()[0].length){
+                continue;
+            }
+            ChessPiece piece = board.getBoard()[row][col];
+            ChessPosition newPosition = ChessPosition.indexToPosition(row, col);
+            if (piece == null){
+                validMoves.add(new ChessMove(myPosition, newPosition, null));
+            }
+            else{
+                // If the space belongs to an enemy piece, allow capture then end recursion
+                if (!piece.getTeamColor().equals(this.pieceColor)){
+                    validMoves.add(new ChessMove(myPosition, newPosition, null));
+                }
+            }
+        }
+        return validMoves;
+    }
+
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){throw new RuntimeException("Not implemented");}
 }
