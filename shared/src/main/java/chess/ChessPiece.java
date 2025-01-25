@@ -61,6 +61,9 @@ public class ChessPiece {
             case QUEEN -> {
                 return queenMoves(board, myPosition);
             }
+            case KING -> {
+                return kingMoves(board, myPosition);
+            }
         }
         throw new RuntimeException("Not implemented");
     }
@@ -126,6 +129,34 @@ public class ChessPiece {
 
         for (int[] dir : directions){
             directionalMoves(board, myPosition, dir[0], dir[1], validMoves);
+        }
+        return validMoves;
+    }
+
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
+        int [][] directions = {{-1,1},{1,1},{1,-1},{-1,-1},{0,1},{0,-1},{1,0},{-1,0}};
+        Collection<ChessMove> validMoves = new ArrayList<>();
+
+        int[] positions = ChessPosition.positionToIndex(myPosition);
+
+        for(int[] dir: directions){
+            int row = positions[0] + dir[0];
+            int col = positions[1] + dir[1];
+            // Skip if out of bounds
+            if (row < 0 || row >= board.getBoard().length || col < 0 || col >= board.getBoard()[0].length){
+                continue;
+            }
+            ChessPiece piece = board.getBoard()[row][col];
+            ChessPosition newPosition = ChessPosition.indexToPosition(row, col);
+            if (piece == null){
+                validMoves.add(new ChessMove(myPosition, newPosition, null));
+            }
+            else{
+                // If the space belongs to an enemy piece, allow capture then end recursion
+                if (!piece.getTeamColor().equals(this.pieceColor)){
+                    validMoves.add(new ChessMove(myPosition, newPosition, null));
+                }
+            }
         }
         return validMoves;
     }
