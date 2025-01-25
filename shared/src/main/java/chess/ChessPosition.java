@@ -10,8 +10,20 @@ import java.util.Objects;
  */
 public class ChessPosition {
 
-    int row;
-    int col;
+    public static int[] positionToIndex(ChessPosition position){
+        int row = 8 - position.getRow();
+        int col = position.getColumn() - 1;
+        return new int[]{row, col};
+    }
+
+    public static ChessPosition indexToPosition(int row, int col){
+        int posRow = 8 - row;
+        int posCol = col + 1;
+        return new ChessPosition(posRow,posCol);
+    }
+
+    private final int row;
+    private final int col;
 
     public ChessPosition(int row, int col) {
     this.row = row;
@@ -49,5 +61,12 @@ public class ChessPosition {
     @Override
     public int hashCode() {
         return Objects.hash(row, col);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + row +
+                ", " + col +
+                ")";
     }
 }
