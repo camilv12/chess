@@ -3,9 +3,9 @@
 ## Project To-Do
 - [X] Chess GitHub Repository
 - [ ] Phase 0: Chess Moves
-  - [ ] Implement `ChessPosition`
-    - [ ] Implement `getRow`
-    - [ ] Implement `getColumn`
+  - [X] Implement `ChessPosition`
+    - [X] Implement `getRow`
+    - [X] Implement `getColumn`
   - [ ] Implement `ChessMove`
     - [ ] Implement `getStartPosition`
     - [ ] Implement `getEndPosition`
