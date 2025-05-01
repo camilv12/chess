@@ -6,13 +6,13 @@
   - [X] Implement `ChessPosition`
     - [X] Implement `getRow`
     - [X] Implement `getColumn`
-  - [ ] Implement `ChessMove`
-    - [ ] Implement `getStartPosition`
-    - [ ] Implement `getEndPosition`
-    - [ ] Implement `getPromotionPiece`
+  - [X] Implement `ChessMove`
+    - [X] Implement `getStartPosition`
+    - [X] Implement `getEndPosition`
+    - [X] Implement `getPromotionPiece`
   - [ ] Implement `ChessPiece`
-    - [ ] Implement `getTeamColor`
-    - [ ] Implement `getPieceType`
+    - [X] Implement `getTeamColor`
+    - [X] Implement `getPieceType`
     - [ ] Implement `pieceMoves`
         - [ ] Implement bishop moves
         - [ ] Implement rook moves
@@ -22,10 +22,10 @@
         - [ ] Implement pawn moves
         - [ ] EXTRA CREDIT: Implement *en passant*
         - [ ] EXTRA CREDIT: Implement *castling*
-  - [ ] Implement `ChessBoard`
-    - [ ] Implement `addPiece`
-    - [ ] Implement `getPiece`
-    - [ ] Implement `resetBoard`
+  - [X] Implement `ChessBoard`
+    - [X] Implement `addPiece`
+    - [X] Implement `getPiece`
+    - [X] Implement `resetBoard`
 - [ ] Phase 1: Chess Game
 - [ ] Phase 2: Chess Design
 - [ ] Phase 3: Chess Web-API

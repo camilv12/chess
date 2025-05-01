@@ -12,9 +12,19 @@ public class ChessPosition {
     private final int row;
     private final int col;
 
+    public static int[] positionToIndex(ChessPosition position){
+        int row = 8 - position.getRow();
+        int col = position.getColumn() - 1;
+        return new int[]{row, col};
+    }
+
+    public static ChessPosition indexToPosition(int row, int col) {
+        return new ChessPosition(8 - row, col + 1);
+    }
+
     public ChessPosition(int row, int col) {
-        this.row = 8-row;
-        this.col = col+1;
+        this.row = row;
+        this.col = col;
     }
 
     /**
@@ -31,16 +41,6 @@ public class ChessPosition {
      */
     public int getColumn() {
         return this.col;
-    }
-
-    public int[] positionToIndex(ChessPosition position){
-        int row = position.getRow() - 8;
-        int col = position.getColumn() - 1;
-        return new int[]{row, col};
-    }
-
-    public ChessPosition indexToPosition(int row, int col) {
-        return new ChessPosition(row, col);
     }
 
     @Override
