@@ -55,4 +55,10 @@ public class ChessPosition {
     public int hashCode() {
         return Objects.hash(row, col);
     }
+
+    @Override
+    public String toString(){
+        char file = (char) ('a' + (this.col - 1));
+        return "" + file + this.row;
+    }
 }
