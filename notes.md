@@ -14,9 +14,9 @@
     - [X] Implement `getTeamColor`
     - [X] Implement `getPieceType`
     - [ ] Implement `pieceMoves`
-        - [ ] Implement bishop moves
-        - [ ] Implement rook moves
-        - [ ] Implement queen moves
+        - [X] Implement bishop moves
+        - [X] Implement rook moves
+        - [X] Implement queen moves
         - [ ] Implement knight moves
         - [ ] Implement king moves
         - [ ] Implement pawn moves
