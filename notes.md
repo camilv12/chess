@@ -2,30 +2,9 @@
 
 ## Project To-Do
 - [X] Chess GitHub Repository
-- [ ] Phase 0: Chess Moves
-  - [X] Implement `ChessPosition`
-    - [X] Implement `getRow`
-    - [X] Implement `getColumn`
-  - [X] Implement `ChessMove`
-    - [X] Implement `getStartPosition`
-    - [X] Implement `getEndPosition`
-    - [X] Implement `getPromotionPiece`
-  - [ ] Implement `ChessPiece`
-    - [X] Implement `getTeamColor`
-    - [X] Implement `getPieceType`
-    - [ ] Implement `pieceMoves`
-        - [X] Implement bishop moves
-        - [X] Implement rook moves
-        - [X] Implement queen moves
-        - [X] Implement knight moves
-        - [X] Implement king moves
-        - [ ] Implement pawn moves
-        - [ ] EXTRA CREDIT: Implement *en passant*
-        - [ ] EXTRA CREDIT: Implement *castling*
-  - [X] Implement `ChessBoard`
-    - [X] Implement `addPiece`
-    - [X] Implement `getPiece`
-    - [X] Implement `resetBoard`
+- [X] Phase 0: Chess Moves
+  - [ ] EXTRA CREDIT: Implement *en passant*
+  - [ ] EXTRA CREDIT: Implement *castling*
 - [ ] Phase 1: Chess Game
 - [ ] Phase 2: Chess Design
 - [ ] Phase 3: Chess Web-API

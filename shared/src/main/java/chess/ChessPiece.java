@@ -51,21 +51,14 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        switch(this.type) {
-            case BISHOP:
-                return bishopMoves(board, myPosition);
-            case ROOK:
-                return rookMoves(board, myPosition);
-            case QUEEN:
-                return queenMoves(board, myPosition);
-            case KNIGHT:
-                return knightMoves(board, myPosition);
-            case KING:
-                return kingMoves(board, myPosition);
-            case PAWN:
-                return pawnMoves(board, myPosition);
-        }
-        throw new RuntimeException("Not implemented");
+        return switch (this.type) {
+            case BISHOP -> bishopMoves(board, myPosition);
+            case ROOK -> rookMoves(board, myPosition);
+            case QUEEN -> queenMoves(board, myPosition);
+            case KNIGHT -> knightMoves(board, myPosition);
+            case KING -> kingMoves(board, myPosition);
+            case PAWN -> pawnMoves(board, myPosition);
+        };
     }
 
     private void directionalMoves(ChessBoard board, ChessPosition myPosition, int rowDir, int colDir,
@@ -155,6 +148,7 @@ public class ChessPiece {
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> validMoves = new ArrayList<>();
         pawnMove(board, myPosition, validMoves);
+        pawnCapture(board, myPosition, validMoves);
         return validMoves;
     }
 
@@ -202,6 +196,49 @@ public class ChessPiece {
                 validMoves.add(new ChessMove(myPosition, newPosition, null));
             }
         }
+    }
+
+    private void pawnCapture(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> validMoves){
+        // Convert to indices
+        int[] indices = ChessPosition.positionToIndex(myPosition);
+        int row = indices[0];
+
+        // Set promotion row and directions
+        int promotionRow = (this.pieceColor == ChessGame.TeamColor.WHITE) ? 0 : 7;
+        int rowDir = (this.pieceColor == ChessGame.TeamColor.WHITE) ? -1 : 1;
+        int[] colDirs = {-1, 1};
+
+        row += rowDir;
+
+        if (row < 0 || row > 7){
+            throw new ArrayIndexOutOfBoundsException("Out of Bounds");
+        }
+
+        for(int dir : colDirs){
+            int col = indices[1] + dir;
+
+            if(col < 0 || col > 7){
+                continue;
+            }
+
+            ChessPosition newPosition = ChessPosition.indexToPosition(row, col);
+            ChessPiece piece = board.getPiece(newPosition);
+
+            if(piece != null && piece.pieceColor != this.pieceColor){
+                if(row == promotionRow){
+                    validMoves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
+                    validMoves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
+                    validMoves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
+                    validMoves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+                }
+                else{
+                    validMoves.add(new ChessMove(myPosition, newPosition, null));
+                }
+            }
+        }
+
+
+
     }
 
     @Override
