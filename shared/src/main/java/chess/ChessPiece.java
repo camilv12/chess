@@ -63,6 +63,7 @@ public class ChessPiece {
             case KING:
                 return kingMoves(board, myPosition);
             case PAWN:
+                return pawnMoves(board, myPosition);
         }
         throw new RuntimeException("Not implemented");
     }
@@ -151,7 +152,57 @@ public class ChessPiece {
         return validMoves;
     }
 
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        pawnMove(board, myPosition, validMoves);
+        return validMoves;
+    }
 
+    private void pawnMove(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> validMoves){
+        // Convert to indices
+        int[] indices = ChessPosition.positionToIndex(myPosition);
+        int row = indices[0];
+        int col = indices[1];
+
+        // Set first row and direction
+        int firstRow = (this.pieceColor == ChessGame.TeamColor.WHITE) ? 6 : 1;
+        int promotionRow = (this.pieceColor == ChessGame.TeamColor.WHITE) ? 0 : 7;
+        int rowDir = (this.pieceColor == ChessGame.TeamColor.WHITE) ? -1 : 1;
+
+        // Move
+        boolean isFirstRow = (row == firstRow);
+        row += rowDir;
+
+        // Check if out of bounds
+        if (row < 0 || row > 7){
+            throw new ArrayIndexOutOfBoundsException("Out of Bounds");
+        }
+
+        // Check if empty
+        ChessPosition newPosition = ChessPosition.indexToPosition(row, col);
+        ChessPiece piece = board.getPiece(newPosition);
+
+        if (piece == null){
+            if (isFirstRow){
+                row += rowDir;
+                ChessPosition twoSquares = ChessPosition.indexToPosition(row, col);
+                ChessPiece newPiece = board.getPiece(twoSquares);
+                if(newPiece == null){
+                    validMoves.add(new ChessMove(myPosition, twoSquares, null));
+                }
+                validMoves.add(new ChessMove(myPosition, newPosition, null));
+            }
+            else if (row == promotionRow){
+                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
+                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
+                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
+                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+            }
+            else{
+                validMoves.add(new ChessMove(myPosition, newPosition, null));
+            }
+        }
+    }
 
     @Override
     public boolean equals(Object o) {
