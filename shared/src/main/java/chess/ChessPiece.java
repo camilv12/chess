@@ -59,19 +59,21 @@ public class ChessPiece {
             case QUEEN:
                 return queenMoves(board, myPosition);
             case KNIGHT:
+                return knightMoves(board, myPosition);
             case KING:
+                return kingMoves(board, myPosition);
             case PAWN:
         }
         throw new RuntimeException("Not implemented");
     }
 
     private void directionalMoves(ChessBoard board, ChessPosition myPosition, int rowDir, int colDir,
-                                  Collection<ChessMove> moveList){
+                                  Collection<ChessMove> moveList, boolean canSlide){
         int[] indices = ChessPosition.positionToIndex(myPosition);
         int row = indices[0];
         int col = indices[1];
 
-        while(true){
+        do{
             row += rowDir;
             col += colDir;
 
@@ -94,14 +96,21 @@ public class ChessPiece {
                 }
                 break;
             }
-        }
+        }while(canSlide);
     }
+
+    /* TODO:
+        Refactor pieceMoves and helper functions to take the array of directions and canSlide as the arguments
+        Ex: Without calling bishopMoves
+        int[][] bishopDirections = {{1,1},{1,-1},{-1,1},{-1,-1}};
+        for(int[] dir : directions) ...
+     */
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> validMoves = new ArrayList<>();
         int[][] directions = {{1,1},{1,-1},{-1,1},{-1,-1}};
         for(int[] dir : directions){
-            directionalMoves(board, myPosition, dir[0], dir[1],validMoves);
+            directionalMoves(board, myPosition, dir[0], dir[1],validMoves, true);
         }
         return validMoves;
     }
@@ -110,7 +119,7 @@ public class ChessPiece {
         Collection<ChessMove> validMoves = new ArrayList<>();
         int[][] directions = {{1,0},{0,1},{-1,0},{0,-1}};
         for(int[] dir : directions){
-            directionalMoves(board, myPosition, dir[0], dir[1],validMoves);
+            directionalMoves(board, myPosition, dir[0], dir[1],validMoves, true);
         }
         return validMoves;
     }
@@ -119,10 +128,30 @@ public class ChessPiece {
         Collection<ChessMove> validMoves = new ArrayList<>();
         int[][] directions = {{1,0},{0,1},{-1,0},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
         for(int[] dir : directions){
-            directionalMoves(board, myPosition, dir[0], dir[1],validMoves);
+            directionalMoves(board, myPosition, dir[0], dir[1],validMoves, true);
         }
         return validMoves;
     }
+
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        int[][] directions = {{1,0},{0,1},{-1,0},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
+        for(int[] dir : directions){
+            directionalMoves(board, myPosition, dir[0], dir[1],validMoves, false);
+        }
+        return validMoves;
+    }
+
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        int[][] directions = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{-1,2},{1,-2},{-1,-2}};
+        for(int[] dir : directions){
+            directionalMoves(board, myPosition, dir[0], dir[1],validMoves, false);
+        }
+        return validMoves;
+    }
+
+
 
     @Override
     public boolean equals(Object o) {

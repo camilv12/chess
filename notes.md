@@ -17,8 +17,8 @@
         - [X] Implement bishop moves
         - [X] Implement rook moves
         - [X] Implement queen moves
-        - [ ] Implement knight moves
-        - [ ] Implement king moves
+        - [X] Implement knight moves
+        - [X] Implement king moves
         - [ ] Implement pawn moves
         - [ ] EXTRA CREDIT: Implement *en passant*
         - [ ] EXTRA CREDIT: Implement *castling*
