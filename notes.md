@@ -3,9 +3,18 @@
 ## Project To-Do
 - [X] Chess GitHub Repository
 - [X] Phase 0: Chess Moves
-  - [ ] EXTRA CREDIT: Implement *en passant*
-  - [ ] EXTRA CREDIT: Implement *castling*
 - [ ] Phase 1: Chess Game
+  - [ ] Implement `getTeamTurn`
+  - [ ] Implement `validMoves`
+  - [ ] Implement `makeMove`
+  - [ ] Implement `isInCheck`
+  - [ ] Implement `isInCheckmate`
+  - [ ] Implement `isInStaleMate`
+  - [ ] Implement `setBoard`
+  - [ ] Implement `getBoard` 
+  - [ ] **EXTRA CREDIT:**
+    - [ ] Implement castling
+    - [ ] Implement en passant
 - [ ] Phase 2: Chess Design
 - [ ] Phase 3: Chess Web-API
 - [ ] Phase 4: Chess Database
