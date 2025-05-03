@@ -4,14 +4,14 @@
 - [X] Chess GitHub Repository
 - [X] Phase 0: Chess Moves
 - [ ] Phase 1: Chess Game
-  - [ ] Implement `getTeamTurn`
+  - [X] Implement `getTeamTurn`
   - [ ] Implement `validMoves`
-  - [ ] Implement `makeMove`
+  - [X] Implement `makeMove`
   - [ ] Implement `isInCheck`
   - [ ] Implement `isInCheckmate`
   - [ ] Implement `isInStaleMate`
-  - [ ] Implement `setBoard`
-  - [ ] Implement `getBoard` 
+  - [X] Implement `setBoard`
+  - [X] Implement `getBoard` 
   - [ ] **EXTRA CREDIT:**
     - [ ] Implement castling
     - [ ] Implement en passant

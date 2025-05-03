@@ -11,8 +11,8 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    ChessGame.TeamColor pieceColor;
-    ChessPiece.PieceType type;
+    private final ChessGame.TeamColor pieceColor;
+    private final ChessPiece.PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -52,12 +52,23 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         return switch (this.type) {
-            case BISHOP -> bishopMoves(board, myPosition);
-            case ROOK -> rookMoves(board, myPosition);
-            case QUEEN -> queenMoves(board, myPosition);
-            case KNIGHT -> knightMoves(board, myPosition);
-            case KING -> kingMoves(board, myPosition);
-            case PAWN -> pawnMoves(board, myPosition);
+            case BISHOP:
+                int[][] bishopDirs = {{1,1},{1,-1},{-1,1},{-1,-1}};
+                yield calculateMoves(board, myPosition, bishopDirs, true);
+            case ROOK:
+                int[][] rookDirs = {{1,0},{0,1},{-1,0},{0,-1}};
+                yield calculateMoves(board, myPosition, rookDirs, true);
+            case QUEEN:
+                int [][] queenDirs = {{1,0},{0,1},{-1,0},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
+                yield calculateMoves(board, myPosition, queenDirs, true);
+            case KING:
+                int[][] kingDirs = {{1,0},{0,1},{-1,0},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
+                yield calculateMoves(board, myPosition, kingDirs, false);
+            case KNIGHT:
+                int [][] knightDirs = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{-1,2},{1,-2},{-1,-2}};
+                yield calculateMoves(board, myPosition, knightDirs, false);
+            case PAWN:
+                yield pawnMoves(board, myPosition);
         };
     }
 
@@ -90,57 +101,17 @@ public class ChessPiece {
                 }
                 break;
             }
-        }while(canSlide);
+            if(!canSlide){
+                break;
+            }
+        } while(true);
     }
 
-    /* TODO:
-        Refactor pieceMoves and helper functions to take the array of directions and canSlide as the arguments
-        Ex: Without calling bishopMoves
-        int[][] bishopDirections = {{1,1},{1,-1},{-1,1},{-1,-1}};
-        for(int[] dir : directions) ...
-     */
-
-    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
+    private Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition,
+                                                 int[][] directions, boolean canSlide){
         Collection<ChessMove> validMoves = new ArrayList<>();
-        int[][] directions = {{1,1},{1,-1},{-1,1},{-1,-1}};
         for(int[] dir : directions){
-            directionalMoves(board, myPosition, dir[0], dir[1],validMoves, true);
-        }
-        return validMoves;
-    }
-
-    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> validMoves = new ArrayList<>();
-        int[][] directions = {{1,0},{0,1},{-1,0},{0,-1}};
-        for(int[] dir : directions){
-            directionalMoves(board, myPosition, dir[0], dir[1],validMoves, true);
-        }
-        return validMoves;
-    }
-
-    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> validMoves = new ArrayList<>();
-        int[][] directions = {{1,0},{0,1},{-1,0},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
-        for(int[] dir : directions){
-            directionalMoves(board, myPosition, dir[0], dir[1],validMoves, true);
-        }
-        return validMoves;
-    }
-
-    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> validMoves = new ArrayList<>();
-        int[][] directions = {{1,0},{0,1},{-1,0},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
-        for(int[] dir : directions){
-            directionalMoves(board, myPosition, dir[0], dir[1],validMoves, false);
-        }
-        return validMoves;
-    }
-
-    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> validMoves = new ArrayList<>();
-        int[][] directions = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{-1,2},{1,-2},{-1,-2}};
-        for(int[] dir : directions){
-            directionalMoves(board, myPosition, dir[0], dir[1],validMoves, false);
+            directionalMoves(board, myPosition, dir[0], dir[1],validMoves, canSlide);
         }
         return validMoves;
     }
@@ -187,10 +158,7 @@ public class ChessPiece {
                 validMoves.add(new ChessMove(myPosition, newPosition, null));
             }
             else if (row == promotionRow){
-                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
-                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
-                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
-                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+                promotePawn(myPosition, newPosition, validMoves);
             }
             else{
                 validMoves.add(new ChessMove(myPosition, newPosition, null));
@@ -226,10 +194,7 @@ public class ChessPiece {
 
             if(piece != null && piece.pieceColor != this.pieceColor){
                 if(row == promotionRow){
-                    validMoves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
-                    validMoves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
-                    validMoves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
-                    validMoves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+                    promotePawn(myPosition, newPosition, validMoves);
                 }
                 else{
                     validMoves.add(new ChessMove(myPosition, newPosition, null));
@@ -239,6 +204,13 @@ public class ChessPiece {
 
 
 
+    }
+
+    private void promotePawn(ChessPosition startPosition, ChessPosition endPosition, Collection<ChessMove> validMoves){
+        validMoves.add(new ChessMove(startPosition, endPosition, PieceType.BISHOP));
+        validMoves.add(new ChessMove(startPosition, endPosition, PieceType.KNIGHT));
+        validMoves.add(new ChessMove(startPosition, endPosition, PieceType.QUEEN));
+        validMoves.add(new ChessMove(startPosition, endPosition, PieceType.ROOK));
     }
 
     @Override
