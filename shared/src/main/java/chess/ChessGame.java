@@ -92,7 +92,7 @@ public class ChessGame {
         }
 
         else{
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Invalid Move");
         }
     }
 
@@ -104,7 +104,40 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPosition = findKingPosition(this.board, teamColor);
+        if (kingPosition == null) return false;
+
+        for (int i = 1; i <= 8; i++){
+            for (int j = 1; j <= 8; j++){
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = this.board.getPiece(position);
+                if(piece != null && piece.getTeamColor() != teamColor){
+                    Collection<ChessMove> enemyMoves = piece.pieceMoves(this.board, position);
+                    for (ChessMove move : enemyMoves){
+                        if(move.getEndPosition().equals(kingPosition)){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private ChessPosition findKingPosition(ChessBoard board, ChessGame.TeamColor teamColor){
+        for (int i = 1; i <= 8; i++){
+            for (int j = 1; j <= 8; j++){
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null &&
+                        piece.getPieceType() == ChessPiece.PieceType.KING &&
+                        piece.getTeamColor() == teamColor) {
+                    return position;
+                }
+
+            }
+        }
+        return null; // King not found
     }
 
     /**

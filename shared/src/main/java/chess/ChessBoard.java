@@ -16,6 +16,22 @@ public class ChessBoard {
         board = new ChessPiece[8][8];
     }
 
+    // Deep copy constructor
+    public ChessBoard(ChessBoard original){
+        this.board = new ChessPiece[8][8];
+        for (int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                ChessPiece originalPiece = original.board[i][j];
+                if(originalPiece != null){
+                    this.board[i][j] = new ChessPiece(
+                            originalPiece.getTeamColor(),
+                            originalPiece.getPieceType()
+                    );
+                }
+            }
+        }
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
@@ -85,6 +101,10 @@ public class ChessBoard {
         // Set up kings
         addPiece(ChessPosition.indexToPosition(7,4),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
         addPiece(ChessPosition.indexToPosition(0,4),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
+    }
+
+    public ChessBoard copy(){
+        return new ChessBoard(this);
     }
 
     @Override
