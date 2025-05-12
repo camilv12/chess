@@ -11,8 +11,8 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessGame {
-    TeamColor team;
-    ChessBoard board;
+    private TeamColor team;
+    private ChessBoard board;
 
     public ChessGame() {
         this.team = TeamColor.WHITE;
@@ -181,7 +181,19 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        boolean stalemate = false;
+        if (!isInCheck(teamColor)) {
+            for (int i = 1; i <= 8; i++) {
+                for (int j = 1; j <= 8; j++) {
+                    ChessPosition position = new ChessPosition(i, j);
+                    ChessPiece piece = this.board.getPiece(position);
+                    if (piece != null && piece.getTeamColor() == teamColor) {
+                        stalemate = (validMoves(position).isEmpty());
+                    }
+                }
+            }
+        }
+        return stalemate;
     }
 
     /**
