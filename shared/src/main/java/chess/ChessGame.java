@@ -1,8 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -150,7 +148,7 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null && piece.getTeamColor() != teamColor){
-                    Collection<ChessMove> enemyMoves = piece.pieceMoves(board, position);
+                    Collection<ChessMove> enemyMoves = piece.pieceMoves(this.board, position);
                     for (ChessMove move : enemyMoves){
                         if(move.getEndPosition().equals(kingPosition)){
                             return true;
@@ -170,7 +168,81 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if(!isInCheck(teamColor)) return false;
-        throw new RuntimeException("Not Implemented");
+
+        // Return false if the king can escape check
+        ChessPosition kingPosition = findKingPosition(this.board, teamColor);
+        Collection<ChessMove> kingMoves = validMoves(kingPosition);
+        if(!kingMoves.isEmpty()) return false;
+
+        // Verify Capture Possibilities
+        Collection<ChessPosition> attackers = checkingPositions(this.board, teamColor, kingPosition);
+        return !canCaptureOrBlock(this.board, teamColor, kingPosition, attackers);
+    }
+
+    private Collection<ChessPosition> checkingPositions(ChessBoard board, TeamColor teamColor,
+                                                        ChessPosition kingPosition){
+        Collection<ChessPosition> enemyPieces = new ArrayList<>();
+        // Iterate through the chess board
+        for (int i = 1; i <= 8; i++){
+            for (int j = 1; j <= 8; j++){
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece == null || piece.getTeamColor() == teamColor) continue;
+                // If there is an enemy piece, check if its moves end with the king's position
+                Collection<ChessMove> enemyMoves = piece.pieceMoves(this.board, position);
+                for (ChessMove move : enemyMoves){
+                    if(move.getEndPosition().equals(kingPosition)){
+                        enemyPieces.add(position); // If so, add the starting position
+                        break;
+                    }
+                }
+            }
+        }
+        return enemyPieces;
+    }
+
+    private boolean canCaptureOrBlock(ChessBoard board, TeamColor teamColor,
+                                      ChessPosition kingPosition, Collection<ChessPosition> attackers){
+        // Double Check returns false, already checked king's moves
+        if (attackers.size() > 1) return false;
+
+        ChessPosition attackerPosition = attackers.iterator().next();
+        ChessPiece attacker = board.getPiece(attackerPosition);
+        Set<ChessPosition> enemyPath = getEnemyPath(kingPosition, attackerPosition, attacker.getPieceType());
+
+        for (int i = 1; i <= 8; i++){
+            for (int j = 1; j <= 8; j++){
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece == null || piece.getTeamColor() != teamColor) continue;
+                Collection<ChessMove> moves = validMoves(position);
+                for(ChessMove move : moves) {
+                    if(enemyPath.contains(move.getEndPosition()) ||
+                    move.getEndPosition().equals(attackerPosition)) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private Set<ChessPosition> getEnemyPath(ChessPosition kingPosition, ChessPosition attackerPosition,
+                                            ChessPiece.PieceType pieceType){
+        Set<ChessPosition> path = new HashSet<>();
+        // Only update for Rooks, Queens, and Bishops
+        if (pieceType == ChessPiece.PieceType.ROOK ||
+            pieceType == ChessPiece.PieceType.QUEEN||
+            pieceType == ChessPiece.PieceType.BISHOP){
+            int rowStep = Integer.signum(attackerPosition.getRow() - kingPosition.getRow());
+            int colStep = Integer.signum(attackerPosition.getColumn() - kingPosition.getColumn());
+            int row = kingPosition.getRow() + rowStep;
+            int col = kingPosition.getColumn() + colStep;
+            while(row != attackerPosition.getRow() || col != attackerPosition.getColumn()){
+                path.add(new ChessPosition(row, col));
+                row += rowStep;
+                col += colStep;
+            }
+        }
+        return path;
     }
 
     /**
@@ -205,8 +277,8 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        for(int i = 0; i <= 8; i++){
-            for(int j = 0; j <= 8; j++){
+        for(int i = 1; i <= 8; i++){
+            for(int j = 1; j <= 8; j++){
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = board.getPiece(position);
                 this.board.addPiece(position, piece);
