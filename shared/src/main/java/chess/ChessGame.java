@@ -148,7 +148,7 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null && piece.getTeamColor() != teamColor){
-                    Collection<ChessMove> enemyMoves = piece.pieceMoves(this.board, position);
+                    Collection<ChessMove> enemyMoves = piece.pieceMoves(board, position);
                     for (ChessMove move : enemyMoves){
                         if(move.getEndPosition().equals(kingPosition)){
                             return true;
@@ -306,5 +306,13 @@ public class ChessGame {
     @Override
     public int hashCode() {
         return Objects.hash(team, board);
+    }
+
+    @Override
+    public String toString() {
+        return "Current turn: " +
+                (team == TeamColor.WHITE ? "WHITE" : "BLACK") +
+                System.lineSeparator() +
+                board.toString();
     }
 }

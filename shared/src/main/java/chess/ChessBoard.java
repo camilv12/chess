@@ -119,4 +119,17 @@ public class ChessBoard {
     public int hashCode() {
         return Arrays.deepHashCode(board);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int row = 8; row >= 1; row--) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPiece p = getPiece(new ChessPosition(row, col));
+                sb.append(p != null ? p.toString() : ".");
+            }
+            sb.append('\n');
+        }
+        return sb.toString();
+    }
 }
