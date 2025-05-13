@@ -123,13 +123,17 @@ public class ChessBoard {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("   a b c d e f g h").append("\n");
         for (int row = 8; row >= 1; row--) {
+            sb.append(row).append(" ");
             for (int col = 1; col <= 8; col++) {
                 ChessPiece p = getPiece(new ChessPosition(row, col));
-                sb.append(p != null ? p.toString() : ".");
+                sb.append("|")
+                  .append(p != null ? p.toString() : " ");
             }
-            sb.append('\n');
+            sb.append("| ").append(row).append('\n');
         }
+        sb.append("   a b c d e f g h").append("\n");
         return sb.toString();
     }
 }

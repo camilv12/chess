@@ -312,7 +312,7 @@ public class ChessGame {
     public String toString() {
         return "Current turn: " +
                 (team == TeamColor.WHITE ? "WHITE" : "BLACK") +
-                System.lineSeparator() +
+                '\n' +
                 board.toString();
     }
 }
