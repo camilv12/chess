@@ -5,11 +5,11 @@
 - [X] Phase 0: Chess Moves
 - [ ] Phase 1: Chess Game
   - [X] Implement `getTeamTurn`
-  - [ ] Implement `validMoves`
+  - [X] Implement `validMoves`
   - [X] Implement `makeMove`
-  - [ ] Implement `isInCheck`
+  - [X] Implement `isInCheck`
   - [ ] Implement `isInCheckmate`
-  - [ ] Implement `isInStaleMate`
+  - [X] Implement `isInStaleMate`
   - [X] Implement `setBoard`
   - [X] Implement `getBoard` 
   - [ ] **EXTRA CREDIT:**
