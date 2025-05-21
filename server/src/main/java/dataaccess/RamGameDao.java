@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RamGameDao implements GameDao{
-    private final Map<Integer, GameData> games = new HashMap<>();
+    private static final Map<Integer, GameData> games = new HashMap<>();
 
     @Override
     public void createGame(GameData game) throws DataAccessException {

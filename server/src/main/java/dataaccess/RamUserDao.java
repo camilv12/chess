@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RamUserDao implements UserDao {
-    private final Map<String, UserData> users = new HashMap<>();
+    private static final Map<String, UserData> users = new HashMap<>();
 
     @Override
     public void createUser(UserData user) throws DataAccessException {

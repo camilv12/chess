@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RamAuthDao implements AuthDao{
-    private final Map<String, AuthData> auth = new HashMap<>();
+    private static final Map<String, AuthData> auth = new HashMap<>();
     @Override
     public void createAuth(AuthData authData) throws DataAccessException{
         if(auth.containsKey(authData.authToken())){

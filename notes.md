@@ -6,11 +6,11 @@
 - [X] Phase 1: Chess Game
 - [X] Phase 2: Chess Design
 - [ ] Phase 3: Chess Web-API
-  - [ ] Implement Classes:
+  - [X] Implement Classes:
     - [X] User
     - [X] Game
     - [X] AuthToken
-    - [ ] Request/Result Classes
+    - [X] Request/Result Classes
   - [X] Implement DAOs
     - [X] AuthDAO
     - [X] GameDAO
