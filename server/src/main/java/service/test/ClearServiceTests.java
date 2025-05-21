@@ -43,7 +43,7 @@ public class ClearServiceTests {
 
     @Test
     @DisplayName("ClearService succeeds with an empty database")
-    public void clearEmptyDatabase() {
+    public void clearEmptyDatabase() throws DataAccessException {
         // Execute method
         ClearResult result = clearService.clear(new ClearRequest());
 

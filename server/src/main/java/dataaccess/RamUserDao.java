@@ -18,11 +18,9 @@ public class RamUserDao implements UserDao {
 
     @Override
     public UserData getUser(String username) throws DataAccessException{
-        try{
-            return users.get(username);
-        } catch(Exception e){
-            throw new DataAccessException("User not found");
-        }
+        UserData result = users.get(username);
+        if(result == null) throw new DataAccessException("User not found");
+        return result;
     }
 
     @Override

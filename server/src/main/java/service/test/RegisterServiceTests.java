@@ -33,7 +33,7 @@ public class RegisterServiceTests {
     // Positive Test
     @Test
     @DisplayName("RegisterService registers a user in the database")
-    void registerUser() throws DataAccessException{
+    void registerUser() throws DataAccessException, BadRequestException, AlreadyTakenException {
         // Setup:
         RegisterRequest request = new RegisterRequest("testUser","deadbeef","user@test.com");
         RegisterResult result = registerService.register(request);
@@ -56,12 +56,10 @@ public class RegisterServiceTests {
     @DisplayName("RegisterService with bad request throws BadRequestException")
     public void registerBadRequest() {
         // Setup
-        RegisterRequest badRequest = new RegisterRequest("user", "pass","email");
+        RegisterRequest badRequest = new RegisterRequest("user", "pass",null);
 
         // Verify result
-        assertThrows(BadRequestException.class, () -> {
-           registerService.register(badRequest);
-        });
+        assertThrows(BadRequestException.class, () -> registerService.register(badRequest));
 
         // Verify no data persists
         assertThrows(DataAccessException.class, () -> userDao.getUser("user"));
@@ -71,7 +69,7 @@ public class RegisterServiceTests {
     // Negative Test 2: Already Taken
     @Test
     @DisplayName("Duplicate registration throws AlreadyTakenException")
-    public void registerDuplicateUser() throws DataAccessException {
+    public void registerDuplicateUser() throws DataAccessException, BadRequestException, AlreadyTakenException {
         // Setup
         registerService.register(new RegisterRequest(
                 "existing",
@@ -83,9 +81,7 @@ public class RegisterServiceTests {
                 "exist2@email.com");
 
         // Verify result
-        assertThrows(AlreadyTakenException.class, () -> {
-           registerService.register(duplicate);
-        });
+        assertThrows(AlreadyTakenException.class, () -> registerService.register(duplicate));
 
         // Verify original user remains
         UserData originalUser = userDao.getUser("existing");

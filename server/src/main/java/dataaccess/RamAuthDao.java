@@ -1,12 +1,17 @@
 package dataaccess;
 
 import model.AuthData;
-
+import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RamAuthDao implements AuthDao{
     private static final Map<String, AuthData> auth = new HashMap<>();
+
+    public static String generateToken() {
+        return UUID.randomUUID().toString();
+    }
+
     @Override
     public void createAuth(AuthData authData) throws DataAccessException{
         if(auth.containsKey(authData.authToken())){
@@ -17,11 +22,9 @@ public class RamAuthDao implements AuthDao{
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        try{
-            return auth.get(authToken);
-        } catch(Exception e) {
-            throw new DataAccessException("AuthToken not found");
-        }
+        AuthData result = auth.get(authToken);
+        if(result == null) throw new DataAccessException("AuthToken not found");
+        return result;
     }
 
     @Override

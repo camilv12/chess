@@ -20,11 +20,9 @@ public class RamGameDao implements GameDao{
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
-        try{
-            return games.get(gameID);
-        } catch (Exception e){
-            throw new DataAccessException("Game not found");
-        }
+        GameData result =  games.get(gameID);
+        if(result == null) throw new DataAccessException("Game not found");
+        return result;
     }
 
     @Override
