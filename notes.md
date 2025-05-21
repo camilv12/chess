@@ -11,10 +11,10 @@
     - [X] Game
     - [X] AuthToken
     - [ ] Request/Result Classes
-  - [ ] Implement DAOs
-    - [ ] AuthDAO
-    - [ ] GameDAO
-    - [ ] UserDAO
+  - [X] Implement DAOs
+    - [X] AuthDAO
+    - [X] GameDAO
+    - [X] UserDAO
   - [ ] Implement Services
     - [ ] ClearService
     - [ ] RegisterService
