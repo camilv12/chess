@@ -1,4 +1,4 @@
-package service.test;
+package service;
 
 import dataaccess.DataAccessException;
 import dataaccess.RamAuthDao;
@@ -8,11 +8,13 @@ import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import service.AlreadyTakenException;
-import service.BadRequestException;
-import service.RegisterService;
-import service.request.RegisterRequest;
-import service.result.RegisterResult;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import service.model.RegisterRequest;
+import service.model.RegisterResult;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,23 +54,38 @@ public class RegisterServiceTests {
     }
 
     // Negative Test 1: Bad Request
-    @Test
-    @DisplayName("RegisterService with bad request throws BadRequestException")
-    public void registerBadRequest() {
-        // Setup
-        RegisterRequest badRequest = new RegisterRequest("user", "pass",null);
-
+    @ParameterizedTest(name = "Test null {0}")
+    @MethodSource("badRequestsProvider")
+    @DisplayName("RegisterService throws BadRequestException when argument is null")
+    public void testRegistrationWithBadRequests(
+            String description,
+            String username,
+            String password,
+            String email
+    ) {
         // Verify result
-        assertThrows(BadRequestException.class, () -> registerService.register(badRequest));
+        assertThrows(BadRequestException.class, () ->
+                registerService.register(new RegisterRequest(username, password, email)),
+                "Failed validation for: " + description);
 
         // Verify no data persists
-        assertThrows(DataAccessException.class, () -> userDao.getUser("user"));
-        assertThrows(DataAccessException.class, () -> authDao.getAuth("anyToken"));
+        ServiceTestUtils.verifyEmptyUserAndAuthDaos(userDao, authDao);
+    }
+    private static Stream<Arguments> badRequestsProvider() {
+        String validUser = "testUser";
+        String validPass = "passw0rd";
+        String validEmail = "user@test.com";
+
+        return Stream.of(
+                Arguments.of("username", null, validPass, validEmail),
+                Arguments.of("password", validUser, null, validEmail),
+                Arguments.of("email", validUser, validPass, null)
+        );
     }
 
     // Negative Test 2: Already Taken
     @Test
-    @DisplayName("Duplicate registration throws AlreadyTakenException")
+    @DisplayName("Duplicate registration throws exception")
     public void registerDuplicateUser() throws DataAccessException, BadRequestException, AlreadyTakenException {
         // Setup
         registerService.register(new RegisterRequest(

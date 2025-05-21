@@ -43,4 +43,6 @@ public class RamAuthDao implements AuthDao{
             throw new DataAccessException("Clear failed: " + e.getMessage());
         }
     }
+
+    public boolean isEmpty() { return auth.isEmpty(); }
 }

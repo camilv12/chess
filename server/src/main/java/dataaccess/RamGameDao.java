@@ -50,4 +50,6 @@ public class RamGameDao implements GameDao{
             throw new DataAccessException("Clear failed: " + e.getMessage());
         }
     }
+
+    public boolean isEmpty() { return games.isEmpty(); }
 }

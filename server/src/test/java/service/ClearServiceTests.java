@@ -1,13 +1,11 @@
-package service.test;
+package service;
 
 import chess.ChessGame;
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
-import service.ClearService;
-import service.request.ClearRequest;
-import service.result.ClearResult;
+import service.model.ClearResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,30 +28,32 @@ public class ClearServiceTests {
         userDao.createUser(new UserData("testUser","p@ssw0rd123","user@test.com"));
 
         // Execute method
-        ClearResult result = clearService.clear(new ClearRequest());
+        ClearResult result = clearService.clear();
 
         // Assert Result
         assertNotNull(result, "Should return ClearResult object");
 
         // Verify empty DAOs
-        assertThrows(DataAccessException.class, () -> authDao.getAuth("testToken"));
-        assertThrows(DataAccessException.class, () -> gameDao.getGame(1234));
-        assertThrows(DataAccessException.class, () -> userDao.getUser("user"));
+        verifyEmpty();
     }
 
     @Test
     @DisplayName("ClearService succeeds with an empty database")
     public void clearEmptyDatabase() throws DataAccessException {
         // Execute method
-        ClearResult result = clearService.clear(new ClearRequest());
+        ClearResult result = clearService.clear();
 
         // Assert Result
         assertNotNull(result, "Should return ClearResult object");
 
         // Verify empty DAOs
-        assertThrows(DataAccessException.class, () -> authDao.getAuth("testToken"));
-        assertThrows(DataAccessException.class, () -> gameDao.getGame(1234));
-        assertThrows(DataAccessException.class, () -> userDao.getUser("user"));
+        verifyEmpty();
+    }
+
+    private void verifyEmpty(){
+        ServiceTestUtils.verifyEmptyAuthDao(authDao);
+        ServiceTestUtils.verifyEmptyGameDao(gameDao);
+        ServiceTestUtils.verifyEmptyUserDao(userDao);
     }
 
 }

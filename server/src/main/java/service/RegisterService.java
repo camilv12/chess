@@ -5,8 +5,8 @@ import dataaccess.RamAuthDao;
 import dataaccess.RamUserDao;
 import model.AuthData;
 import model.UserData;
-import service.request.RegisterRequest;
-import service.result.RegisterResult;
+import service.model.RegisterRequest;
+import service.model.RegisterResult;
 
 public class RegisterService {
     private final RamUserDao userDao = new RamUserDao();
@@ -14,12 +14,16 @@ public class RegisterService {
 
     public RegisterResult register(RegisterRequest request) throws RuntimeException, DataAccessException {
         // Check if the request is valid
-        if(isBlank(request.username()) || isBlank(request.password()) || isBlank(request.email())){
+        if(ServiceUtils.isBlank(request.username())
+                || ServiceUtils.isBlank(request.password())
+                || ServiceUtils.isBlank(request.email())) {
             throw new BadRequestException("Error: bad request");
         }
 
         // Check username availability
-        if(userExists(request.username())) throw new AlreadyTakenException("Error: already taken");
+        if(ServiceUtils.userExists(userDao, request.username())){
+            throw new AlreadyTakenException("Error: already taken");
+        }
 
         UserData newUser = new UserData(
                 request.username(),
@@ -37,18 +41,5 @@ public class RegisterService {
         return new RegisterResult(
                 request.username(),
                 newAuth.authToken());
-    }
-
-    private boolean userExists(String username){
-        try{
-            userDao.getUser(username);
-            return true;
-        } catch (DataAccessException e) {
-            return false;
-        }
-    }
-
-    private boolean isBlank(String value) {
-        return value == null || value.isBlank();
     }
 }

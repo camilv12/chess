@@ -1,3 +1,3 @@
-package service.result;
+package service.model;
 
 public record JoinGameResult() {}

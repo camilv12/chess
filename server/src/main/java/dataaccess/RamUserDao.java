@@ -31,4 +31,6 @@ public class RamUserDao implements UserDao {
             throw new DataAccessException("Clear failed: " + e.getMessage());
         }
     }
+
+    public boolean isEmpty() { return users.isEmpty(); }
 }
