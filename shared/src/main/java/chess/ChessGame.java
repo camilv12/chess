@@ -147,14 +147,24 @@ public class ChessGame {
             for (int j = 1; j <= 8; j++){
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = board.getPiece(position);
-                if(piece != null && piece.getTeamColor() != teamColor){
-                    Collection<ChessMove> enemyMoves = piece.pieceMoves(board, position);
-                    for (ChessMove move : enemyMoves){
-                        if(move.getEndPosition().equals(kingPosition)){
-                            return true;
-                        }
-                    }
+                if (shouldSkipPiece(piece, teamColor)){
+                    continue;
                 }
+                if(canThreatenKing(piece, board, position, kingPosition)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean shouldSkipPiece(ChessPiece piece, TeamColor teamColor){
+        return (piece == null || piece.getTeamColor() == teamColor);
+    }
+    private boolean canThreatenKing(ChessPiece piece, ChessBoard board, ChessPosition from, ChessPosition kingPosition) {
+        for (ChessMove move : piece.pieceMoves(board, from)) {
+            if (move.getEndPosition().equals(kingPosition)) {
+                return true;
             }
         }
         return false;
@@ -261,17 +271,23 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if(isInCheck(teamColor)) return false;
+        if(isInCheck(teamColor)) {
+            return false;
+        }
 
         for(int i = 1; i <= 8; i++){
             for(int j = 1; j <= 8; j++){
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = this.board.getPiece(position);
 
-                if (piece == null || piece.getTeamColor() != teamColor) continue;
+                if (piece == null || piece.getTeamColor() != teamColor) {
+                    continue;
+                }
 
                 Collection<ChessMove> moves = validMoves(position);
-                if(moves != null && !moves.isEmpty()) return false; // Found at least one valid move
+                if(moves != null && !moves.isEmpty()) {
+                    return false; // Found at least one valid move
+                }
             }
         }
 

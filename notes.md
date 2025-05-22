@@ -23,14 +23,14 @@
     - [X] ListGamesService
     - [X] CreateGameService
     - [X] JoinGameService
-  - [ ] Implement Handlers
-    - [ ] ClearHandler
-    - [ ] RegisterHandler
-    - [ ] LoginHandler
-    - [ ] LogoutHandler
-    - [ ] ListGamesHandler
-    - [ ] CreateGameHandler
-    - [ ] JoinGameHandler
+  - [X] Implement Handlers
+    - [X] ClearHandler
+    - [X] RegisterHandler
+    - [X] LoginHandler
+    - [X] LogoutHandler
+    - [X] ListGamesHandler
+    - [X] CreateGameHandler
+    - [X] JoinGameHandler
   - [ ] Implement Server Class
 - [ ] Phase 4: Chess Database
 - [ ] Phase 5: Chess Pregame

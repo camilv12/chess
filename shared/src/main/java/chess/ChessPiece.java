@@ -236,7 +236,9 @@ public class ChessPiece {
             case KNIGHT -> 'N';
             case PAWN -> 'P';
         };
-        if (this.getTeamColor() == ChessGame.TeamColor.BLACK) piece = Character.toLowerCase(piece);
+        if (this.getTeamColor() == ChessGame.TeamColor.BLACK) {
+            piece = Character.toLowerCase(piece);
+        }
 
         return String.valueOf(piece);
     }
