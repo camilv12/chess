@@ -19,22 +19,20 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RegisterServiceTests {
-    private RamUserDao userDao;
-    private RamAuthDao authDao;
+    private final RamUserDao users = new RamUserDao();
+    private final RamAuthDao auth = new RamAuthDao();
     private RegisterService registerService;
 
     @BeforeEach
     void setup() throws DataAccessException {
-        userDao = new RamUserDao();
-        authDao = new RamAuthDao();
         registerService = new RegisterService();
-        userDao.clear();
-        authDao.clear();
+        users.clear();
+        auth.clear();
     }
 
     // Positive Test
     @Test
-    @DisplayName("RegisterService registers a user in the database")
+    @DisplayName("Successfully registers a user")
     void registerUser() throws DataAccessException, BadRequestException, AlreadyTakenException {
         // Setup:
         RegisterRequest request = new RegisterRequest("testUser","deadbeef","user@test.com");
@@ -45,18 +43,18 @@ public class RegisterServiceTests {
         assertEquals("testUser", result.username());
 
         // Verify user storage
-        UserData storedUser = userDao.getUser("testUser");
+        UserData storedUser = users.getUser("testUser");
         assertEquals("user@test.com", storedUser.email());
 
         // Verify auth storage
-        AuthData auth = authDao.getAuth(result.authToken());
+        AuthData auth = this.auth.getAuth(result.authToken());
         assertEquals("testUser", auth.username());
     }
 
     // Negative Test 1: Bad Request
     @ParameterizedTest(name = "Test null {0}")
     @MethodSource("badRequestsProvider")
-    @DisplayName("RegisterService throws BadRequestException when argument is null")
+    @DisplayName("Throws an exception when arguments are null")
     public void testRegistrationWithBadRequests(
             String description,
             String username,
@@ -69,7 +67,7 @@ public class RegisterServiceTests {
                 "Failed validation for: " + description);
 
         // Verify no data persists
-        ServiceTestUtils.verifyEmptyUserAndAuthDaos(userDao, authDao);
+        ServiceTestUtils.verifyEmptyUserAndAuthDaos(users, auth);
     }
     private static Stream<Arguments> badRequestsProvider() {
         String validUser = "testUser";
@@ -101,7 +99,7 @@ public class RegisterServiceTests {
         assertThrows(AlreadyTakenException.class, () -> registerService.register(duplicate));
 
         // Verify original user remains
-        UserData originalUser = userDao.getUser("existing");
+        UserData originalUser = users.getUser("existing");
         assertEquals("exist@test.com", originalUser.email());
     }
 

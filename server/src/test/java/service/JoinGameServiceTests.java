@@ -20,26 +20,24 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JoinGameServiceTests {
-    private RamAuthDao authDao;
-    private RamGameDao gameDao;
+    private final RamAuthDao auth = new RamAuthDao();
+    private final RamGameDao games = new RamGameDao();
     private JoinGameService joinGameService;
 
     @BeforeEach
     void setUp() throws DataAccessException {
-        authDao = new RamAuthDao();
-        gameDao = new RamGameDao();
         joinGameService = new JoinGameService();
-        authDao.clear();
-        gameDao.clear();
+        auth.clear();
+        games.clear();
     }
 
     // Positive test
     @Test
-    @DisplayName("JoinGameService adds user to the game")
+    @DisplayName("Successfully adds user to the game")
     void joinGame() throws DataAccessException {
         // Setup
-        authDao.createAuth(new AuthData("testToken","testUser"));
-        gameDao.createGame(new GameData(1234,
+        auth.createAuth(new AuthData("testToken","testUser"));
+        games.createGame(new GameData(1234,
                 "whiteUser",
                 null,
                 "test",
@@ -53,14 +51,14 @@ class JoinGameServiceTests {
         assertNotNull(result, "Should return JoinGameResult object");
 
         // Verify data
-        GameData game = gameDao.getGame(1234);
+        GameData game = games.getGame(1234);
         assertEquals("testUser",game.blackUsername());
     }
 
     // Negative test 1: Bad request
     @ParameterizedTest(name = "Test invalid {0}")
     @MethodSource("badRequestsProvider")
-    @DisplayName("CreateGameService throws exception when argument is null")
+    @DisplayName("Throws exception when argument is null")
     public void testJoinGameWithBadRequests(
             String description,
             String authToken,
@@ -73,7 +71,7 @@ class JoinGameServiceTests {
                 "Failed validation for: " + description);
 
         // Verify data was not updated
-        ServiceTestUtils.verifyEmptyGameAndAuthDaos(gameDao, authDao);
+        ServiceTestUtils.verifyEmptyGameAndAuthDaos(games, auth);
     }
 
     private static Stream<Arguments> badRequestsProvider(){
@@ -91,14 +89,14 @@ class JoinGameServiceTests {
 
     // Negative test 2: Unauthorized token
     @Test
-    @DisplayName("JoinGameService throws exception when authToken is not found")
+    @DisplayName("Throws exception when token is not found")
     public void testUnauthorizedJoinGame(){
         // Verify exception
         assertThrows(UnauthorizedException.class, () ->
                 joinGameService.joinGame(new JoinGameRequest("token1234","WHITE",5678)));
 
         // Verify data did not update
-        ServiceTestUtils.verifyEmptyGameAndAuthDaos(gameDao, authDao);
+        ServiceTestUtils.verifyEmptyGameAndAuthDaos(games, auth);
     }
 
     // Negative test 3: Already taken
@@ -106,8 +104,8 @@ class JoinGameServiceTests {
     @DisplayName("Name")
     public void testJoinGameWhenColorIsFull() throws DataAccessException {
         // Setup
-        authDao.createAuth(new AuthData("testToken","testUser"));
-        gameDao.createGame(new GameData(
+        auth.createAuth(new AuthData("testToken","testUser"));
+        games.createGame(new GameData(
                 1337,
                 "whiteUser",
                 "blackUser",
@@ -128,7 +126,7 @@ class JoinGameServiceTests {
                 )));
 
         // Verify game data did not update
-        GameData game = gameDao.getGame(1337);
+        GameData game = games.getGame(1337);
         assertEquals("whiteUser", game.whiteUsername());
         assertEquals("blackUser", game.blackUsername());
     }

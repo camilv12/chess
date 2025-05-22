@@ -52,4 +52,12 @@ public class RamGameDao implements GameDao{
     }
 
     public boolean isEmpty() { return games.isEmpty(); }
+
+    public Collection<Integer> getGameIds() throws DataAccessException{
+        try{
+            return games.keySet();
+        } catch (Exception e){
+            throw new DataAccessException("Set failed: " + e.getMessage());
+        }
+    }
 }

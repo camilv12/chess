@@ -19,25 +19,23 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CreateGameServiceTests {
-    private RamAuthDao authDao;
-    private RamGameDao gameDao;
+    private final RamAuthDao auth = new RamAuthDao();
+    private final RamGameDao games = new RamGameDao();
     private CreateGameService createGameService;
 
     @BeforeEach
     void setUp() throws DataAccessException {
-        authDao = new RamAuthDao();
-        gameDao = new RamGameDao();
         createGameService = new CreateGameService();
-        authDao.clear();
-        gameDao.clear();
+        auth.clear();
+        games.clear();
     }
 
     // Positive test
     @Test
-    @DisplayName("CreateGameService adds a game to memory")
+    @DisplayName("Successfully creates a game")
     void createGame() throws DataAccessException {
         // Setup:
-        authDao.createAuth(new AuthData("testToken", "testUser"));
+        auth.createAuth(new AuthData("testToken", "testUser"));
         CreateGameRequest request = new CreateGameRequest("testToken","testGame");
         CreateGameResult result = createGameService.createGame(request);
 
@@ -45,14 +43,14 @@ class CreateGameServiceTests {
         assertTrue(result.gameID() > 0, "Game was not created");
 
         // Verify game storage
-        GameData game = gameDao.getGame(result.gameID());
+        GameData game = games.getGame(result.gameID());
         assertEquals("testGame", game.gameName());
     }
 
     // Negative Test 1: Bad Request
     @ParameterizedTest(name = "Test null {0}")
     @MethodSource("badRequestsProvider")
-    @DisplayName("CreateGameService throws exception when argument is null")
+    @DisplayName("Throws exception when argument is null")
     public void testCreateGameWithBadRequests(
             String description,
             String authToken,
@@ -64,8 +62,7 @@ class CreateGameServiceTests {
                 "Failed validation for: " + description);
 
         // Verify data did not update
-        assertThrows(DataAccessException.class, () -> authDao.getAuth("testToken"));
-        assertThrows(DataAccessException.class, () -> gameDao.getGame(1234));
+        ServiceTestUtils.verifyEmptyGameAndAuthDaos(games, auth);
     }
 
     private static Stream<Arguments> badRequestsProvider(){
@@ -80,15 +77,14 @@ class CreateGameServiceTests {
 
     // Negative Test 2: Unauthorized
     @Test
-    @DisplayName("CreateGameService throws exception when authToken is not found")
+    @DisplayName("Throws exception when token is not found")
     public void testUnauthorizedCreateGame() {
         // Setup
         assertThrows(UnauthorizedException.class, () ->
                 createGameService.createGame(new CreateGameRequest("test1234","game1234")));
 
         // Verify data did not update
-        assertThrows(DataAccessException.class, () -> authDao.getAuth("test1234"));
-        assertThrows(DataAccessException.class, () -> gameDao.getGame(1234));
+        ServiceTestUtils.verifyEmptyGameAndAuthDaos(games, auth);
     }
 
 }

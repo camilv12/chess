@@ -12,17 +12,17 @@ public class RegisterService {
     private final RamUserDao userDao = new RamUserDao();
     private final RamAuthDao authDao = new RamAuthDao();
 
-    public RegisterResult register(RegisterRequest request) throws RuntimeException, DataAccessException {
+    public RegisterResult register(RegisterRequest request) throws DataAccessException {
         // Check if the request is valid
         if(ServiceUtils.isBlank(request.username())
                 || ServiceUtils.isBlank(request.password())
                 || ServiceUtils.isBlank(request.email())) {
-            throw new BadRequestException("Error: bad request");
+            throw new BadRequestException("Invalid Request");
         }
 
         // Check username availability
         if(ServiceUtils.userExists(userDao, request.username())){
-            throw new AlreadyTakenException("Error: already taken");
+            throw new AlreadyTakenException("Username has already been taken");
         }
 
         UserData newUser = new UserData(

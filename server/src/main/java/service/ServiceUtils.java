@@ -11,6 +11,13 @@ public final class ServiceUtils {
         return value == null || value.isBlank();
     }
 
+    public static boolean isAnyBlank(String... values) {
+        for (String value : values) {
+            if (isBlank(value)) return true;
+        }
+        return false;
+    }
+
     public static boolean userExists(UserDao userDao, String username){
         try{
             userDao.getUser(username);
@@ -20,12 +27,11 @@ public final class ServiceUtils {
         }
     }
 
-    public static boolean authTokenExists(AuthDao authDao, String authToken){
+    public static void authorize(AuthDao authDao, String authToken){
         try{
             authDao.getAuth(authToken);
-            return true;
         } catch (DataAccessException e){
-            return false;
+            throw new UnauthorizedException("Unauthorized request");
         }
     }
 
