@@ -13,7 +13,7 @@ public final class ServiceUtils {
 
     public static boolean isAnyBlank(String... values) {
         for (String value : values) {
-            if (isBlank(value)) return true;
+            if (isBlank(value)) { return true; }
         }
         return false;
     }

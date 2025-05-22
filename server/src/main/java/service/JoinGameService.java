@@ -28,7 +28,7 @@ public class JoinGameService {
 
         // Validate player color
         String colorName = (request.playerColor().equals("WHITE")) ? game.whiteUsername() : game.blackUsername();
-        if(colorName != null) throw new AlreadyTakenException("Color is already taken");
+        if(colorName != null) { throw new AlreadyTakenException("Color is already taken"); }
 
         // Update game
         String username = auth.getAuth(request.authToken()).username();
@@ -43,8 +43,8 @@ public class JoinGameService {
         String newWhite = game.whiteUsername();
         String newBlack = game.blackUsername();
 
-        if(color.equals("WHITE")) newWhite = username;
-        else newBlack = username;
+        if(color.equals("WHITE")) { newWhite = username; }
+        else { newBlack = username; }
 
         return new GameData(game.gameID(), newWhite, newBlack, game.gameName(), game.game());
 

@@ -51,7 +51,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = this.board.getPiece(startPosition);
-        if (piece == null) return null;
+        if (piece == null){ return null; }
 
         Collection<ChessMove> potentialMoves = piece.pieceMoves(this.board, startPosition);
         Collection<ChessMove> validMoves = new ArrayList<>();
@@ -87,7 +87,7 @@ public class ChessGame {
         ChessPosition startPosition = move.getStartPosition();
         // Check if the move is valid
         ChessPiece piece = this.board.getPiece(startPosition);
-        if (piece == null) throw new InvalidMoveException("Invalid Move");
+        if (piece == null) { throw new InvalidMoveException("Invalid Move");}
 
         Collection<ChessMove> legalMoves = validMoves(startPosition);
         if(legalMoves.contains(move) && piece.getTeamColor() == this.team){
@@ -141,7 +141,7 @@ public class ChessGame {
 
     private boolean isInCheckHelper(ChessBoard board, TeamColor teamColor){
         ChessPosition kingPosition = findKingPosition(board, teamColor);
-        if (kingPosition == null) return false;
+        if (kingPosition == null){ return false; }
 
         for (int i = 1; i <= 8; i++){
             for (int j = 1; j <= 8; j++){
@@ -167,12 +167,16 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if(!isInCheck(teamColor)) return false;
+        if(!isInCheck(teamColor)) {
+            return false;
+        }
 
         // Return false if the king can escape check
         ChessPosition kingPosition = findKingPosition(this.board, teamColor);
         Collection<ChessMove> kingMoves = validMoves(kingPosition);
-        if(!kingMoves.isEmpty()) return false;
+        if(!kingMoves.isEmpty()) {
+            return false;
+        }
 
         // Verify Capture Possibilities
         Collection<ChessPosition> attackers = checkingPositions(this.board, teamColor, kingPosition);
@@ -187,7 +191,9 @@ public class ChessGame {
             for (int j = 1; j <= 8; j++){
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = board.getPiece(position);
-                if(piece == null || piece.getTeamColor() == teamColor) continue;
+                if(piece == null || piece.getTeamColor() == teamColor) {
+                    continue;
+                }
                 // If there is an enemy piece, check if its moves end with the king's position
                 Collection<ChessMove> enemyMoves = piece.pieceMoves(this.board, position);
                 for (ChessMove move : enemyMoves){
@@ -204,7 +210,7 @@ public class ChessGame {
     private boolean canCaptureOrBlock(ChessBoard board, TeamColor teamColor,
                                       ChessPosition kingPosition, Collection<ChessPosition> attackers){
         // Double Check returns false, already checked king's moves
-        if (attackers.size() > 1) return false;
+        if (attackers.size() > 1){ return false; }
 
         ChessPosition attackerPosition = attackers.iterator().next();
         ChessPiece attacker = board.getPiece(attackerPosition);
@@ -214,11 +220,13 @@ public class ChessGame {
             for (int j = 1; j <= 8; j++){
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = board.getPiece(position);
-                if(piece == null || piece.getTeamColor() != teamColor) continue;
+                if(piece == null || piece.getTeamColor() != teamColor){ continue; }
                 Collection<ChessMove> moves = validMoves(position);
                 for(ChessMove move : moves) {
                     if(enemyPath.contains(move.getEndPosition()) ||
-                    move.getEndPosition().equals(attackerPosition)) return true;
+                    move.getEndPosition().equals(attackerPosition)){
+                        return true;
+                    }
                 }
             }
         }
