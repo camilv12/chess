@@ -4,7 +4,6 @@ import dataaccess.DataAccessException;
 import dataaccess.RamAuthDao;
 import dataaccess.RamGameDao;
 import dataaccess.RamUserDao;
-import service.model.ClearRequest;
 import service.model.ClearResult;
 
 public class ClearService {
@@ -12,10 +11,7 @@ public class ClearService {
     private final RamGameDao games = new RamGameDao();
     private final RamUserDao users = new RamUserDao();
 
-    public ClearResult clear(ClearRequest request) throws DataAccessException {
-        if (request == null){
-            throw new IllegalArgumentException("Request cannot be null");
-        }
+    public ClearResult clear() throws DataAccessException {
         auth.clear();
         games.clear();
         users.clear();

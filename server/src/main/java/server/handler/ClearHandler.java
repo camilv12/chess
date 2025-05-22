@@ -1,6 +1,4 @@
 package server.handler;
-import service.model.ClearRequest;
-import service.model.ClearResult;
 import spark.Request;
 import service.ClearService;
 import spark.Response;
@@ -12,13 +10,12 @@ public class ClearHandler {
         this.clearService = clearService;
     }
 
-    public Object handle(Request req, Response res){
+    public Object handle(Request ignored, Response res){
         try{
-            ClearRequest request = JsonUtils.fromJson(req, ClearRequest.class);
-            ClearResult result = clearService.clear(request);
+            clearService.clear();
             res.status(200);
             res.type("application/json");
-            return JsonUtils.toJson(result);
+            return JsonUtils.toJson(new Object());
         } catch (Exception e) {
             res.status(500);
             return JsonUtils.errorResponse("Error: " + e.getMessage());

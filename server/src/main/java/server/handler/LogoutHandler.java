@@ -3,7 +3,6 @@ package server.handler;
 import service.LogoutService;
 import service.UnauthorizedException;
 import service.model.LogoutRequest;
-import service.model.LogoutResult;
 import spark.Request;
 import spark.Response;
 
@@ -17,10 +16,10 @@ public class LogoutHandler {
     public Object handle(Request req, Response res){
         try{
             LogoutRequest request = JsonUtils.fromJson(req, LogoutRequest.class);
-            LogoutResult result = logoutService.logout(request);
+            logoutService.logout(request);
             res.status(200);
             res.type("application/json");
-            return JsonUtils.toJson(result);
+            return JsonUtils.toJson(new Object());
         }catch(UnauthorizedException e){
             res.status(401);
             return JsonUtils.errorResponse("Error: " + e.getMessage());
