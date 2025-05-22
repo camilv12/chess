@@ -15,14 +15,14 @@
     - [X] AuthDAO
     - [X] GameDAO
     - [X] UserDAO
-  - [ ] Implement Services
-    - [ ] ClearService
-    - [ ] RegisterService
-    - [ ] LoginService
-    - [ ] LogoutService
-    - [ ] ListGamesService
-    - [ ] CreateGameService
-    - [ ] JoinGameService
+  - [X] Implement Services
+    - [X] ClearService
+    - [X] RegisterService
+    - [X] LoginService
+    - [X] LogoutService
+    - [X] ListGamesService
+    - [X] CreateGameService
+    - [X] JoinGameService
   - [ ] Implement Handlers
     - [ ] ClearHandler
     - [ ] RegisterHandler

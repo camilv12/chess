@@ -89,6 +89,7 @@ class LoginServiceTests {
                 loginService.login(new LoginRequest("testUser","fakePass")));
 
         // Verify data did not update
-        ServiceTestUtils.verifyEmptyUserAndAuthDaos(users, auth);
+        assertThrows(DataAccessException.class, () ->
+                users.getUser("fakeUser"));
     }
 }

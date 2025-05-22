@@ -7,14 +7,14 @@ import dataaccess.RamUserDao;
 import service.model.ClearResult;
 
 public class ClearService {
-    private final RamAuthDao ramAuthDao = new RamAuthDao();
-    private final RamGameDao ramGameDao = new RamGameDao();
-    private final RamUserDao ramUserDao = new RamUserDao();
+    private final RamAuthDao auth = new RamAuthDao();
+    private final RamGameDao games = new RamGameDao();
+    private final RamUserDao users = new RamUserDao();
 
     public ClearResult clear() throws DataAccessException {
-        ramAuthDao.clear();
-        ramGameDao.clear();
-        ramUserDao.clear();
+        auth.clear();
+        games.clear();
+        users.clear();
         return new ClearResult();
     }
 }

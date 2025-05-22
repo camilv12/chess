@@ -9,8 +9,8 @@ import service.model.RegisterRequest;
 import service.model.RegisterResult;
 
 public class RegisterService {
-    private final RamUserDao userDao = new RamUserDao();
-    private final RamAuthDao authDao = new RamAuthDao();
+    private final RamUserDao users = new RamUserDao();
+    private final RamAuthDao auth = new RamAuthDao();
 
     public RegisterResult register(RegisterRequest request) throws DataAccessException {
         // Check if the request is valid
@@ -21,7 +21,7 @@ public class RegisterService {
         }
 
         // Check username availability
-        if(ServiceUtils.userExists(userDao, request.username())){
+        if(ServiceUtils.userExists(users, request.username())){
             throw new AlreadyTakenException("Username has already been taken");
         }
 
@@ -30,13 +30,13 @@ public class RegisterService {
                 request.password(),
                 request.email()
         );
-        userDao.createUser(newUser);
+        users.createUser(newUser);
 
         AuthData newAuth = new AuthData(
                 RamAuthDao.generateToken(),
                 request.username()
         );
-        authDao.createAuth(newAuth);
+        auth.createAuth(newAuth);
 
         return new RegisterResult(
                 request.username(),
