@@ -15,7 +15,8 @@ public class ListGamesHandler {
 
     public Object handle(Request req, Response res){
         try{
-            ListGamesRequest request = JsonUtils.fromJson(req, ListGamesRequest.class);
+            String authToken = req.headers("authorization");
+            ListGamesRequest request = new ListGamesRequest(authToken);
             ListGamesResult result = listGamesService.listGames(request);
             res.status(200);
             res.type("application/json");

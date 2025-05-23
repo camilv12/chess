@@ -17,7 +17,9 @@ public class CreateGameHandler {
 
     public Object handle(Request req, Response res){
         try{
-            CreateGameRequest request = JsonUtils.fromJson(req, CreateGameRequest.class);
+            String authToken = req.headers("authorization");
+            String gameName = JsonUtils.fromJson(req, CreateGameRequest.class).gameName();
+            CreateGameRequest request = new CreateGameRequest(authToken, gameName);
             CreateGameResult result = createGameService.createGame(request);
             res.status(200);
             res.type("application/json");

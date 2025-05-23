@@ -18,7 +18,9 @@ public class JoinGameHandler {
 
     public Object handle(Request req, Response res){
         try{
-            JoinGameRequest request = JsonUtils.fromJson(req, JoinGameRequest.class);
+            String authToken = req.headers("authorization");
+            JoinGameRequest joinBody = JsonUtils.fromJson(req, JoinGameRequest.class);
+            JoinGameRequest request = new JoinGameRequest(authToken, joinBody.playerColor(), joinBody.gameID());
             JoinGameResult result = joinGameService.joinGame(request);
             res.status(200);
             res.type("application/json");

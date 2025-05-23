@@ -15,7 +15,9 @@ public class LogoutHandler {
 
     public Object handle(Request req, Response res){
         try{
-            LogoutRequest request = JsonUtils.fromJson(req, LogoutRequest.class);
+            // Get authToken from the header
+            String authToken = req.headers("authorization");
+            LogoutRequest request = new LogoutRequest(authToken);
             logoutService.logout(request);
             res.status(200);
             res.type("application/json");
