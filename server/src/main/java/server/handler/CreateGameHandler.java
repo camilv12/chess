@@ -1,25 +1,29 @@
 package server.handler;
 
+import service.AuthService;
 import service.BadRequestException;
 import service.CreateGameService;
 import service.UnauthorizedException;
+import service.model.AuthRequest;
 import service.model.CreateGameRequest;
 import service.model.CreateGameResult;
 import spark.Request;
 import spark.Response;
 
 public class CreateGameHandler {
+    private final AuthService authService;
     private final CreateGameService createGameService;
 
-    public CreateGameHandler(CreateGameService createGameService){
+    public CreateGameHandler(AuthService authService, CreateGameService createGameService){
+        this.authService = authService;
         this.createGameService = createGameService;
     }
 
     public Object handle(Request req, Response res){
         try{
             String authToken = req.headers("authorization");
-            String gameName = JsonUtils.fromJson(req, CreateGameRequest.class).gameName();
-            CreateGameRequest request = new CreateGameRequest(authToken, gameName);
+            authService.authenticate(new AuthRequest(authToken));
+            CreateGameRequest request = JsonUtils.fromJson(req, CreateGameRequest.class);
             CreateGameResult result = createGameService.createGame(request);
             res.status(200);
             res.type("application/json");

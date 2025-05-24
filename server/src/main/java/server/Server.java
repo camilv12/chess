@@ -14,10 +14,10 @@ public class Server {
         // Register your endpoints and handle exceptions here.
 
         // Services
+        AuthService authService = new AuthService();
         ClearService clearService = new ClearService();
         RegisterService registerService = new RegisterService();
         LoginService loginService = new LoginService();
-        LogoutService logoutService = new LogoutService();
         CreateGameService createGameService = new CreateGameService();
         ListGamesService listGamesService = new ListGamesService();
         JoinGameService joinGameService = new JoinGameService();
@@ -26,9 +26,9 @@ public class Server {
         ClearHandler clearHandler = new ClearHandler(clearService);
         RegisterHandler registerHandler = new RegisterHandler(registerService);
         LoginHandler loginHandler = new LoginHandler(loginService);
-        LogoutHandler logoutHandler = new LogoutHandler(logoutService);
-        CreateGameHandler createGameHandler = new CreateGameHandler(createGameService);
-        ListGamesHandler listGamesHandler = new ListGamesHandler(listGamesService);
+        LogoutHandler logoutHandler = new LogoutHandler(authService);
+        CreateGameHandler createGameHandler = new CreateGameHandler(authService, createGameService);
+        ListGamesHandler listGamesHandler = new ListGamesHandler(authService, listGamesService);
         JoinGameHandler joinGameHandler = new JoinGameHandler(joinGameService);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 

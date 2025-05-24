@@ -5,7 +5,6 @@ import service.BadRequestException;
 import service.JoinGameService;
 import service.UnauthorizedException;
 import service.model.JoinGameRequest;
-import service.model.JoinGameResult;
 import spark.Request;
 import spark.Response;
 
@@ -21,10 +20,10 @@ public class JoinGameHandler {
             String authToken = req.headers("authorization");
             JoinGameRequest joinBody = JsonUtils.fromJson(req, JoinGameRequest.class);
             JoinGameRequest request = new JoinGameRequest(authToken, joinBody.playerColor(), joinBody.gameID());
-            JoinGameResult result = joinGameService.joinGame(request);
+            joinGameService.joinGame(request);
             res.status(200);
             res.type("application/json");
-            return JsonUtils.toJson(result);
+            return JsonUtils.toJson(new Object());
         }catch(BadRequestException e){
             res.status(400);
             return JsonUtils.errorResponse("Error: " + e.getMessage());

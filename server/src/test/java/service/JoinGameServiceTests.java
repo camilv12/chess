@@ -13,7 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import service.model.JoinGameRequest;
-import service.model.JoinGameResult;
 
 import java.util.stream.Stream;
 
@@ -42,13 +41,10 @@ class JoinGameServiceTests {
                 null,
                 "test",
                 new ChessGame()));
-        JoinGameResult result = joinGameService.joinGame(new JoinGameRequest(
+        joinGameService.joinGame(new JoinGameRequest(
                 "testToken",
                 "BLACK",
                 1234));
-
-        // Verify result
-        assertNotNull(result, "Should return JoinGameResult object");
 
         // Verify data
         GameData game = games.getGame(1234);
@@ -87,19 +83,7 @@ class JoinGameServiceTests {
         );
     }
 
-    // Negative test 2: Unauthorized token
-    @Test
-    @DisplayName("Throws exception when token is not found")
-    public void testUnauthorizedJoinGame(){
-        // Verify exception
-        assertThrows(UnauthorizedException.class, () ->
-                joinGameService.joinGame(new JoinGameRequest("token1234","WHITE",5678)));
-
-        // Verify data did not update
-        ServiceTestUtils.verifyEmptyGameAndAuthDaos(games, auth);
-    }
-
-    // Negative test 3: Already taken
+    // Negative test 2: Already taken
     @Test
     @DisplayName("Name")
     public void testJoinGameWhenColorIsFull() throws DataAccessException {

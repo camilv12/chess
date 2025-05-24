@@ -1,11 +1,11 @@
 package service;
 
+import dataaccess.AuthDao;
 import dataaccess.DataAccessException;
 import dataaccess.RamAuthDao;
 import dataaccess.RamGameDao;
 import model.GameData;
 import service.model.JoinGameRequest;
-import service.model.JoinGameResult;
 
 import java.util.Set;
 
@@ -14,14 +14,14 @@ public class JoinGameService {
     private final RamGameDao games = new RamGameDao();
     private static final Set<String> VALID_COLORS = Set.of("WHITE", "BLACK");
 
-    public JoinGameResult joinGame(JoinGameRequest request) throws DataAccessException {
+    public void joinGame(JoinGameRequest request) throws DataAccessException {
         // Validate request
         if(ServiceUtils.isAnyBlank(request.authToken(), request.playerColor()) ||
                 request.gameID() < 1 ||
                 !VALID_COLORS.contains(request.playerColor())){
             throw new BadRequestException("Invalid Request");
         }
-        ServiceUtils.authorize(auth, request.authToken());
+        authorize(auth, request.authToken());
 
         // Get requested game
         GameData game = games.getGame(request.gameID());
@@ -34,9 +34,6 @@ public class JoinGameService {
         String username = auth.getAuth(request.authToken()).username();
         GameData newGame = updateGame(request.playerColor(), username, game);
         games.updateGame(newGame);
-
-        // No errors: return result
-        return new JoinGameResult();
     }
 
     private GameData updateGame(String color, String username, GameData game){
@@ -48,5 +45,13 @@ public class JoinGameService {
 
         return new GameData(game.gameID(), newWhite, newBlack, game.gameName(), game.game());
 
+    }
+
+    private void authorize(AuthDao authDao, String authToken){
+        try{
+            authDao.getAuth(authToken);
+        } catch (DataAccessException e){
+            throw new UnauthorizedException("Unauthorized request");
+        }
     }
 }

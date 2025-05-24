@@ -2,14 +2,11 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.DataAccessException;
-import dataaccess.RamAuthDao;
 import dataaccess.RamGameDao;
-import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import service.model.ListGamesRequest;
 import service.model.ListGamesResult;
 
 import java.util.Set;
@@ -18,14 +15,12 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ListGamesServiceTest {
-    private final RamAuthDao auth = new RamAuthDao();
     private final RamGameDao games = new RamGameDao();
     private ListGamesService listGamesService;
 
     @BeforeEach
     void setUp() throws DataAccessException {
         listGamesService = new ListGamesService();
-        auth.clear();
         games.clear();
     }
 
@@ -34,7 +29,6 @@ class ListGamesServiceTest {
     @DisplayName("Lists games successfully")
     void listGames() throws DataAccessException {
         // Setup
-        auth.createAuth(new AuthData("testToken","username"));
         GameData game1 = new GameData(1234,
                 "whiteUser1",
                 "blackUser1",
@@ -47,7 +41,7 @@ class ListGamesServiceTest {
                 new ChessGame());
         games.createGame(game1);
         games.createGame(game2);
-        ListGamesResult result = listGamesService.listGames(new ListGamesRequest("testToken"));
+        ListGamesResult result = listGamesService.listGames();
 
         // Verify result
         assertNotNull(result, "Should return a ListGamesResult");
@@ -63,13 +57,11 @@ class ListGamesServiceTest {
 
     // Negative Test: Unauthorized
     @Test
-    @DisplayName("Game list fails when token not found")
+    @DisplayName("Game list empty")
     public void testUnauthorizedListGames(){
         // Verify exception
-        assertThrows(UnauthorizedException.class, () ->
-                listGamesService.listGames(new ListGamesRequest("testToken")));
-        // Verify data did not update
-        ServiceTestUtils.verifyEmptyGameAndAuthDaos(games,auth);
+        assertDoesNotThrow(() ->
+                listGamesService.listGames());
     }
 
 }

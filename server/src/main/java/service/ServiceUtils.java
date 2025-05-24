@@ -1,6 +1,5 @@
 package service;
 
-import dataaccess.AuthDao;
 import dataaccess.DataAccessException;
 import dataaccess.UserDao;
 
@@ -18,20 +17,12 @@ public final class ServiceUtils {
         return false;
     }
 
-    public static boolean userExists(UserDao userDao, String username){
+    public static boolean userExists(UserDao users, String username){
         try{
-            userDao.getUser(username);
+            users.getUser(username);
             return true;
         } catch (DataAccessException e) {
             return false;
-        }
-    }
-
-    public static void authorize(AuthDao authDao, String authToken){
-        try{
-            authDao.getAuth(authToken);
-        } catch (DataAccessException e){
-            throw new UnauthorizedException("Unauthorized request");
         }
     }
 

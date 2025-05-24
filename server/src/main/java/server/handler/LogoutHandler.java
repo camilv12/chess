@@ -1,15 +1,15 @@
 package server.handler;
 
-import service.LogoutService;
+import service.AuthService;
 import service.UnauthorizedException;
-import service.model.LogoutRequest;
+import service.model.AuthRequest;
 import spark.Request;
 import spark.Response;
 
 public class LogoutHandler {
-    private final LogoutService logoutService;
+    private final AuthService logoutService;
 
-    public LogoutHandler(LogoutService logoutService){
+    public LogoutHandler(AuthService logoutService){
         this.logoutService = logoutService;
     }
 
@@ -17,7 +17,7 @@ public class LogoutHandler {
         try{
             // Get authToken from the header
             String authToken = req.headers("authorization");
-            LogoutRequest request = new LogoutRequest(authToken);
+            AuthRequest request = new AuthRequest(authToken);
             logoutService.logout(request);
             res.status(200);
             res.type("application/json");

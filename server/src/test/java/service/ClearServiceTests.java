@@ -5,9 +5,6 @@ import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
-import service.model.ClearResult;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ClearServiceTests {
     private final RamAuthDao auth = new RamAuthDao();
@@ -28,10 +25,7 @@ public class ClearServiceTests {
         users.createUser(new UserData("testUser","p@ssw0rd123","user@test.com"));
 
         // Execute method
-        ClearResult result = clearService.clear();
-
-        // Assert Result
-        assertNotNull(result, "Should return ClearResult object");
+        clearService.clear();
 
         // Verify empty DAOs
         verifyEmpty();
@@ -41,10 +35,7 @@ public class ClearServiceTests {
     @DisplayName("Succeeds with an empty database")
     public void clearEmptyDatabase() throws DataAccessException {
         // Execute method
-        ClearResult result = clearService.clear();
-
-        // Assert Result
-        assertNotNull(result, "Should return ClearResult object");
+        clearService.clear();
 
         // Verify empty DAOs
         verifyEmpty();

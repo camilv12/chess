@@ -1,5 +1,5 @@
 package service.model;
 
-public record ListGamesRequest(
+public record AuthRequest(
         String authToken
 ) {}
