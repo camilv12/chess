@@ -7,11 +7,11 @@
 - [X] Phase 2: Chess Design
 - [X] Phase 3: Chess Web-API
 - [ ] Phase 4: Chess Database
-    - [ ] Implement MySQL Database Setup
-        - [ ] Install MySQL DBMS
-        - [ ] Configure `db.properties` with credentials
-        - [ ] Design database schema (users, games, auths tables)
-        - [ ] Add DB initialization on server startup
+    - [X] Implement MySQL Database Setup
+        - [X] Install MySQL DBMS
+        - [X] Configure `db.properties` with credentials
+        - [X] Design database schema (users, games, auths tables)
+        - [X] Add DB initialization on server startup
     - [ ] MySQL DAO Implementations
         - [ ] `MySqlUserDao`
             - [ ] Implement CRUD methods with password hashing
