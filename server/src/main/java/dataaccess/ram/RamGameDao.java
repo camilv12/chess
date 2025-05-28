@@ -13,11 +13,12 @@ public class RamGameDao implements GameDao {
     private static final Map<Integer, GameData> GAME_DATA_MAP = new HashMap<>();
 
     @Override
-    public void createGame(GameData game) throws DataAccessException {
+    public int createGame(GameData game) throws DataAccessException {
         if(GAME_DATA_MAP.containsKey(game.gameID())){
             throw new DataAccessException("Game already exists");
         }
         GAME_DATA_MAP.put(game.gameID(), game);
+        return game.gameID();
     }
 
     @Override

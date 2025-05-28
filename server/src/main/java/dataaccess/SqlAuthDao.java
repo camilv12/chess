@@ -12,11 +12,11 @@ public class SqlAuthDao implements AuthDao {
     }
 
     @Override
-    public void createAuth(AuthData authData) throws DataAccessException {
+    public void createAuth(AuthData data) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
             var statement = conn.prepareStatement("INSERT INTO auth (token, username) VALUES(?,?)");
-            statement.setString(1, authData.authToken());
-            statement.setString(2, authData.username());
+            statement.setString(1, data.authToken());
+            statement.setString(2, data.username());
             statement.executeUpdate();
         } catch(SQLException e){
             throw new DataAccessException("Auth creation failed:", e);

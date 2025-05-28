@@ -12,12 +12,12 @@ public class SqlUserDao implements UserDao {
     }
 
     @Override
-    public void createUser(UserData user) throws DataAccessException {
+    public void createUser(UserData data) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
             var statement = conn.prepareStatement("INSERT INTO users (username, password, email) VALUES(?,?,?)");
-            statement.setString(1, user.username());
-            statement.setString(2, user.password());
-            statement.setString(3, user.email());
+            statement.setString(1, data.username());
+            statement.setString(2, data.password());
+            statement.setString(3, data.email());
             statement.executeUpdate();
         } catch(SQLException e){
             throw new DataAccessException("User creation failed:", e);

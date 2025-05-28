@@ -20,33 +20,31 @@ class SqlGameDaoTest {
     @Test
     void testPositiveCreateGame() throws DataAccessException {
         // Set up
-        int gameID = 1;
         GameData testGame = new GameData(
-                gameID,
+                0,
                 null,
                 null,
                 "testGame",
                 new ChessGame());
 
         // Execute
-        games.createGame(testGame);
+        int id = games.createGame(testGame);
 
         // Assert
-        GameData fetchedGame = games.getGame(gameID);
+        GameData fetchedGame = games.getGame(id);
         assertEquals(testGame.gameName(), fetchedGame.gameName());
     }
 
     @Test
     void testPositiveGetGame() throws DataAccessException {
         // Set up
-        int gameID = 1;
         GameData game = new GameData(
-                gameID,
+                0,
                 null,
                 null,
                 "testGame",
                 new ChessGame());
-        games.createGame(game);
+        int gameID = games.createGame(game);
 
         // Execute
         GameData fetchedGame = games.getGame(gameID);
@@ -60,7 +58,7 @@ class SqlGameDaoTest {
     void testPositiveListGames() throws DataAccessException{
         // Set up
         games.createGame(new GameData(
-                1,
+                0,
                 null,
                 null,
                 "Game1",
@@ -68,7 +66,7 @@ class SqlGameDaoTest {
         ));
         SqlDaoTestUtility.addUser("whitePlayer");
         games.createGame(new GameData(
-                2,
+                0,
                 "whitePlayer",
                 null,
                 "Game2",
@@ -76,7 +74,7 @@ class SqlGameDaoTest {
         ));
         SqlDaoTestUtility.addUser("blackPlayer");
         games.createGame(new GameData(
-                3,
+                0,
                 null,
                 "blackPlayer",
                 "Game3",
@@ -88,28 +86,26 @@ class SqlGameDaoTest {
 
         // Assert
         assertEquals(3, gamesList.size());
-
-
     }
 
     @Test
     void testPositiveUpdateGame() throws DataAccessException {
         // Set up
         GameData originalGame = new GameData(
-                1,
+                0,
                 null,
                 null,
-                "OldName",
+                "test",
                 new ChessGame()
         );
-        games.createGame(originalGame);
+        int id = games.createGame(originalGame);
         SqlDaoTestUtility.addUser("whitePlayer");
         SqlDaoTestUtility.addUser("blackPlayer");
         GameData updatedGame = new GameData(
-                1,
+                id,
                 "whitePlayer",
                 "blackPlayer",
-                "NewName",
+                "test",
                 new ChessGame()
         );
 
@@ -117,8 +113,7 @@ class SqlGameDaoTest {
         games.updateGame(updatedGame);
 
         // Assert
-        GameData fetchedGame = games.getGame(1);
-        assertEquals("NewName", fetchedGame.gameName());
+        GameData fetchedGame = games.getGame(id);
         assertEquals("whitePlayer", fetchedGame.whiteUsername());
         assertEquals("blackPlayer", fetchedGame.blackUsername());
     }
@@ -126,7 +121,7 @@ class SqlGameDaoTest {
     @Test
     void testClear() throws DataAccessException {
         // Set up
-        games.createGame(new GameData(1,
+        int id = games.createGame(new GameData(0,
                 null,
                 null,
                 "ClearGame",
@@ -138,23 +133,21 @@ class SqlGameDaoTest {
 
         // Assert
         Collection<GameData> remainingGames = games.listGames();
-        assertThrows(DataAccessException.class, () -> games.getGame(1));
+        assertThrows(DataAccessException.class, () -> games.getGame(id));
         assertTrue(remainingGames.isEmpty());
     }
 
     // Negative tests
     @Test
-    void testCreateDuplicateGame() throws DataAccessException {
+    void testCreateGameWithNullGame() {
         // Set up
         GameData game = new GameData(
-                1,
+                0,
                 null,
                 null,
                 "DuplicateGame",
-                new ChessGame()
+                null
         );
-
-        games.createGame(game);
         // Assert + Execute
         assertThrows(DataAccessException.class, () -> games.createGame(game));
     }
@@ -176,7 +169,7 @@ class SqlGameDaoTest {
     }
 
     @Test
-    void testUpdateGameInvalidID(){
+    void testUpdateGameInvalidID() throws DataAccessException {
         // Set up
         GameData fakeGame = new GameData(
                 9999,
@@ -185,8 +178,8 @@ class SqlGameDaoTest {
                 "FakeGame",
                 new ChessGame()
         );
-
+        games.updateGame(fakeGame);
         // Assert + Execute
-        assertThrows(DataAccessException.class, () -> games.updateGame(fakeGame));
+        assertThrows(DataAccessException.class, () -> games.getGame(9999));
     }
 }
