@@ -1,7 +1,7 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.RamGameDao;
+import dataaccess.ram.RamGameDao;
 import service.model.ListGamesResult;
 
 public class ListGamesService {

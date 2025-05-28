@@ -2,8 +2,8 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.DataAccessException;
-import dataaccess.RamAuthDao;
-import dataaccess.RamGameDao;
+import dataaccess.ram.RamAuthDao;
+import dataaccess.ram.RamGameDao;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;

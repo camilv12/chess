@@ -1,8 +1,8 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.RamAuthDao;
-import dataaccess.RamUserDao;
+import dataaccess.ram.RamAuthDao;
+import dataaccess.ram.RamUserDao;
 import model.AuthData;
 import model.UserData;
 import service.model.RegisterRequest;

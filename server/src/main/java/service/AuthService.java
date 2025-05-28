@@ -1,6 +1,6 @@
 package service;
 import dataaccess.DataAccessException;
-import dataaccess.RamAuthDao;
+import dataaccess.ram.RamAuthDao;
 import service.model.AuthRequest;
 
 public class AuthService {

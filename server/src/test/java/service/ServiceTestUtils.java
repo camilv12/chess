@@ -1,8 +1,8 @@
 package service;
 
-import dataaccess.RamAuthDao;
-import dataaccess.RamGameDao;
-import dataaccess.RamUserDao;
+import dataaccess.ram.RamAuthDao;
+import dataaccess.ram.RamGameDao;
+import dataaccess.ram.RamUserDao;
 
 import static org.junit.jupiter.api.Assertions.*;
 

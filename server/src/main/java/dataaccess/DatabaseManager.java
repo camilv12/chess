@@ -29,37 +29,40 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Initializes the tables in the database if they do not exist
+     */
     public static void initializeDatabase() throws DataAccessException {
         try (var conn = getConnection()){
             String[] createStatements = {
                     """
             CREATE TABLE IF NOT EXISTS users (
-                username VARCHAR(64) PRIMARY KEY,
-                password VARCHAR(60) NOT NULL,
-                email VARCHAR(128) NOT NULL
-            );
+                username VARCHAR(255) NOT NULL PRIMARY KEY,
+                password VARCHAR(255) NOT NULL,
+                email VARCHAR(320) NOT NULL
+            )
             """,
                     """
             CREATE TABLE IF NOT EXISTS auth (
                 token VARCHAR(36) PRIMARY KEY,
-                username VARCHAR(64) NOT NULL,
+                username VARCHAR(255) NOT NULL,
                 FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
-            );
+            )
             """,
                     """
             CREATE TABLE IF NOT EXISTS games (
-                game_id INT AUTO_INCREMENT PRIMARY KEY,
-                game_name VARCHAR(128) NOT NULL,
-                white_username VARCHAR(64),
-                black_username VARCHAR(64),
+                game_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                game_name VARCHAR(255) NOT NULL,
+                white_username VARCHAR(255),
+                black_username VARCHAR(255),
                 game_state JSON NOT NULL,
                 FOREIGN KEY (white_username) REFERENCES users(username) ON DELETE SET NULL,
                 FOREIGN KEY (black_username) REFERENCES users(username) ON DELETE SET NULL
-            );
+            )
             """
             };
-            for (String statement : createStatements){
-                try (PreparedStatement preparedStatement = conn.prepareStatement(statement)){
+            for (var statement : createStatements){
+                try (var preparedStatement = conn.prepareStatement(statement)){
                     preparedStatement.executeUpdate();
                 }
             }

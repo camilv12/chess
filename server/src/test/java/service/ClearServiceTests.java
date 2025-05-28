@@ -2,6 +2,9 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.ram.RamAuthDao;
+import dataaccess.ram.RamGameDao;
+import dataaccess.ram.RamUserDao;
 import model.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;

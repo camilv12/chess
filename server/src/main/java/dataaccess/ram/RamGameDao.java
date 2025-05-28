@@ -1,13 +1,15 @@
-package dataaccess;
+package dataaccess.ram;
 
 
+import dataaccess.DataAccessException;
+import dataaccess.GameDao;
 import model.GameData;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RamGameDao implements GameDao{
+public class RamGameDao implements GameDao {
     private static final Map<Integer, GameData> GAME_DATA_MAP = new HashMap<>();
 
     @Override

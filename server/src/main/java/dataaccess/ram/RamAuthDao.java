@@ -1,11 +1,13 @@
-package dataaccess;
+package dataaccess.ram;
 
+import dataaccess.AuthDao;
+import dataaccess.DataAccessException;
 import model.AuthData;
 import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RamAuthDao implements AuthDao{
+public class RamAuthDao implements AuthDao {
     private static final Map<String, AuthData> AUTH_DATA_MAP = new HashMap<>();
 
     public static String generateToken() {
@@ -13,7 +15,7 @@ public class RamAuthDao implements AuthDao{
     }
 
     @Override
-    public void createAuth(AuthData authData) throws DataAccessException{
+    public void createAuth(AuthData authData) throws DataAccessException {
         if(AUTH_DATA_MAP.containsKey(authData.authToken())){
             throw new DataAccessException("AuthToken already exists");
         }

@@ -1,9 +1,9 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.RamAuthDao;
-import dataaccess.RamGameDao;
-import dataaccess.RamUserDao;
+import dataaccess.ram.RamAuthDao;
+import dataaccess.ram.RamGameDao;
+import dataaccess.ram.RamUserDao;
 
 public class ClearService {
     private final RamAuthDao auth = new RamAuthDao();

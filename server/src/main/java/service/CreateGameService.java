@@ -2,7 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.DataAccessException;
-import dataaccess.RamGameDao;
+import dataaccess.ram.RamGameDao;
 import model.GameData;
 import service.model.CreateGameRequest;
 import service.model.CreateGameResult;

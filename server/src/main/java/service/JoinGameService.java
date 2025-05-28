@@ -2,8 +2,8 @@ package service;
 
 import dataaccess.AuthDao;
 import dataaccess.DataAccessException;
-import dataaccess.RamAuthDao;
-import dataaccess.RamGameDao;
+import dataaccess.ram.RamAuthDao;
+import dataaccess.ram.RamGameDao;
 import model.GameData;
 import service.model.JoinGameRequest;
 
