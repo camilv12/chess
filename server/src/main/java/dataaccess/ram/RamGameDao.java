@@ -53,14 +53,4 @@ public class RamGameDao implements GameDao {
             throw new DataAccessException("Clear failed: " + e.getMessage());
         }
     }
-
-    public boolean isEmpty() { return GAME_DATA_MAP.isEmpty(); }
-
-    public Collection<Integer> getGameIds() throws DataAccessException{
-        try{
-            return GAME_DATA_MAP.keySet();
-        } catch (Exception e){
-            throw new DataAccessException("Set failed: " + e.getMessage());
-        }
-    }
 }

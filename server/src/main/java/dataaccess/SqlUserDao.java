@@ -2,8 +2,6 @@ package dataaccess;
 
 import model.UserData;
 
-import java.sql.SQLException;
-
 public class SqlUserDao implements UserDao {
 
     public SqlUserDao() {
@@ -23,7 +21,7 @@ public class SqlUserDao implements UserDao {
             statement.setString(2, data.password());
             statement.setString(3, data.email());
             statement.executeUpdate();
-        } catch(SQLException e){
+        } catch(Exception e){
             throw new DataAccessException("User creation failed:", e);
         }
     }
@@ -43,10 +41,12 @@ public class SqlUserDao implements UserDao {
                     return new UserData(user, password, email);
                 }
                 else{
-                    throw new DataAccessException("User not found");
+                    throw new NotFoundException("User not found");
                 }
             }
-        }catch (SQLException e){
+        } catch(NotFoundException e){
+            throw new NotFoundException(e.getMessage());
+        } catch (Exception e){
             throw new DataAccessException("User request failed:", e);
         }
     }
@@ -56,7 +56,7 @@ public class SqlUserDao implements UserDao {
         try (var conn = DatabaseManager.getConnection()){
             var statement = conn.prepareStatement("DELETE FROM users");
             statement.executeUpdate();
-        } catch(SQLException e){
+        } catch(Exception e){
             throw new DataAccessException("User clear failed:", e);
         }
     }

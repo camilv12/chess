@@ -57,7 +57,7 @@ class SqlUserDaoTest {
         users.clear();
 
         // Assert
-        assertThrows(DataAccessException.class, () -> users.getUser(username));
+        assertThrows(NotFoundException.class, () -> users.getUser(username));
     }
 
     // Negative Tests
@@ -75,6 +75,6 @@ class SqlUserDaoTest {
     @Test
     void testNonExistentGetUser(){
         // Set up and assert
-        assertThrows(DataAccessException.class, () -> users.getUser("ghost"));
+        assertThrows(NotFoundException.class, () -> users.getUser("ghost"));
     }
 }

@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.AuthDao;
-import dataaccess.DataAccessException;
-import dataaccess.SqlAuthDao;
-import dataaccess.SqlGameDao;
+import dataaccess.*;
 import model.GameData;
 import service.model.JoinGameRequest;
 
@@ -44,13 +41,12 @@ public class JoinGameService {
         else { newBlack = username; }
 
         return new GameData(game.gameID(), newWhite, newBlack, game.gameName(), game.game());
-
     }
 
-    private void authorize(AuthDao authDao, String authToken){
+    private void authorize(AuthDao authDao, String authToken) throws DataAccessException{
         try{
             authDao.getAuth(authToken);
-        } catch (DataAccessException e){
+        } catch (NotFoundException e){
             throw new UnauthorizedException("Unauthorized request");
         }
     }

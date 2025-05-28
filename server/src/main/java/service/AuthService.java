@@ -1,5 +1,6 @@
 package service;
 import dataaccess.DataAccessException;
+import dataaccess.NotFoundException;
 import dataaccess.SqlAuthDao;
 import dataaccess.SqlUserDao;
 import model.AuthData;
@@ -13,14 +14,17 @@ public class AuthService {
     private final SqlAuthDao auth = new SqlAuthDao();
     private final SqlUserDao users = new SqlUserDao();
 
-    public void authenticate(AuthRequest request){
+    public void authenticate(AuthRequest request) throws DataAccessException {
         try{
             if(ServiceUtils.isBlank(request.authToken())){
                 throw new UnauthorizedException("Missing Authentication Token");
             }
             auth.getAuth(request.authToken());
-        }catch (DataAccessException e){
-            throw new UnauthorizedException("Unauthorized Request");
+        } catch(NotFoundException e){
+            throw new UnauthorizedException(e.getMessage());
+        }
+        catch (Exception e){
+            throw new DataAccessException("Unauthorized Request");
         }
     }
 
@@ -54,19 +58,21 @@ public class AuthService {
         return new RegisterResult(request.username(), newAuth.authToken());
     }
 
-    public void logout(AuthRequest request){
+    public void logout(AuthRequest request) throws DataAccessException {
         try{
             auth.deleteAuth(request.authToken());
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new UnauthorizedException("Unauthorized Request");
+        } catch(Exception e){
+            throw new DataAccessException(e.getMessage());
         }
     }
 
-    private boolean userExists(String username){
+    private boolean userExists(String username) throws DataAccessException{
         try{
             users.getUser(username);
             return true;
-        }catch(DataAccessException e){
+        }catch(NotFoundException e){
             return false;
         }
     }

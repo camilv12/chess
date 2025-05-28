@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.DataAccessException;
+import dataaccess.NotFoundException;
 import dataaccess.SqlGameDao;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +73,7 @@ class GameServiceTests {
         );
 
         // Verify data did not update
-        assertThrows(DataAccessException.class, () -> games.getGame(1));
+        assertThrows(NotFoundException.class, () -> games.getGame(1));
     }
 
     // Negative Test: Empty List still returns

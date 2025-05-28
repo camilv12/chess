@@ -62,7 +62,7 @@ class SqlAuthDaoTest {
         auth.deleteAuth(authToken);
 
         // Assert
-        assertThrows(DataAccessException.class, () -> auth.getAuth(authToken));
+        assertThrows(NotFoundException.class, () -> auth.getAuth(authToken));
     }
 
     @Test
@@ -77,7 +77,7 @@ class SqlAuthDaoTest {
         auth.clear();
 
         // Assert
-        assertThrows(DataAccessException.class, () -> auth.getAuth(authToken));
+        assertThrows(NotFoundException.class, () -> auth.getAuth(authToken));
     }
 
     // Negative Tests
@@ -92,7 +92,7 @@ class SqlAuthDaoTest {
 
     @Test
     void testGetAuthMissingAuthToken() {
-        assertThrows(DataAccessException.class, () -> auth.getAuth("ghost-token"));
+        assertThrows(NotFoundException.class, () -> auth.getAuth("ghost-token"));
     }
 
     @Test
@@ -104,10 +104,8 @@ class SqlAuthDaoTest {
         SqlDaoTestUtility.addUser(username);
         auth.createAuth(testAuth);
 
-        // Execute
-        auth.deleteAuth("ghost-token");
-
         // Assert
+        assertThrows(NotFoundException.class, () -> auth.deleteAuth("ghost-token"));
         assertDoesNotThrow(() -> auth.getAuth(authToken));
     }
 }

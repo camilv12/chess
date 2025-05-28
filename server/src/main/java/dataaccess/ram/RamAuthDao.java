@@ -3,16 +3,11 @@ package dataaccess.ram;
 import dataaccess.AuthDao;
 import dataaccess.DataAccessException;
 import model.AuthData;
-import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RamAuthDao implements AuthDao {
     private static final Map<String, AuthData> AUTH_DATA_MAP = new HashMap<>();
-
-    public static String generateToken() {
-        return UUID.randomUUID().toString();
-    }
 
     @Override
     public void createAuth(AuthData authData) throws DataAccessException {
@@ -45,6 +40,4 @@ public class RamAuthDao implements AuthDao {
             throw new DataAccessException("Clear failed: " + e.getMessage());
         }
     }
-
-    public boolean isEmpty() { return AUTH_DATA_MAP.isEmpty(); }
 }

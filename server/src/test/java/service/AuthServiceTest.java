@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.DataAccessException;
+import dataaccess.NotFoundException;
 import dataaccess.SqlAuthDao;
 import dataaccess.SqlUserDao;
 import model.AuthData;
@@ -59,7 +60,7 @@ class AuthServiceTest {
                 authService.logout(request));
 
         // Verify data updated
-        assertThrows(DataAccessException.class, () ->
+        assertThrows(NotFoundException.class, () ->
                 auth.getAuth(validToken));
     }
 
@@ -117,12 +118,9 @@ class AuthServiceTest {
     // Negative test - Logout
     @Test
     @DisplayName("Logout fails when token not found")
-    public void testUnauthorizedLogout(){
-        // Execute
-        authService.logout(new AuthRequest("testToken"));
-
-        // Assert
-        assertThrows(DataAccessException.class, () -> auth.getAuth("testToken"));
+    public void testUnauthorizedLogout() {
+        // Assert + Execute
+        assertThrows(UnauthorizedException.class, () -> authService.logout(new AuthRequest("testToken")));
 
     }
 
@@ -141,7 +139,7 @@ class AuthServiceTest {
                 "Failed validation for: " + description);
 
         // Verify no data persists
-        assertThrows(DataAccessException.class, ()-> users.getUser("testUser"));
+        assertThrows(NotFoundException.class, ()-> users.getUser("testUser"));
     }
     private static Stream<Arguments> badLoginRequestsProvider() {
         String validUser = "testUser";
@@ -168,7 +166,7 @@ class AuthServiceTest {
                 authService.login(new LoginRequest("testUser","fakePass")));
 
         // Verify data did not update
-        assertThrows(DataAccessException.class, () -> users.getUser("fakeUser"));
+        assertThrows(NotFoundException.class, () -> users.getUser("fakeUser"));
     }
 
     // Negative Test: Bad Registration Request
@@ -187,7 +185,7 @@ class AuthServiceTest {
                 "Failed validation for: " + description);
 
         // Verify no data persists
-        assertThrows(DataAccessException.class, () -> users.getUser("testUser"));
+        assertThrows(NotFoundException.class, () -> users.getUser("testUser"));
     }
     private static Stream<Arguments> badRegistrationRequestsProvider() {
         String validUser = "testUser";

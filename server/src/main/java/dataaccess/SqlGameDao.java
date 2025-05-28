@@ -59,7 +59,7 @@ public class SqlGameDao implements GameDao {
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()){
+        try (var conn = DatabaseManager.getConnection()) {
             var statement = conn.prepareStatement("""
                     SELECT
                     game_id,
@@ -70,20 +70,21 @@ public class SqlGameDao implements GameDao {
                     FROM games WHERE game_id=?
                     """);
             statement.setInt(1, gameID);
-            try (var rs = statement.executeQuery()){
-                if(rs.next()){
+            try (var rs = statement.executeQuery()) {
+                if (rs.next()) {
                     var id = rs.getInt("game_id");
                     var name = rs.getString("game_name");
                     var white = rs.getString("white_username");
                     var black = rs.getString("black_username");
                     var state = rs.getString("game_state");
                     return new GameData(id, white, black, name, state);
-                }
-                else {
-                    throw new DataAccessException("Game ID not found");
+                } else {
+                    throw new NotFoundException("Game ID not found");
                 }
             }
-        } catch(SQLException e){
+        }catch(NotFoundException e){
+            throw new NotFoundException(e.getMessage());
+        }catch(SQLException e){
             throw new DataAccessException("Game request failed:", e);
         }
     }
