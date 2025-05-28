@@ -16,8 +16,7 @@ public class Server {
         // Services
         AuthService authService = new AuthService();
         ClearService clearService = new ClearService();
-        CreateGameService createGameService = new CreateGameService();
-        ListGamesService listGamesService = new ListGamesService();
+        GameService gameService = new GameService();
         JoinGameService joinGameService = new JoinGameService();
 
         // Handlers
@@ -25,8 +24,8 @@ public class Server {
         RegisterHandler registerHandler = new RegisterHandler(authService);
         LoginHandler loginHandler = new LoginHandler(authService);
         LogoutHandler logoutHandler = new LogoutHandler(authService);
-        CreateGameHandler createGameHandler = new CreateGameHandler(authService, createGameService);
-        ListGamesHandler listGamesHandler = new ListGamesHandler(authService, listGamesService);
+        CreateGameHandler createGameHandler = new CreateGameHandler(authService, gameService);
+        ListGamesHandler listGamesHandler = new ListGamesHandler(authService, gameService);
         JoinGameHandler joinGameHandler = new JoinGameHandler(joinGameService);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 

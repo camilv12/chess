@@ -2,16 +2,16 @@ package service;
 
 import dataaccess.AuthDao;
 import dataaccess.DataAccessException;
-import dataaccess.ram.RamAuthDao;
-import dataaccess.ram.RamGameDao;
+import dataaccess.SqlAuthDao;
+import dataaccess.SqlGameDao;
 import model.GameData;
 import service.model.JoinGameRequest;
 
 import java.util.Set;
 
 public class JoinGameService {
-    private final RamAuthDao auth = new RamAuthDao();
-    private final RamGameDao games = new RamGameDao();
+    private final SqlAuthDao auth = new SqlAuthDao();
+    private final SqlGameDao games = new SqlGameDao();
     private static final Set<String> VALID_COLORS = Set.of("WHITE", "BLACK");
 
     public void joinGame(JoinGameRequest request) throws DataAccessException {

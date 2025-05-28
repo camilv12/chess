@@ -21,9 +21,8 @@ public class SqlGameDao implements GameDao {
     }
 
     private void resetIncrement() throws DataAccessException {
-        // Reset game id increment to 1
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = conn.prepareStatement("ALTER TABLE games AUTO_INCREMENT = 1");
+            var statement = conn.prepareStatement("ALTER TABLE games AUTO_INCREMENT = 0");
             statement.executeUpdate();
         } catch(SQLException e){
             throw new DataAccessException("Game initialization failed:", e);

@@ -53,7 +53,10 @@ public class SqlAuthDao implements AuthDao {
         try (var conn = DatabaseManager.getConnection()){
             var statement = conn.prepareStatement("DELETE FROM auth WHERE token=?");
             statement.setString(1, authToken);
-            statement.executeUpdate();
+            int rowsUpdated = statement.executeUpdate();
+            if (rowsUpdated == 0){
+                throw new DataAccessException("Auth Token not found");
+            }
         } catch(SQLException e){
             throw new DataAccessException("Auth request failed:", e);
         }

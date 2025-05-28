@@ -8,11 +8,11 @@ import spark.Response;
 
 public class ListGamesHandler {
     private final AuthService authService;
-    private final ListGamesService listGamesService;
+    private final GameService gameService;
 
-    public ListGamesHandler(AuthService authService, ListGamesService listGamesService){
+    public ListGamesHandler(AuthService authService, GameService gamesService){
         this.authService = authService;
-        this.listGamesService = listGamesService;
+        this.gameService = gamesService;
     }
 
     public Object handle(Request req, Response res){
@@ -20,7 +20,7 @@ public class ListGamesHandler {
             String authToken = req.headers("authorization");
             authService.authenticate(new AuthRequest(authToken));
 
-            ListGamesResult result = listGamesService.listGames();
+            ListGamesResult result = gameService.listGames();
             res.status(200);
             res.type("application/json");
             return JsonUtils.toJson(result);
