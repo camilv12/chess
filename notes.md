@@ -6,36 +6,40 @@
 - [X] Phase 1: Chess Game
 - [X] Phase 2: Chess Design
 - [X] Phase 3: Chess Web-API
-- [ ] Phase 4: Chess Database
-    - [X] Implement MySQL Database Setup
-        - [X] Install MySQL DBMS
-        - [X] Configure `db.properties` with credentials
-        - [X] Design database schema (users, games, auths tables)
-        - [X] Add DB initialization on server startup
-    - [X] MySQL DAO Implementations
-        - [X] Write DAO unit tests in `server/src/test/java/dataaccess`
-        - [X] `SqlUserDao`
-            - [X] Implement CRUD methods
-            - [X] 2 tests per DAO method (1 positive, 1 negative)
-        - [X] `SqlAuthDao`
-            - [X] Manage authTokens
-            - [X] 2 tests per DAO method (1 positive, 1 negative)
-        - [X] `SqlGameDao`
-            - [X] Handle player assignment
-            - [X] 2 tests per DAO method (1 positive, 1 negative)
-            - [X] Store serialized ChessGame objects
-    - [ ] Refactor Service Classes
-        - [ ] Refactor unit tests
-        - [ ] Implement Password hashing
-            - [ ] Integrate BCrypt hashing in `UserService`
-            - [ ] Update registration/login to use hashed passwords
-        - [ ] Add JSON serialization/deserialization for `ChessGame`
-            - [ ] Implement Gson TypeAdapter if needed
-    - [ ] Testing
-        - [ ] Test board state persistence
-        - [ ] Make sure all tests pass locally
-
+- [X] Phase 4: Chess Database
 - [ ] Phase 5: Chess Pregame
+  - [ ] Set up project and ServerFacade class
+    - [ ] Add `ServerFacade` constructor
+    - [ ] Make sure tests start/stop server and pass port to facade
+    - [ ] Set up `ServerFacadeTest` skeleton
+  - [ ] Set up unit tests
+    - [ ] Each public method in `ServerFacade` has one positive and one negative test
+    - [ ] Each test has an assert statement
+  - [ ] Write Pre-Login commands
+    - [ ] `help` - Displays text informing what the user can do
+    - [ ] `quit` - Exits neatly
+    - [ ] `login` - Prompts login info, calls server login API, transitions client to post-login UI
+    - [ ] `register` - Prompts user to put in registration info, calls server register API and logs in user
+  - [ ] Write the Post-Login UI commands
+    - [ ] `help` - Displays text informing what the user can do
+    - [ ] `logout` - Logs out the user, calls logout API
+    - [ ] `create game` - Allows user to input a name for a game, calls create game API
+    - [ ] `list games` - Lists available games, calls list games API
+  - [ ] Implement stubs (Functionality added in Phase 6) 
+    - [ ] `play game` - Allows the user to join a game, calls join game API
+    - [ ] `observe game` - Allows the user to specify a game to observe
+  - [ ] Draw initial chess board in terminal
+    - [ ] Render chessboard with chess pieces, must be alternating colors and show coordinates
+    - [ ] Support white and black perspectives
+    - [ ] Make sure `h1` and `a8` are the light squares
+  - [ ] Handle errors and messages
+    - [ ] Map HTTP errors to simple messages
+    - [ ] Follow UI requirements: Avoid raw JSON, AuthTokens, Status Codes, etc.
+    - [ ] Catch errors and handle bad input without crashing
+  - [ ] Final Checks:
+    - [ ] Local unit tests pass and make sense
+    - [ ] Program supports functionality
+    - [ ] Check for Code Quality
 - [ ] Phase 6: Chess Gameplay
 
 ## Class Notes
