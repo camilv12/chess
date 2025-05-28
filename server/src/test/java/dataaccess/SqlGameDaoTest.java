@@ -132,7 +132,7 @@ class SqlGameDaoTest {
 
         // Assert
         Collection<GameData> remainingGames = games.listGames();
-        assertThrows(DataAccessException.class, () -> games.getGame(id));
+        assertThrows(NotFoundException.class, () -> games.getGame(id));
         assertTrue(remainingGames.isEmpty());
     }
 
@@ -154,7 +154,7 @@ class SqlGameDaoTest {
     @Test
     void testGetGameNotFound(){
         // Assert + Execute
-        assertThrows(DataAccessException.class, () -> games.getGame(9999));
+        assertThrows(NotFoundException.class, () -> games.getGame(9999));
     }
 
     @Test
@@ -179,6 +179,6 @@ class SqlGameDaoTest {
         );
         games.updateGame(fakeGame);
         // Assert + Execute
-        assertThrows(DataAccessException.class, () -> games.getGame(9999));
+        assertThrows(NotFoundException.class, () -> games.getGame(9999));
     }
 }
