@@ -14,24 +14,23 @@
         - [X] Add DB initialization on server startup
     - [ ] MySQL DAO Implementations
         - [X] Write DAO unit tests in `server/src/test/java/dataaccess`
-        - [ ] `SqlUserDao`
-            - [ ] Implement CRUD methods
-            - [ ] Implement Password hashing
-                - [ ] Integrate BCrypt hashing in `UserService`
-                - [ ] Update registration/login to use hashed passwords
-            - [ ] Handle unique username constraints
+        - [X] `SqlUserDao`
+            - [X] Implement CRUD methods
             - [X] 2 tests per DAO method (1 positive, 1 negative)
         - [X] `SqlAuthDao`
             - [X] Manage authTokens
             - [X] 2 tests per DAO method (1 positive, 1 negative)
         - [ ] `SqlGameDao`
+            - [ ] Handle player assignment
+            - [X] 2 tests per DAO method (1 positive, 1 negative)
             - [ ] Store serialized ChessGame objects
                 - [ ] Add JSON serialization/deserialization for `ChessGame`
                 - [ ] Implement Gson TypeAdapter if needed
-            - [ ] Handle player assignment
-            - [ ] Test board state persistence
-            - [X] 2 tests per DAO method (1 positive, 1 negative)
+    - [ ] Implement Password hashing
+      - [ ] Integrate BCrypt hashing in `UserService`
+      - [ ] Update registration/login to use hashed passwords
     - [ ] Testing
+        - [ ] Test board state persistence
         - [ ] Make sure all tests pass locally
 
 - [ ] Phase 5: Chess Pregame
