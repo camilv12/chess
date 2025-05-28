@@ -1,0 +1,67 @@
+package dataaccess;
+
+import model.AuthData;
+
+import java.sql.SQLException;
+
+public class SqlAuthDao implements AuthDao {
+
+    public SqlAuthDao() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        DatabaseManager.initializeDatabase();
+    }
+
+    @Override
+    public void createAuth(AuthData authData) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()){
+            var statement = conn.prepareStatement("INSERT INTO auth (token, username) VALUES(?,?)");
+            statement.setString(1, authData.authToken());
+            statement.setString(2, authData.username());
+            statement.executeUpdate();
+        } catch(SQLException e){
+            throw new DataAccessException("Auth creation failed:", e);
+        }
+    }
+
+    @Override
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()){
+            var statement = conn.prepareStatement("SELECT token, username FROM auth WHERE token=?");
+            statement.setString(1, authToken);
+            try (var rs = statement.executeQuery()){
+                if(rs.next()){
+                    var token = rs.getString("token");
+                    var username = rs.getString("username");
+
+                    return new AuthData(token, username);
+                }
+                else {
+                    throw new DataAccessException("Auth token not found");
+                }
+            }
+        } catch(SQLException e){
+            throw new DataAccessException("Auth request failed:", e);
+        }
+    }
+
+    @Override
+    public void deleteAuth(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()){
+            var statement = conn.prepareStatement("DELETE FROM auth WHERE token=?");
+            statement.setString(1, authToken);
+            statement.executeUpdate();
+        } catch(SQLException e){
+            throw new DataAccessException("Auth request failed:", e);
+        }
+    }
+
+    @Override
+    public void clear() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()){
+            var statement = conn.prepareStatement("DELETE FROM auth");
+            statement.executeUpdate();
+        } catch(SQLException e){
+            throw new DataAccessException("Auth clear failed:", e);
+        }
+    }
+}

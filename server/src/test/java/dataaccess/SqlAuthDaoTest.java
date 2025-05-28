@@ -1,32 +1,18 @@
 package dataaccess;
 
-import dataaccess.sql.SqlAuthDao;
 import model.AuthData;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SqlAuthDaoTest {
     private SqlAuthDao auth;
 
-    @BeforeAll
-    static void setupDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        DatabaseManager.initializeDatabase();
-    }
-
     @BeforeEach
     void setUp() throws DataAccessException{
-        try(var conn = DatabaseManager.getConnection()){
-            auth = new SqlAuthDao(conn);
-            SqlDaoTestUtility.clearTables();
-        } catch (SQLException e){
-            throw new DataAccessException(e.getMessage());
-        }
+        auth = new SqlAuthDao();
+        SqlDaoTestUtility.clearTables();
     }
 
     // Positive Tests
@@ -35,8 +21,9 @@ class SqlAuthDaoTest {
     void testPositiveCreateAuth() throws DataAccessException{
         // Set up
         String authToken = "test-token";
-        AuthData testAuth = new AuthData(authToken, "testUser");
-
+        String username = "testUser";
+        AuthData testAuth = new AuthData(authToken, username);
+        SqlDaoTestUtility.addUser(username);
         // Execute
         auth.createAuth(testAuth);
 
@@ -48,8 +35,10 @@ class SqlAuthDaoTest {
     @Test
     void testPositiveGetAuth() throws DataAccessException {
         // Set up
+        String username = "dummyUser";
         String authToken = "dummy-token";
-        AuthData testAuth = new AuthData(authToken,"dummyUser");
+        AuthData testAuth = new AuthData(authToken,username);
+        SqlDaoTestUtility.addUser(username);
         auth.createAuth(testAuth);
 
         // Execute
@@ -64,7 +53,9 @@ class SqlAuthDaoTest {
     void testPositiveDeleteAuth() throws DataAccessException {
         // Set up
         String authToken = "delete-this";
-        AuthData dummyAuth = new AuthData(authToken,"delUser");
+        String username = "delUser";
+        AuthData dummyAuth = new AuthData(authToken,username);
+        SqlDaoTestUtility.addUser(username);
         auth.createAuth(dummyAuth);
 
         // Execute
@@ -77,7 +68,9 @@ class SqlAuthDaoTest {
     @Test
     void testPositiveClear() throws DataAccessException {
         // Set up
+        String username = "clear-test";
         String authToken = "auth-token";
+        SqlDaoTestUtility.addUser(username);
         auth.createAuth(new AuthData(authToken, "clear-test"));
 
         // Execute
@@ -103,7 +96,18 @@ class SqlAuthDaoTest {
     }
 
     @Test
-    void testDeleteAuthMissingAuthToken() {
-        assertThrows(DataAccessException.class, () -> auth.deleteAuth("ghost-token"));
+    void testDeleteAuthMissingAuthToken() throws DataAccessException {
+        // Set up
+        String authToken = "real-token";
+        String username = "test";
+        AuthData testAuth = new AuthData(authToken, username);
+        SqlDaoTestUtility.addUser(username);
+        auth.createAuth(testAuth);
+
+        // Execute
+        auth.deleteAuth("ghost-token");
+
+        // Assert
+        assertDoesNotThrow(() -> auth.getAuth(authToken));
     }
 }

@@ -1,22 +1,15 @@
-package dataaccess.sql;
+package dataaccess;
 
-import dataaccess.DataAccessException;
-import dataaccess.GameDao;
 import model.GameData;
 
 import java.sql.Connection;
 import java.util.Collection;
 
 public class SqlGameDao implements GameDao {
-    private final Connection conn;
 
-    public SqlGameDao(Connection conn){
-        this.conn = conn;
-        initializeDatabase();
-    }
-
-    private void initializeDatabase(){
-        throw new RuntimeException("Not implemented");
+    public SqlGameDao() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        DatabaseManager.initializeDatabase();
     }
 
     @Override

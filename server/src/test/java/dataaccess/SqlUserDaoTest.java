@@ -1,30 +1,17 @@
 package dataaccess;
 
-import dataaccess.sql.SqlUserDao;
 import model.UserData;
 import org.junit.jupiter.api.*;
-
-import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SqlUserDaoTest {
     private SqlUserDao users;
 
-    @BeforeAll
-    static void setupDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        DatabaseManager.initializeDatabase();
-    }
-
     @BeforeEach
     void setUp() throws DataAccessException {
-        try(var conn = DatabaseManager.getConnection()){
-            users = new SqlUserDao(conn);
-            SqlDaoTestUtility.clearTables();
-        } catch(SQLException e){
-            throw new DataAccessException(e.getMessage());
-        }
+        users = new SqlUserDao();
+        SqlDaoTestUtility.clearTables();
     }
 
     // Positive Tests

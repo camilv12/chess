@@ -1,11 +1,9 @@
 package dataaccess;
 
 import chess.ChessGame;
-import dataaccess.sql.SqlGameDao;
 import model.GameData;
 import org.junit.jupiter.api.*;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,21 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class SqlGameDaoTest {
     private static SqlGameDao games;
 
-
-    @BeforeAll
-    static void setupDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        DatabaseManager.initializeDatabase();
-    }
-
     @BeforeEach
     void setUp() throws DataAccessException{
-        try (var conn = DatabaseManager.getConnection()){
-            games = new SqlGameDao(conn);
-            SqlDaoTestUtility.clearTables();
-        } catch(SQLException e){
-            throw new DataAccessException(e.getMessage());
-        }
+        games = new SqlGameDao();
+        SqlDaoTestUtility.clearTables();
     }
 
     @Test
@@ -79,13 +66,15 @@ class SqlGameDaoTest {
                 "Game1",
                 new ChessGame()
         ));
+        SqlDaoTestUtility.addUser("whitePlayer");
         games.createGame(new GameData(
                 2,
-                "whitePlayet",
+                "whitePlayer",
                 null,
                 "Game2",
                 new ChessGame()
         ));
+        SqlDaoTestUtility.addUser("blackPlayer");
         games.createGame(new GameData(
                 3,
                 null,
@@ -114,6 +103,8 @@ class SqlGameDaoTest {
                 new ChessGame()
         );
         games.createGame(originalGame);
+        SqlDaoTestUtility.addUser("whitePlayer");
+        SqlDaoTestUtility.addUser("blackPlayer");
         GameData updatedGame = new GameData(
                 1,
                 "whitePlayer",
