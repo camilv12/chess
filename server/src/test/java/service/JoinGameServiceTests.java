@@ -1,6 +1,5 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.ram.RamAuthDao;
 import dataaccess.ram.RamGameDao;
@@ -40,7 +39,7 @@ class JoinGameServiceTests {
                 "whiteUser",
                 null,
                 "test",
-                new ChessGame()));
+                ""));
         joinGameService.joinGame(new JoinGameRequest(
                 "testToken",
                 "BLACK",
@@ -94,7 +93,7 @@ class JoinGameServiceTests {
                 "whiteUser",
                 "blackUser",
                 "testGame",
-                new ChessGame()));
+                ""));
         // Verify results
         assertThrows(AlreadyTakenException.class, () ->
                 joinGameService.joinGame(new JoinGameRequest(

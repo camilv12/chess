@@ -1,7 +1,5 @@
 package dataaccess;
 
-import chess.ChessGame;
-import com.google.gson.Gson;
 import model.GameData;
 
 import java.sql.SQLException;
@@ -11,9 +9,18 @@ import java.util.Collection;
 
 public class SqlGameDao implements GameDao {
 
-    public SqlGameDao() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        DatabaseManager.initializeDatabase();
+    public SqlGameDao() {
+        try{
+            DatabaseManager.createDatabase();
+            DatabaseManager.initializeDatabase();
+            resetIncrement();
+        } catch(DataAccessException e){
+            throw new RuntimeException("Game DAO initialization failed:", e);
+        }
+
+    }
+
+    private void resetIncrement() throws DataAccessException {
         // Reset game id increment to 1
         try (var conn = DatabaseManager.getConnection()) {
             var statement = conn.prepareStatement("ALTER TABLE games AUTO_INCREMENT = 1");
@@ -21,17 +28,6 @@ public class SqlGameDao implements GameDao {
         } catch(SQLException e){
             throw new DataAccessException("Game initialization failed:", e);
         }
-    }
-
-    // TODO: Move serialization/deserialization to Service class
-    private String serialize(ChessGame game){
-        if(game == null){
-            return null;
-        }
-        return new Gson().toJson(game);
-    }
-    private ChessGame deserialize(String json){
-        return new Gson().fromJson(json, ChessGame.class);
     }
 
     @Override
@@ -48,7 +44,7 @@ public class SqlGameDao implements GameDao {
             statement.setString(1, data.gameName());
             statement.setString(2, data.whiteUsername());
             statement.setString(3, data.blackUsername());
-            statement.setString(4, serialize(data.game()));
+            statement.setString(4, data.game());
             statement.executeUpdate();
 
             var rs = statement.getGeneratedKeys();
@@ -81,7 +77,7 @@ public class SqlGameDao implements GameDao {
                     var name = rs.getString("game_name");
                     var white = rs.getString("white_username");
                     var black = rs.getString("black_username");
-                    ChessGame state = deserialize(rs.getString("game_state"));
+                    var state = rs.getString("game_state");
                     return new GameData(id, white, black, name, state);
                 }
                 else {
@@ -112,7 +108,7 @@ public class SqlGameDao implements GameDao {
                     var name = rs.getString("game_name");
                     var white = rs.getString("white_username");
                     var black = rs.getString("black_username");
-                    ChessGame state = deserialize(rs.getString("game_state"));
+                    var state = rs.getString("game_state");
                     list.add(new GameData(id, white, black, name, state));
                 }
                 return list;
@@ -134,7 +130,7 @@ public class SqlGameDao implements GameDao {
                     """);
             statement.setString(1, data.whiteUsername());
             statement.setString(2, data.blackUsername());
-            statement.setString(3, serialize(data.game()));
+            statement.setString(3, data.game());
             statement.setInt(4, data.gameID());
             statement.executeUpdate();
         } catch(SQLException e){

@@ -1,6 +1,5 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.ram.RamGameDao;
 import model.GameData;
@@ -23,7 +22,7 @@ public class CreateGameService {
                 null,
                 null,
                 request.gameName(),
-                new ChessGame()
+                ""
         );
         games.createGame(game);
         return new CreateGameResult(gameID);

@@ -16,16 +16,14 @@ public class Server {
         // Services
         AuthService authService = new AuthService();
         ClearService clearService = new ClearService();
-        RegisterService registerService = new RegisterService();
-        LoginService loginService = new LoginService();
         CreateGameService createGameService = new CreateGameService();
         ListGamesService listGamesService = new ListGamesService();
         JoinGameService joinGameService = new JoinGameService();
 
         // Handlers
         ClearHandler clearHandler = new ClearHandler(clearService);
-        RegisterHandler registerHandler = new RegisterHandler(registerService);
-        LoginHandler loginHandler = new LoginHandler(loginService);
+        RegisterHandler registerHandler = new RegisterHandler(authService);
+        LoginHandler loginHandler = new LoginHandler(authService);
         LogoutHandler logoutHandler = new LogoutHandler(authService);
         CreateGameHandler createGameHandler = new CreateGameHandler(authService, createGameService);
         ListGamesHandler listGamesHandler = new ListGamesHandler(authService, listGamesService);

@@ -6,9 +6,13 @@ import java.sql.SQLException;
 
 public class SqlUserDao implements UserDao {
 
-    public SqlUserDao() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        DatabaseManager.initializeDatabase();
+    public SqlUserDao() {
+        try{
+            DatabaseManager.createDatabase();
+            DatabaseManager.initializeDatabase();
+        } catch(DataAccessException e){
+            throw new RuntimeException("User DAO initialization failed:", e);
+        }
     }
 
     @Override

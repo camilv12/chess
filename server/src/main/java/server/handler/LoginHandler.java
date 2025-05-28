@@ -1,7 +1,7 @@
 package server.handler;
 
+import service.AuthService;
 import service.BadRequestException;
-import service.LoginService;
 import service.UnauthorizedException;
 import service.model.LoginRequest;
 import service.model.LoginResult;
@@ -9,16 +9,16 @@ import spark.Request;
 import spark.Response;
 
 public class LoginHandler {
-    private final LoginService loginService;
+    private final AuthService authService;
 
-    public LoginHandler(LoginService loginService){
-        this.loginService = loginService;
+    public LoginHandler(AuthService authService){
+        this.authService = authService;
     }
 
     public Object handle(Request req, Response res){
         try{
             LoginRequest request = JsonUtils.fromJson(req, LoginRequest.class);
-            LoginResult result = loginService.login(request);
+            LoginResult result = authService.login(request);
             res.status(200);
             res.type("application/json");
             return JsonUtils.toJson(result);

@@ -1,7 +1,7 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.UserDao;
+import chess.ChessGame;
+import com.google.gson.Gson;
 
 public final class ServiceUtils {
     private ServiceUtils() {}
@@ -17,13 +17,14 @@ public final class ServiceUtils {
         return false;
     }
 
-    public static boolean userExists(UserDao users, String username){
-        try{
-            users.getUser(username);
-            return true;
-        } catch (DataAccessException e) {
-            return false;
+    public static String serialize(ChessGame game){
+        if(game == null){
+            return null;
         }
+        return new Gson().toJson(game);
     }
 
+    public static ChessGame deserialize(String json){
+        return new Gson().fromJson(json, ChessGame.class);
+    }
 }

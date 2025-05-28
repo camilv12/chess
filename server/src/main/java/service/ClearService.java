@@ -1,14 +1,14 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.ram.RamAuthDao;
-import dataaccess.ram.RamGameDao;
-import dataaccess.ram.RamUserDao;
+import dataaccess.SqlAuthDao;
+import dataaccess.SqlGameDao;
+import dataaccess.SqlUserDao;
 
 public class ClearService {
-    private final RamAuthDao auth = new RamAuthDao();
-    private final RamGameDao games = new RamGameDao();
-    private final RamUserDao users = new RamUserDao();
+    private final SqlAuthDao auth = new SqlAuthDao();
+    private final SqlGameDao games = new SqlGameDao();
+    private final SqlUserDao users = new SqlUserDao();
 
     public void clear() throws DataAccessException {
         auth.clear();

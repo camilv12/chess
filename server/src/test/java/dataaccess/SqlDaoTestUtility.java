@@ -1,8 +1,12 @@
 package dataaccess;
 
+import chess.ChessGame;
+import service.ServiceUtils;
+
 import java.sql.SQLException;
 
 public class SqlDaoTestUtility {
+    public static final String NEW_CHESS_GAME = ServiceUtils.serialize(new ChessGame());
 
     public static void clearTables() throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()){

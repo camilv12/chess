@@ -1,23 +1,24 @@
 package server.handler;
 import service.AlreadyTakenException;
+import service.AuthService;
 import service.BadRequestException;
 import service.model.RegisterRequest;
 import service.model.RegisterResult;
 import spark.Request;
-import service.RegisterService;
+
 import spark.Response;
 
 public class RegisterHandler {
-    private final RegisterService registerService;
+    private final AuthService authService;
 
-    public RegisterHandler(RegisterService registerService){
-        this.registerService = registerService;
+    public RegisterHandler(AuthService authService){
+        this.authService = authService;
     }
 
     public Object handle(Request req, Response res){
         try{
             RegisterRequest request = JsonUtils.fromJson(req, RegisterRequest.class);
-            RegisterResult result = registerService.register(request);
+            RegisterResult result = authService.register(request);
             res.status(200);
             res.type("application/json");
             return JsonUtils.toJson(result);

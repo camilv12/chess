@@ -6,9 +6,13 @@ import java.sql.SQLException;
 
 public class SqlAuthDao implements AuthDao {
 
-    public SqlAuthDao() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        DatabaseManager.initializeDatabase();
+    public SqlAuthDao() {
+        try{
+            DatabaseManager.createDatabase();
+            DatabaseManager.initializeDatabase();
+        }catch (DataAccessException e){
+            throw new RuntimeException("Auth DAO initialization failed:", e);
+        }
     }
 
     @Override

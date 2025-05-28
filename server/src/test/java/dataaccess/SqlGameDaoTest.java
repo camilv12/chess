@@ -1,6 +1,5 @@
 package dataaccess;
 
-import chess.ChessGame;
 import model.GameData;
 import org.junit.jupiter.api.*;
 
@@ -25,7 +24,7 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "testGame",
-                new ChessGame());
+                SqlDaoTestUtility.NEW_CHESS_GAME);
 
         // Execute
         int id = games.createGame(testGame);
@@ -43,7 +42,7 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "testGame",
-                new ChessGame());
+                SqlDaoTestUtility.NEW_CHESS_GAME);
         int gameID = games.createGame(game);
 
         // Execute
@@ -62,7 +61,7 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "Game1",
-                new ChessGame()
+                SqlDaoTestUtility.NEW_CHESS_GAME
         ));
         SqlDaoTestUtility.addUser("whitePlayer");
         games.createGame(new GameData(
@@ -70,7 +69,7 @@ class SqlGameDaoTest {
                 "whitePlayer",
                 null,
                 "Game2",
-                new ChessGame()
+                SqlDaoTestUtility.NEW_CHESS_GAME
         ));
         SqlDaoTestUtility.addUser("blackPlayer");
         games.createGame(new GameData(
@@ -78,7 +77,7 @@ class SqlGameDaoTest {
                 null,
                 "blackPlayer",
                 "Game3",
-                new ChessGame()
+                SqlDaoTestUtility.NEW_CHESS_GAME
         ));
 
         // Execute
@@ -96,7 +95,7 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "test",
-                new ChessGame()
+                SqlDaoTestUtility.NEW_CHESS_GAME
         );
         int id = games.createGame(originalGame);
         SqlDaoTestUtility.addUser("whitePlayer");
@@ -106,7 +105,7 @@ class SqlGameDaoTest {
                 "whitePlayer",
                 "blackPlayer",
                 "test",
-                new ChessGame()
+                SqlDaoTestUtility.NEW_CHESS_GAME
         );
 
         // Execute
@@ -125,8 +124,8 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "ClearGame",
-                new ChessGame())
-        );
+                SqlDaoTestUtility.NEW_CHESS_GAME
+        ));
 
         // Execute
         games.clear();
@@ -176,7 +175,7 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "FakeGame",
-                new ChessGame()
+                ""
         );
         games.updateGame(fakeGame);
         // Assert + Execute

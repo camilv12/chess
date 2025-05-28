@@ -1,6 +1,5 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.ram.RamGameDao;
 import model.GameData;
@@ -33,12 +32,12 @@ class ListGamesServiceTest {
                 "whiteUser1",
                 "blackUser1",
                 "gameName1",
-                new ChessGame());
+                "");
         GameData game2 = new GameData(5678,
                 "whiteUser2",
                 "blackUser2",
                 "gameName2",
-                new ChessGame());
+                "");
         games.createGame(game1);
         games.createGame(game2);
         ListGamesResult result = listGamesService.listGames();
