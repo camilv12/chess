@@ -28,7 +28,6 @@ public class Server {
         ListGamesHandler listGamesHandler = new ListGamesHandler(authService, gameService);
         JoinGameHandler joinGameHandler = new JoinGameHandler(joinGameService);
 
-        //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.delete("/db", clearHandler::handle);
         Spark.post("/user", registerHandler::handle);
         Spark.post("/session", loginHandler::handle);

@@ -8,13 +8,14 @@
 - [X] Phase 3: Chess Web-API
 - [X] Phase 4: Chess Database
 - [ ] Phase 5: Chess Pregame
-  - [ ] Set up project and ServerFacade class
-    - [ ] Add `ServerFacade` constructor
-    - [ ] Make sure tests start/stop server and pass port to facade
-    - [ ] Set up `ServerFacadeTest` skeleton
-  - [ ] Set up unit tests
-    - [ ] Each public method in `ServerFacade` has one positive and one negative test
-    - [ ] Each test has an assert statement
+  - [X] Set up project and ServerFacade class
+    - [X] Add `ServerFacade` constructor
+    - [X] Make sure tests start/stop server and pass port to facade
+    - [X] Set up `ServerFacadeTest` skeleton
+    - [ ] Implement `ServerFacade` class
+  - [X] Set up unit tests
+    - [X] Each public method in `ServerFacade` has one positive and one negative test
+    - [X] Each test has an assert statement
   - [ ] Write Pre-Login commands
     - [ ] `help` - Displays text informing what the user can do
     - [ ] `quit` - Exits neatly
