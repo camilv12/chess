@@ -12,15 +12,14 @@
     - [X] Add `ServerFacade` constructor
     - [X] Make sure tests start/stop server and pass port to facade
     - [X] Set up `ServerFacadeTest` skeleton
-    - [ ] Implement `ServerFacade` class
+    - [X] Implement `ServerFacade` class
   - [X] Set up unit tests
     - [X] Each public method in `ServerFacade` has one positive and one negative test
     - [X] Each test has an assert statement
-  - [ ] Write Pre-Login commands
-    - [ ] `help` - Displays text informing what the user can do
-    - [ ] `quit` - Exits neatly
-    - [ ] `login` - Prompts login info, calls server login API, transitions client to post-login UI
-    - [ ] `register` - Prompts user to put in registration info, calls server register API and logs in user
+  - [X] Implement Login Client
+    - [X] `help` - Displays text informing what the user can do
+    - [X] `login` - Prompts login info, calls server login API, transitions client to post-login UI
+    - [X] `register` - Prompts user to put in registration info, calls server register API and logs in user
   - [ ] Write the Post-Login UI commands
     - [ ] `help` - Displays text informing what the user can do
     - [ ] `logout` - Logs out the user, calls logout API
@@ -29,6 +28,8 @@
   - [ ] Implement stubs (Functionality added in Phase 6) 
     - [ ] `play game` - Allows the user to join a game, calls join game API
     - [ ] `observe game` - Allows the user to specify a game to observe
+  - [ ] Implement REPL class
+    - [ ] `quit` - Exits UI neatly
   - [ ] Draw initial chess board in terminal
     - [ ] Render chessboard with chess pieces, must be alternating colors and show coordinates
     - [ ] Support white and black perspectives
