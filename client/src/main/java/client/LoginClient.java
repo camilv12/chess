@@ -28,8 +28,8 @@ public class LoginClient {
         return """
                Login Menu:
                help - display menu
-               register <USERNAME> <PASSWORD> <EMAIL> - create a new account
                login <USERNAME> <PASSWORD> - log into your account
+               register <USERNAME> <PASSWORD> <EMAIL> - create a new account
                quit - exit program
                """;
     }
