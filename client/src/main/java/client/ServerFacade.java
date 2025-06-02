@@ -1,12 +1,16 @@
 
 package client;
 import com.google.gson.Gson;
+import service.AlreadyTakenException;
+import service.BadRequestException;
+import service.UnauthorizedException;
 import service.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
+import java.net.http.*;
 
 /**
  * A class that encapsulates HTTP requests to the server and results from the server.
@@ -15,44 +19,56 @@ import java.net.*;
 
 public class ServerFacade {
     private final String serverUrl;
+    private final HttpClient httpClient;
 
     public ServerFacade(int port){
         this.serverUrl = "http://localhost:" + port;
+        this.httpClient = HttpClient.newHttpClient();
     }
 
     /**
-     * Makes a login API call to the server using the login input from the client.
-     * @return Result (LoginResult) from the API call to the server
+     * Makes a call to the server login API using the login input from the client.
+     * @return Result (LoginResult) from the API call to the server.
      */
-    public LoginResult login(String username, String password){
-        throw new RuntimeException("Not implemented");
+    public LoginResult login(String username, String password) throws Exception {
+        String path = "/session";
+        LoginRequest request = new LoginRequest(username, password);
+        return makeRequest("POST", path, request, LoginResult.class);
     }
 
     /**
-     * Makes a register API call to the server using the registration input from the client.
-     * @return Result (RegisterResult) from the API call to the server
+     * Makes a call to the server register API using the registration input from the client.
+     * @return Result (RegisterResult) from the API call to the server.
      */
     public RegisterResult register(String username, String password, String email) throws Exception {
-        throw new RuntimeException("Not implemented");
+        String path = "/user";
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        return makeRequest("POST", path, request, RegisterResult.class);
     }
 
     /**
-     * Makes a logout API call to the server based on client credentials
+     * Makes a call to the server logout API based on client credentials
      */
     public void logout(String token) throws Exception{
-        throw new RuntimeException("Not implemented");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(serverUrl + "/session"))
+                .header("authorization", token)
+                .DELETE()
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        checkStatus(response.statusCode());
     }
 
     /**
-     * Makes a game creation API call to the server based on the game creation input from the client
-     * @return Result (CreateGameResult) from the API call to the server
+     * Makes a call to the server game creation API based on the game creation input from the client
+     * @return Result (CreateGameResult) from the API call to the server.
      */
     public CreateGameResult createGame(String token, String name) throws Exception{
         throw new RuntimeException("Not implemented");
     }
 
     /**
-     * Makes a list game API call to the server based on client credentials
+     * Makes a call to the server list API based on client credentials
      * @return Result (ListGameResult) from the API call to the server
      */
     public ListGamesResult listGames(String token) throws Exception{
@@ -60,7 +76,7 @@ public class ServerFacade {
     }
 
     /**
-     * Makes a join game API call to the server based on input from the client.
+     * Makes a call to the server join game API based on input from the client.
      */
     public void joinGame(String token, String color, int id) throws Exception{
         throw new RuntimeException("Not implemented");
@@ -95,7 +111,7 @@ public class ServerFacade {
 
             // Handle response
             if (http.getResponseCode() >= 400){
-                throw new Exception("HTTP Error: " + http.getResponseCode());
+                checkStatus(http.getResponseCode());
             }
 
             try (InputStream is = http.getInputStream()){
@@ -103,7 +119,16 @@ public class ServerFacade {
                 return new Gson().fromJson(response, responseClass);
             }
         } catch (IOException e){
-            throw new Exception("Connection failed: " + e.getMessage());
+            throw new Exception("Error: Connection failed");
+        }
+    }
+
+    private void checkStatus(int code) throws Exception {
+        switch(code){
+            case 400 -> throw new BadRequestException("Error: Invalid Request");
+            case 401 -> throw new UnauthorizedException("Error: Unauthorized");
+            case 403 -> throw new AlreadyTakenException("Error: Already Taken");
+            case 500 -> throw new Exception("Error: Connection failed");
         }
     }
 }

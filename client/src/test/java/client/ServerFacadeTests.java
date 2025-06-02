@@ -20,6 +20,7 @@ public class ServerFacadeTests {
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade(port);
+        ServerFacadeTestUtils.setTestUrl(port);
     }
 
     @AfterAll
@@ -28,9 +29,13 @@ public class ServerFacadeTests {
     }
 
     // Register Tests
+    @BeforeEach
+    public void clearDatabase() throws Exception {
+        ServerFacadeTestUtils.clear();
+    }
 
     @Test
-    public void testRegisterValidCredentials() throws Exception {
+    public void testRegisterValid() throws Exception {
         // Set up and Execute
         var result = facade.register("player1", "password", "test@mail.com");
 
