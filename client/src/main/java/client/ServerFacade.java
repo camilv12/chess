@@ -31,9 +31,8 @@ public class ServerFacade {
      * @return Result (LoginResult) from the API call to the server.
      */
     public LoginResult login(String username, String password) throws Exception {
-        String path = "/session";
         LoginRequest request = new LoginRequest(username, password);
-        return makeRequest("POST", path, request, LoginResult.class);
+        return makeRequest("POST", "/session", null, request, LoginResult.class);
     }
 
     /**
@@ -41,9 +40,8 @@ public class ServerFacade {
      * @return Result (RegisterResult) from the API call to the server.
      */
     public RegisterResult register(String username, String password, String email) throws Exception {
-        String path = "/user";
         RegisterRequest request = new RegisterRequest(username, password, email);
-        return makeRequest("POST", path, request, RegisterResult.class);
+        return makeRequest("POST", "/user", null, request, RegisterResult.class);
     }
 
     /**
@@ -64,7 +62,8 @@ public class ServerFacade {
      * @return Result (CreateGameResult) from the API call to the server.
      */
     public CreateGameResult createGame(String token, String name) throws Exception{
-        throw new RuntimeException("Not implemented");
+        CreateGameRequest request = new CreateGameRequest(name);
+        return makeRequest("POST", "/game", token, request, CreateGameResult.class);
     }
 
     /**
@@ -72,14 +71,15 @@ public class ServerFacade {
      * @return Result (ListGameResult) from the API call to the server
      */
     public ListGamesResult listGames(String token) throws Exception{
-        throw new RuntimeException("Not implemented");
+        return makeRequest("GET", "/game", token, null, ListGamesResult.class);
     }
 
     /**
      * Makes a call to the server join game API based on input from the client.
      */
     public void joinGame(String token, String color, int id) throws Exception{
-        throw new RuntimeException("Not implemented");
+        JoinGameRequest request = new JoinGameRequest(token, color, id);
+        makeRequest("PUT", "/game", token, request, null);
     }
 
     /**
@@ -87,6 +87,7 @@ public class ServerFacade {
      *
      * @param method HTTP method (GET, POST, PUT, DELETE)
      * @param path URL path (ex: "/game")
+     * @param token AuthToken. Use null for no token.
      * @param request Request body object (will be serialized to JSON). Use null for no body.
      * @param responseClass Class object for response type (ex: Response.class)
      * @return Deserialized response object of type T
@@ -96,22 +97,32 @@ public class ServerFacade {
      *                   - Network/Connection issues occur
      *                   - Response parsing fails
      */
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
+    private <T> T makeRequest(String method, String path, String token, Object request, Class<T> responseClass) throws Exception {
         try{
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
+            if(token != null && !token.isBlank()){
+                http.setRequestProperty("authorization", token);
+            }
+
             // Write request body
-            try (OutputStream os = http.getOutputStream()){
-                String json = new Gson().toJson(request);
-                os.write(json.getBytes());
+            if(request != null){
+                try (OutputStream os = http.getOutputStream()){
+                    String json = new Gson().toJson(request);
+                    os.write(json.getBytes());
+                }
             }
 
             // Handle response
             if (http.getResponseCode() >= 400){
                 checkStatus(http.getResponseCode());
+            }
+
+            if(responseClass == null){
+                return null;
             }
 
             try (InputStream is = http.getInputStream()){
