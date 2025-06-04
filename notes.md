@@ -27,15 +27,14 @@
     - [X] `list games` - Lists available games, calls list games API
     - [X] `play game` - Allows the user to join a game, calls join game API
     - [X] `observe game` - Allows the user to specify a game to observe
-  - [ ] Implement stubs for Gameplay UI (Functionality added in Phase 6) 
-    - [ ]
+  - [X] Implement Gameplay UI skeleton (Functionality added in Phase 6) 
+    - [X] Draw initial chess board in terminal
+      - [X] Render chessboard with chess pieces, must be alternating colors and show coordinates
+      - [X] Support white and black perspectives
+      - [X] Make sure `h1` and `a8` are the light squares
   - [ ] Implement REPL class
     - [ ] Cycle between `LoginClient`, `LobbyClient`, and `GameClient`
     - [ ] `quit` - Exits UI neatly
-  - [ ] Draw initial chess board in terminal
-    - [ ] Render chessboard with chess pieces, must be alternating colors and show coordinates
-    - [ ] Support white and black perspectives
-    - [ ] Make sure `h1` and `a8` are the light squares
   - [ ] Handle errors and messages
     - [ ] Map HTTP errors to simple messages
     - [ ] Follow UI requirements: Avoid raw JSON, AuthTokens, Status Codes, etc.
