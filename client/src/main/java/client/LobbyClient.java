@@ -1,5 +1,6 @@
 package client;
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 
 import java.util.Arrays;
 
@@ -23,15 +24,30 @@ public class LobbyClient implements Client {
             var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd){
-                case "create" -> create(params);
-                case "join" -> join(params);
-                case "list" -> list();
-                case "logout" -> logout();
-                case "observe" -> observe(params);
-                case "quit" -> ClientState.EXIT;
-                default -> ClientState.LOBBY;
-            };
+            switch (cmd){
+                case "create" -> {
+                    return create(params);
+                }
+                case "join" -> {
+                    return join(params);
+                }
+                case "list" -> {
+                    return list();
+                }
+                case "logout" -> {
+                    return logout();
+                }
+                case "observe" -> {
+                    return observe(params);
+                }
+                case "quit" -> {
+                    return ClientState.EXIT;
+                }
+                default -> {
+                    System.out.println("Unknown command. Type 'help' to view options.");
+                    return ClientState.LOBBY;
+                }
+            }
         } catch(Exception e){
             throw new Exception(e.getMessage());
         }
@@ -53,28 +69,55 @@ public class LobbyClient implements Client {
     public ClientState create(String... params) throws Exception {
         if(params.length >= 1){
             var name = params[0];
-            var id = server.createGame(session.getAuthToken(), name).gameID();
-            System.out.printf("Game created. %s, ID: %d",name,id);
+            server.createGame(session.getAuthToken(), name);
+            System.out.printf("Game created. Name: %s",name);
             return ClientState.LOBBY;
         }
         throw new Exception("Error: Please enter a name");
     }
 
     public ClientState join(String... params) throws Exception {
-        if(params.length >= 2){
-            int id = Integer.parseInt(params[0]);
-            var color = params[1].toUpperCase();
+        // Validate number of arguments
+        if(params.length < 2){
+            throw new Exception("Error: Please enter a game ID and color <WHITE|BLACK>.");
+        }
+
+        // Validate ID
+        int position;
+        int id;
+        try{
+            position = Integer.parseInt(params[0]);
+            updateGamesList();
+            id = session.getGameId(position);
+        } catch (Exception e){
+            throw new Exception("Error: Invalid game ID. Example: 'join 1 white'");
+        }
+
+        // Validate color
+        var color = params[1].toUpperCase();
+        if(!color.equals("WHITE") && !color.equals("BLACK")){
+            throw new Exception("Error: Invalid color. Please choose WHITE or BLACK.");
+        }
+
+        try{
             server.joinGame(session.getAuthToken(), color, id);
             session.setColor(color);
-            session.setGame(new ChessGame());
-            System.out.printf("Joining game %d\n", id);
+            session.setGame(new ChessGame()); // Implement functionality later
+            System.out.printf("Joining game %s\n", session.getGameName(position));
             return ClientState.GAME;
+        } catch(DataAccessException e){
+            throw new Exception("Invalid ID. Type 'list' for a list of valid games.");
         }
-        throw new Exception("Error: Please enter a game ID and color <WHITE|BLACK>.");
+    }
+
+    private void updateGamesList() throws Exception {
+        var games = server.listGames(session.getAuthToken()).games();
+        session.setGamesList(games);
     }
 
     public ClientState list() throws Exception {
         var games = server.listGames(session.getAuthToken()).games();
+        session.setGamesList(games);
 
         if(games.isEmpty()){
             System.out.println("No games available. Create one by typing 'create <NAME>'!");
@@ -102,14 +145,35 @@ public class LobbyClient implements Client {
     }
 
     public ClientState observe(String... params) throws Exception {
-        if(params.length >= 1){
-            int id = Integer.parseInt(params[0]);
+        // Validate number of arguments
+        if(params.length < 1){
+            throw new Exception("Error: Please enter a game ID.");
+        }
+
+        // Validate ID
+        int position;
+        int id;
+        try{
+            position = Integer.parseInt(params[0]);
+            updateGamesList();
+            id = session.getGameId(position);
+        } catch (Exception e){
+            throw new Exception("""
+                    Error: Failed to join game.
+                    Please check if the game number exists (use 'list' to see available games).
+                    """);
+        }
+        try{
             server.joinGame(session.getAuthToken(), null, id);
             session.setGame(new ChessGame()); // Add functionality in Phase 6
-            System.out.printf("Observing game %d\n", id);
+            System.out.printf("Observing game %s\n", session.getGameName(position));
             return ClientState.GAME;
+        }catch(Exception e){
+            throw new Exception("""
+                    Error: Failed to join game.
+                    Please check if the game number exists (use 'list' to see available games).
+                    """);
         }
-        throw new Exception("Error: Please enter a game ID.");
     }
 
 }

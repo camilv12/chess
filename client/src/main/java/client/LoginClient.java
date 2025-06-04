@@ -24,12 +24,21 @@ public class LoginClient implements Client {
             var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd){
-                case "login" -> login(params);
-                case "register" -> register(params);
-                case "quit" -> ClientState.EXIT;
-                default -> ClientState.LOGIN;
-            };
+             switch (cmd){
+                case "login" -> {
+                    return login(params);
+                }
+                case "register" -> {
+                    return register(params);
+                }
+                case "quit" ->{
+                    return ClientState.EXIT;
+                }
+                default -> {
+                    System.out.println("Unknown command. Type 'help' to view options.");
+                    return ClientState.LOGIN;
+                }
+            }
         } catch(Exception e){
             throw new Exception(e.getMessage());
         }

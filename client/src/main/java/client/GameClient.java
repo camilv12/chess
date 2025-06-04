@@ -20,12 +20,21 @@ public class GameClient implements Client {
         try{
             var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
-            return switch(cmd){
-                case "redraw" -> draw();
-                case "leave" -> leave();
-                case "quit" -> ClientState.EXIT;
-                default -> ClientState.GAME;
-            };
+            switch(cmd){
+                case "redraw" -> {
+                    return draw();
+                }
+                case "leave" -> {
+                    return leave();
+                }
+                case "quit" ->{
+                    return ClientState.EXIT;
+                }
+                default -> {
+                    System.out.println("Unknown command. Type 'help' to view options.");
+                    return ClientState.GAME;
+                }
+            }
         } catch(Exception e){
             throw new Exception(e.getMessage());
         }
