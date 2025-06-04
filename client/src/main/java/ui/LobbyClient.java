@@ -1,5 +1,6 @@
-package client;
+package ui;
 import chess.ChessGame;
+import client.ServerFacade;
 import dataaccess.DataAccessException;
 
 import java.util.Arrays;

@@ -1,5 +1,6 @@
-package client;
+package ui;
 
+import client.ServerFacade;
 import service.UnauthorizedException;
 
 import java.util.Arrays;

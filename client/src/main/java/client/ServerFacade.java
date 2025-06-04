@@ -1,8 +1,6 @@
 package client;
 import com.google.gson.Gson;
-import service.AlreadyTakenException;
-import service.BadRequestException;
-import service.UnauthorizedException;
+import service.*;
 import service.model.*;
 
 import java.io.IOException;
