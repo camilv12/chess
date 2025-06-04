@@ -2,14 +2,20 @@ package client;
 
 import java.util.Arrays;
 
-public class LoginClient {
+public class LoginClient implements Client {
     private final ServerFacade server;
 
     public LoginClient(int port){
         server = new ServerFacade(port);
     }
 
-    public String eval(String input){
+    @Override
+    public String prompt() {
+        return "[LOGIN] >>> ";
+    }
+
+    @Override
+    public ClientState eval(String input) throws Exception {
         try{
             var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
@@ -17,40 +23,44 @@ public class LoginClient {
             return switch (cmd){
                 case "login" -> login(params);
                 case "register" -> register(params);
-                default -> help();
+                case "quit" -> ClientState.EXIT;
+                default -> ClientState.LOGIN;
             };
         } catch(Exception e){
-            return e.getMessage();
+            throw new Exception(e.getMessage());
         }
     }
 
-    public String help(){
-        return """
+    @Override
+    public void help(){
+        System.out.print("""
                Login Menu:
                help - display menu
                login <USERNAME> <PASSWORD> - log into your account
                register <USERNAME> <PASSWORD> <EMAIL> - create a new account
                quit - exit program
-               """;
+               """);
     }
 
-    public String login(String... params) throws Exception {
+    public ClientState login(String... params) throws Exception {
         if(params.length >= 2) {
             var username = params[0];
             var password = params[1];
             var result = server.login(username, password);
-            return String.format("Logged in as %s", result.username());
+            System.out.printf("Logged in as %s\n", result.username());
+            return ClientState.LOBBY;
         }
         throw new Exception("Error: Please enter username and password");
     }
 
-    public String register(String... params) throws Exception {
+    public ClientState register(String... params) throws Exception {
         if(params.length >= 3){
             var username = params[0];
             var password = params[1];
             var email = params[2];
             var result = server.register(username, password, email);
-            return String.format("Registration successful. Logged in as %s", result.username());
+            System.out.printf("Registration successful. Logged in as %s\n", result.username());
+            return ClientState.LOBBY;
         }
         throw new Exception("Error: Please enter username, password, and email");
     }

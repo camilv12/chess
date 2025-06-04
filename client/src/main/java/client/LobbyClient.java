@@ -1,16 +1,26 @@
 package client;
 import java.util.Arrays;
 
-public class LobbyClient {
+public class LobbyClient implements Client {
     private final ServerFacade server;
-    private final String authToken;
-
-    public LobbyClient(String token, int port){
-        this.authToken = token;
+    private String authToken;
+    
+    public LobbyClient(int port){
         server = new ServerFacade(port);
+        authToken = "";
+    }
+    
+    public void setAuthToken(String authToken){
+        this.authToken = authToken;
     }
 
-    public String eval(String input){
+    @Override
+    public String prompt() {
+        return "[LOBBY] >>> ";
+    }
+
+    @Override
+    public ClientState eval(String input) throws Exception {
         try{
             var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
@@ -21,15 +31,16 @@ public class LobbyClient {
                 case "list" -> list();
                 case "logout" -> logout();
                 case "observe" -> observe(params);
-                default -> help();
+                default -> ClientState.LOBBY;
             };
         } catch(Exception e){
-            return e.getMessage();
+            throw new Exception(e.getMessage());
         }
     }
 
-    public String help(){
-        return """
+    @Override
+    public void help(){
+        System.out.print("""
                Lobby Menu:
                help - display menu
                create <NAME> - create a new game
@@ -37,33 +48,35 @@ public class LobbyClient {
                list - lists all games
                logout - log out of this session
                quit - exit program
-               """;
+               """);
     }
 
-    public String create(String... params) throws Exception {
+    public ClientState create(String... params) throws Exception {
         if(params.length >= 1){
             var name = params[0];
             var id = server.createGame(authToken, name).gameID();
-            return String.format("Game created. %s, ID: %d",name,id);
+            System.out.printf("Game created. %s, ID: %d",name,id);
+            return ClientState.LOBBY;
         }
         throw new Exception("Error: Please enter a name");
     }
 
-    public String join(String... params) throws Exception {
+    public ClientState join(String... params) throws Exception {
         if(params.length >= 2){
             int id = Integer.parseInt(params[0]);
             var color = params[1].toUpperCase();
             server.joinGame(authToken, color, id);
-            return String.format("Joining game %d", id);
+            System.out.printf("Joining game %d", id);
+            return ClientState.GAME;
         }
         throw new Exception("Error: Please enter a game ID and color <WHITE|BLACK>.");
     }
 
-    public String list() throws Exception {
+    public ClientState list() throws Exception {
         var games = server.listGames(authToken).games();
 
         if(games.isEmpty()){
-            return "No games available. Create one by typing 'create <NAME>'!";
+            System.out.println("No games available. Create one by typing 'create <NAME>'!");
         }
 
         var result = new StringBuilder();
@@ -76,19 +89,22 @@ public class LobbyClient {
                     game.blackUsername() != null ? game.blackUsername() : "[Empty]"
             ));
         }
-        return result.toString();
+        System.out.print(result);
+        return ClientState.LOBBY;
     }
 
-    public String logout() throws Exception {
+    public ClientState logout() throws Exception {
         server.logout(authToken);
-        return "Logging out";
+        System.out.println("Logging out...");
+        return ClientState.LOGIN;
     }
 
-    public String observe(String... params) throws Exception {
+    public ClientState observe(String... params) throws Exception {
         if(params.length >= 1){
             int id = Integer.parseInt(params[0]);
             server.joinGame(authToken, null, id);
-            return String.format("Observing game %d", id);
+            System.out.printf("Observing game %d", id);
+            return ClientState.GAME;
         }
         throw new Exception("Error: Please enter a game ID.");
     }
