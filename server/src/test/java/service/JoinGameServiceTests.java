@@ -59,6 +59,27 @@ class JoinGameServiceTests {
         assertEquals("testUser",game.blackUsername());
     }
 
+    // Positive Test 2:
+    @Test
+    @DisplayName("Test Observe")
+    void observeGame() throws DataAccessException {
+        // Setup
+        users.createUser(new UserData("whiteUser","wh1t3","white@mail.com"));
+        users.createUser(new UserData("testUser","p@ss","test@mail.com"));
+        auth.createAuth(new AuthData("testToken","testUser"));
+
+        int id = games.createGame(new GameData(
+                0,
+                "whiteUser",
+                null,
+                "test",
+                ServiceTestUtils.NEW_CHESS_GAME));
+        assertDoesNotThrow(() -> joinGameService.joinGame(new JoinGameRequest(
+                "testToken",
+                null,
+                id)));
+    }
+
     // Negative test 1: Bad request
     @ParameterizedTest(name = "Test invalid {0}")
     @MethodSource("badRequestsProvider")

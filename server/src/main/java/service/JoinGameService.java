@@ -13,21 +13,31 @@ public class JoinGameService {
 
     public void joinGame(JoinGameRequest request) throws DataAccessException {
         // Validate request
-        if(ServiceUtils.isBlank(request.authToken()) ||
-                request.gameID() < 1 ||
-                (!VALID_COLORS.contains(request.playerColor())
-                && request.playerColor() != null)){
-            throw new BadRequestException("Invalid Request");
-        }
+        validateRequest(request);
         authorize(auth, request.authToken());
 
         // Get requested game
         GameData game = games.getGame(request.gameID());
 
         // Validate player color
-        if(request.playerColor() != null){
-            String colorName = (request.playerColor().equals("WHITE")) ? game.whiteUsername() : game.blackUsername();
-            if(colorName != null) { throw new AlreadyTakenException("Color is already taken"); }
+        if(isPlayerJoinRequest(request)) {
+            handlePlayerJoin(request, game);
+        }
+    }
+
+    private void validateRequest(JoinGameRequest request) throws BadRequestException{
+        if(ServiceUtils.isBlank(request.authToken()) ||
+                request.gameID() < 0 ||
+                (request.playerColor() != null && !VALID_COLORS.contains(request.playerColor()))){
+            throw new BadRequestException("Invalid Request");
+        }
+    }
+
+    private void handlePlayerJoin(JoinGameRequest request, GameData game) throws DataAccessException {
+        // Check if the name is null
+        String colorName = request.playerColor().equals("WHITE") ? game.whiteUsername() : game.blackUsername();
+        if (colorName != null) {
+            throw new AlreadyTakenException("Color is already taken");
         }
 
         // Update game
@@ -52,5 +62,9 @@ public class JoinGameService {
         } catch (NotFoundException e){
             throw new UnauthorizedException("Unauthorized request");
         }
+    }
+
+    private boolean isPlayerJoinRequest(JoinGameRequest request){
+        return request.playerColor() != null;
     }
 }
