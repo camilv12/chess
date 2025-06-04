@@ -53,7 +53,10 @@ public class Repl {
         switch (state){
             case LOGIN -> client = loginClient;
             case LOBBY -> client = lobbyClient;
-            case GAME -> client = gameClient;
+            case GAME -> {
+                client = gameClient;
+                gameClient.draw();
+            }
             case EXIT -> {}
         }
     }

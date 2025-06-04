@@ -1,5 +1,7 @@
 package client;
 
+import service.UnauthorizedException;
+
 import java.util.Arrays;
 
 public class LoginClient implements Client {
@@ -45,16 +47,20 @@ public class LoginClient implements Client {
     }
 
     public ClientState login(String... params) throws Exception {
-        if(params.length >= 2) {
-            var username = params[0];
-            var password = params[1];
-            var result = server.login(username, password);
-            session.setUsername(result.username());
-            session.setAuthToken(result.authToken());
-            System.out.printf("Logged in as %s\n", session.getUsername());
-            return ClientState.LOBBY;
+        try{
+            if(params.length >= 2) {
+                var username = params[0];
+                var password = params[1];
+                var result = server.login(username, password);
+                session.setUsername(result.username());
+                session.setAuthToken(result.authToken());
+                System.out.printf("Logged in as %s\n", session.getUsername());
+                return ClientState.LOBBY;
+            }
+            throw new Exception("Error: Please enter username and password");
+        } catch(UnauthorizedException e){
+            throw new Exception("Incorrect username or password");
         }
-        throw new Exception("Error: Please enter username and password");
     }
 
     public ClientState register(String... params) throws Exception {

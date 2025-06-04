@@ -1,4 +1,6 @@
 package client;
+import chess.ChessGame;
+
 import java.util.Arrays;
 
 public class LobbyClient implements Client {
@@ -64,7 +66,8 @@ public class LobbyClient implements Client {
             var color = params[1].toUpperCase();
             server.joinGame(session.getAuthToken(), color, id);
             session.setColor(color);
-            System.out.printf("Joining game %d", id);
+            session.setGame(new ChessGame());
+            System.out.printf("Joining game %d\n", id);
             return ClientState.GAME;
         }
         throw new Exception("Error: Please enter a game ID and color <WHITE|BLACK>.");
@@ -86,6 +89,7 @@ public class LobbyClient implements Client {
                     game.whiteUsername() != null ? game.whiteUsername() : "[Empty]",
                     game.blackUsername() != null ? game.blackUsername() : "[Empty]"
             ));
+            counter++;
         }
         System.out.print(result);
         return ClientState.LOBBY;
@@ -101,7 +105,8 @@ public class LobbyClient implements Client {
         if(params.length >= 1){
             int id = Integer.parseInt(params[0]);
             server.joinGame(session.getAuthToken(), null, id);
-            System.out.printf("Observing game %d", id);
+            session.setGame(new ChessGame()); // Add functionality in Phase 6
+            System.out.printf("Observing game %d\n", id);
             return ClientState.GAME;
         }
         throw new Exception("Error: Please enter a game ID.");

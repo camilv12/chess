@@ -5,11 +5,9 @@ import ui.ChessBoardRenderer;
 
 public class GameClient implements Client {
     private final Session session;
-    private final boolean isWhitePerspective;
 
     public GameClient(Session session){
         this.session = session;
-        isWhitePerspective = ((session.getColor() == null) || (session.getColor().equals("WHITE")));
     }
 
     @Override
@@ -45,10 +43,11 @@ public class GameClient implements Client {
     }
 
     public ClientState leave(){
-        return ClientState.LOBBY;
+        return ClientState.LOBBY; // No real functionality yet
     }
 
     public ClientState draw(){
+        boolean isWhitePerspective = (session.getColor() == null) || (session.getColor().equals("WHITE"));
         ChessBoardRenderer.render(session.getGame(), isWhitePerspective);
         return ClientState.GAME;
     }

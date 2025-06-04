@@ -40,8 +40,8 @@ public class ClearServiceTests {
         clearService.clear();
 
         // Verify empty DAOs
-        assertThrows(DataAccessException.class, () -> users.getUser("testUser"));
-        assertThrows(DataAccessException.class, () -> auth.getAuth("testToken"));
+        assertThrows(NotFoundException.class, () -> users.getUser("testUser"));
+        assertThrows(NotFoundException.class, () -> auth.getAuth("testToken"));
         Collection<GameData> remainingGames = games.listGames();
         assertTrue(remainingGames.isEmpty());
 

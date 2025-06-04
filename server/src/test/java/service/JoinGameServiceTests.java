@@ -86,9 +86,8 @@ class JoinGameServiceTests {
 
         return Stream.of(
                 Arguments.of("authToken", null, validPlayerColor, validGameID),
-                Arguments.of("playerColor, null",validToken, null, validGameID),
-                Arguments.of("playerColor, not a color",validToken, "user", validGameID),
-                Arguments.of("playerColor, not a color",validToken, validPlayerColor, -32)
+                Arguments.of("playerColor, not a color",validToken, "", validGameID),
+                Arguments.of("game ID, less than 0",validToken, validPlayerColor, -32)
         );
     }
 

@@ -9,8 +9,8 @@ import static ui.EscapeSequences.*;
 public class ChessBoardRenderer {
     // Color configurations
     private static final String BORDER_COLOR = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK;
-    private static final String LIGHT_SQUARE = SET_BG_COLOR_GREEN;
-    private static final String DARK_SQUARE = SET_BG_COLOR_DARK_GREEN;
+    private static final String LIGHT_SQUARE = SET_BG_COLOR_LIGHT_BROWN;
+    private static final String DARK_SQUARE = SET_BG_COLOR_DARK_BROWN;
     private static final String WHITE_PIECE_COLOR = SET_TEXT_COLOR_WHITE;
     private static final String BLACK_PIECE_COLOR = SET_TEXT_COLOR_BLACK;
     private static final String RESET_ALL = RESET_BG_COLOR + RESET_TEXT_COLOR;
@@ -19,10 +19,7 @@ public class ChessBoardRenderer {
         StringBuilder display = new StringBuilder();
 
         // Top Border
-        display.append(BORDER_COLOR)
-                .append("  a  b  c  d  e  f  g  h  ")
-                .append(RESET_ALL)
-                .append("\n");
+        drawColLabels(display, isWhitePerspective);
 
         // Invert rows
         int startRow = isWhitePerspective ? 8 : 1;
@@ -31,9 +28,7 @@ public class ChessBoardRenderer {
 
         for (int row = startRow; row != endRow; row += rowStep) {
             // Left border
-            display.append(BORDER_COLOR)
-                    .append(row)
-                    .append(RESET_ALL);
+            drawRowLabels(display, row);
 
             // Invert cols
             int startCol = isWhitePerspective ? 1 : 8;
@@ -46,7 +41,7 @@ public class ChessBoardRenderer {
 
                 // Determine square color
                 boolean isLightSquare = (row + col) % 2 == 0;
-                String squareColor = isLightSquare ? LIGHT_SQUARE : DARK_SQUARE;
+                String squareColor = isLightSquare ? DARK_SQUARE : LIGHT_SQUARE;
 
                 display.append(squareColor);
 
@@ -54,7 +49,8 @@ public class ChessBoardRenderer {
                 if (piece != null) {
                     String pieceColor = piece.getTeamColor() == ChessGame.TeamColor.WHITE ?
                             WHITE_PIECE_COLOR : BLACK_PIECE_COLOR;
-                    display.append(pieceColor)
+                    display.append(SET_TEXT_BOLD)
+                            .append(pieceColor)
                             .append(getUnicodePiece(piece))
                             .append(RESET_ALL);
                 } else {
@@ -63,20 +59,32 @@ public class ChessBoardRenderer {
             }
 
             // Right border
-            display.append(BORDER_COLOR)
-                    .append(row)
-                    .append(RESET_ALL)
-                    .append("\n");
+            drawRowLabels(display, row);
+            display.append("\n");
         }
 
 
         // Bottom Border
-        display.append(BORDER_COLOR)
-                .append("  a  b  c  d  e  f  g  h  ")
-                .append(RESET_ALL)
-                .append("\n");
+        drawColLabels(display, isWhitePerspective);
 
         System.out.print(display);
+    }
+
+    private static void drawColLabels(StringBuilder sb, boolean isWhitePerspective){
+        sb.append(BORDER_COLOR)
+                .append("   ");
+        for (char c: (isWhitePerspective ? "abcdefgh" : "hgfedcba").toCharArray()){
+            sb.append(" ").append(c).append(" ");
+        }
+        sb.append("   ");
+        sb.append(RESET_ALL)
+                .append("\n");
+    }
+
+    private static void drawRowLabels(StringBuilder sb, int row){
+        sb.append(BORDER_COLOR)
+                .append(String.format("%2d ", row))
+                .append(RESET_ALL);
     }
 
     private static String getUnicodePiece(ChessPiece piece){

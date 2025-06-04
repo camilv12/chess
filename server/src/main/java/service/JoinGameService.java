@@ -13,9 +13,10 @@ public class JoinGameService {
 
     public void joinGame(JoinGameRequest request) throws DataAccessException {
         // Validate request
-        if(ServiceUtils.isAnyBlank(request.authToken(), request.playerColor()) ||
+        if(ServiceUtils.isBlank(request.authToken()) ||
                 request.gameID() < 1 ||
-                !VALID_COLORS.contains(request.playerColor())){
+                (!VALID_COLORS.contains(request.playerColor())
+                && request.playerColor() != null)){
             throw new BadRequestException("Invalid Request");
         }
         authorize(auth, request.authToken());
@@ -24,8 +25,10 @@ public class JoinGameService {
         GameData game = games.getGame(request.gameID());
 
         // Validate player color
-        String colorName = (request.playerColor().equals("WHITE")) ? game.whiteUsername() : game.blackUsername();
-        if(colorName != null) { throw new AlreadyTakenException("Color is already taken"); }
+        if(request.playerColor() != null){
+            String colorName = (request.playerColor().equals("WHITE")) ? game.whiteUsername() : game.blackUsername();
+            if(colorName != null) { throw new AlreadyTakenException("Color is already taken"); }
+        }
 
         // Update game
         String username = auth.getAuth(request.authToken()).username();
