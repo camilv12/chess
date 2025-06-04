@@ -1,7 +1,6 @@
 package ui;
 
 import client.ServerFacade;
-import service.UnauthorizedException;
 
 import java.util.Arrays;
 
@@ -68,8 +67,8 @@ public class LoginClient implements Client {
                 return ClientState.LOBBY;
             }
             throw new Exception("Error: Please enter username and password");
-        } catch(UnauthorizedException e){
-            throw new Exception("Incorrect username or password");
+        } catch(Exception e){
+            throw new Exception("Error: Make sure you put the correct username and password");
         }
     }
 

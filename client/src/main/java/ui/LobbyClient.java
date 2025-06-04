@@ -1,7 +1,6 @@
 package ui;
 import chess.ChessGame;
 import client.ServerFacade;
-import dataaccess.DataAccessException;
 
 import java.util.Arrays;
 
@@ -106,7 +105,7 @@ public class LobbyClient implements Client {
             session.setGame(new ChessGame()); // Implement functionality later
             System.out.printf("Joining game %s\n", session.getGameName(position));
             return ClientState.GAME;
-        } catch(DataAccessException e){
+        } catch(Exception e){
             throw new Exception("Invalid ID. Type 'list' for a list of valid games.");
         }
     }
