@@ -4,9 +4,11 @@ import java.util.Arrays;
 
 public class LoginClient implements Client {
     private final ServerFacade server;
+    private final Session session;
 
-    public LoginClient(int port){
+    public LoginClient(int port, Session session){
         server = new ServerFacade(port);
+        this.session = session;
     }
 
     @Override
@@ -47,7 +49,9 @@ public class LoginClient implements Client {
             var username = params[0];
             var password = params[1];
             var result = server.login(username, password);
-            System.out.printf("Logged in as %s\n", result.username());
+            session.setUsername(result.username());
+            session.setAuthToken(result.authToken());
+            System.out.printf("Logged in as %s\n", session.getUsername());
             return ClientState.LOBBY;
         }
         throw new Exception("Error: Please enter username and password");
@@ -59,7 +63,9 @@ public class LoginClient implements Client {
             var password = params[1];
             var email = params[2];
             var result = server.register(username, password, email);
-            System.out.printf("Registration successful. Logged in as %s\n", result.username());
+            session.setUsername(result.username());
+            session.setAuthToken(result.authToken());
+            System.out.printf("Registration successful. Logged in as %s\n", session.getUsername());
             return ClientState.LOBBY;
         }
         throw new Exception("Error: Please enter username, password, and email");

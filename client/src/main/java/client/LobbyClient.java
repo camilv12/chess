@@ -3,15 +3,11 @@ import java.util.Arrays;
 
 public class LobbyClient implements Client {
     private final ServerFacade server;
-    private String authToken;
+    private final Session session;
     
-    public LobbyClient(int port){
+    public LobbyClient(int port, Session session){
         server = new ServerFacade(port);
-        authToken = "";
-    }
-    
-    public void setAuthToken(String authToken){
-        this.authToken = authToken;
+        this.session = session;
     }
 
     @Override
@@ -31,6 +27,7 @@ public class LobbyClient implements Client {
                 case "list" -> list();
                 case "logout" -> logout();
                 case "observe" -> observe(params);
+                case "quit" -> ClientState.EXIT;
                 default -> ClientState.LOBBY;
             };
         } catch(Exception e){
@@ -54,7 +51,7 @@ public class LobbyClient implements Client {
     public ClientState create(String... params) throws Exception {
         if(params.length >= 1){
             var name = params[0];
-            var id = server.createGame(authToken, name).gameID();
+            var id = server.createGame(session.getAuthToken(), name).gameID();
             System.out.printf("Game created. %s, ID: %d",name,id);
             return ClientState.LOBBY;
         }
@@ -65,7 +62,8 @@ public class LobbyClient implements Client {
         if(params.length >= 2){
             int id = Integer.parseInt(params[0]);
             var color = params[1].toUpperCase();
-            server.joinGame(authToken, color, id);
+            server.joinGame(session.getAuthToken(), color, id);
+            session.setColor(color);
             System.out.printf("Joining game %d", id);
             return ClientState.GAME;
         }
@@ -73,7 +71,7 @@ public class LobbyClient implements Client {
     }
 
     public ClientState list() throws Exception {
-        var games = server.listGames(authToken).games();
+        var games = server.listGames(session.getAuthToken()).games();
 
         if(games.isEmpty()){
             System.out.println("No games available. Create one by typing 'create <NAME>'!");
@@ -94,7 +92,7 @@ public class LobbyClient implements Client {
     }
 
     public ClientState logout() throws Exception {
-        server.logout(authToken);
+        server.logout(session.getAuthToken());
         System.out.println("Logging out...");
         return ClientState.LOGIN;
     }
@@ -102,7 +100,7 @@ public class LobbyClient implements Client {
     public ClientState observe(String... params) throws Exception {
         if(params.length >= 1){
             int id = Integer.parseInt(params[0]);
-            server.joinGame(authToken, null, id);
+            server.joinGame(session.getAuthToken(), null, id);
             System.out.printf("Observing game %d", id);
             return ClientState.GAME;
         }

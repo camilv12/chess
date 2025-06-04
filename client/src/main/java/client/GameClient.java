@@ -1,14 +1,15 @@
 package client;
 
-import chess.ChessGame;
+
 import ui.ChessBoardRenderer;
 
 public class GameClient implements Client {
-    private boolean isWhite = true;
-    private final ChessGame game;
+    private final Session session;
+    private final boolean isWhitePerspective;
 
-    public GameClient(ChessGame game){
-        this.game = game;
+    public GameClient(Session session){
+        this.session = session;
+        isWhitePerspective = ((session.getColor() == null) || (session.getColor().equals("WHITE")));
     }
 
     @Override
@@ -24,6 +25,7 @@ public class GameClient implements Client {
             return switch(cmd){
                 case "redraw" -> draw();
                 case "leave" -> leave();
+                case "quit" -> ClientState.EXIT;
                 default -> ClientState.GAME;
             };
         } catch(Exception e){
@@ -46,12 +48,8 @@ public class GameClient implements Client {
         return ClientState.LOBBY;
     }
 
-    public void setPerspective(String color){
-        isWhite = (color.equals("WHITE"));
-    }
-
     public ClientState draw(){
-        ChessBoardRenderer.render(game, isWhite);
+        ChessBoardRenderer.render(session.getGame(), isWhitePerspective);
         return ClientState.GAME;
     }
 

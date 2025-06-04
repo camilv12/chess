@@ -1,8 +1,11 @@
 import client.Repl;
+import server.Server;
 
 public class Main {
     public static void main(String[] args) {
-        int port = 8080;
+        Server server = new Server();
+        var port = server.run(0);
         new Repl(port).run();
+        server.stop();
     }
 }
