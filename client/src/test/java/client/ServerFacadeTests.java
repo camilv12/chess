@@ -2,9 +2,7 @@ package client;
 
 import org.junit.jupiter.api.*;
 import server.Server;
-import service.AlreadyTakenException;
-import service.UnauthorizedException;
-import service.model.*;
+import client.model.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,7 +48,7 @@ public class ServerFacadeTests {
         registerTestUser();
 
         // Assert and Execute
-        assertThrows(AlreadyTakenException.class, () ->
+        assertThrows(Exception.class, () ->
                 facade.register("testUser","password","test@mail.com"));
     }
 
@@ -68,7 +66,7 @@ public class ServerFacadeTests {
     @Test
     public void testInvalidLogout() {
         // Assert and Execute
-        assertThrows(UnauthorizedException.class, () -> facade.logout("fakeToken"));
+        assertThrows(Exception.class, () -> facade.logout("fakeToken"));
     }
 
     // Login Tests
@@ -94,9 +92,9 @@ public class ServerFacadeTests {
         registerTestUser();
 
         // Assert and Execute
-        assertThrows(UnauthorizedException.class, () ->
+        assertThrows(Exception.class, () ->
             facade.login("testUser", "wrong"));
-        assertThrows(UnauthorizedException.class, () ->
+        assertThrows(Exception.class, () ->
                 facade.login("wrongUser", "fake"));
     }
 
@@ -118,7 +116,7 @@ public class ServerFacadeTests {
     @Test
     public void testUnauthorizedListGames(){
         // Assert and Execute
-        assertThrows(UnauthorizedException.class, () -> facade.listGames("wrong-token"));
+        assertThrows(Exception.class, () -> facade.listGames("wrong-token"));
     }
 
     // Create Game Tests
@@ -138,7 +136,7 @@ public class ServerFacadeTests {
     @Test
     public void testUnauthorizedCreateGames(){
         // Execute and Assert
-        assertThrows(UnauthorizedException.class, () -> facade.createGame("wrong-token", "TestGame"));
+        assertThrows(Exception.class, () -> facade.createGame("wrong-token", "TestGame"));
     }
 
     // Join Game Tests
@@ -163,7 +161,7 @@ public class ServerFacadeTests {
         var token = facade.register("myUser","p4ss","user@mail.com").authToken();
 
         // Assert and Execute
-        assertThrows(AlreadyTakenException.class, () ->
+        assertThrows(Exception.class, () ->
                 facade.joinGame(token, "WHITE", id));
     }
 

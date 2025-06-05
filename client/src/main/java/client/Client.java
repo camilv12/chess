@@ -1,4 +1,4 @@
-package ui;
+package client;
 
 public interface Client {
     String prompt();

@@ -1,5 +1,7 @@
 package ui;
 
+import client.*;
+
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -48,15 +50,15 @@ public class Repl {
     }
 
     private void setState(ClientState state){
-        this.currentState = state;
+        if(state == ClientState.GAME && currentState != ClientState.GAME){
+            gameClient.draw();
+        }
 
+        this.currentState = state;
         switch (state){
             case LOGIN -> client = loginClient;
             case LOBBY -> client = lobbyClient;
-            case GAME -> {
-                client = gameClient;
-                gameClient.draw();
-            }
+            case GAME -> client = gameClient;
             case EXIT -> {}
         }
     }

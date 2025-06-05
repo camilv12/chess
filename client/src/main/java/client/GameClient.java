@@ -1,5 +1,8 @@
-package ui;
+package client;
 
+
+import ui.ChessBoardRenderer;
+import ui.Session;
 
 public class GameClient implements Client {
     private final Session session;

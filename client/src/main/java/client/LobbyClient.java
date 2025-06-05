@@ -1,6 +1,6 @@
-package ui;
+package client;
 import chess.ChessGame;
-import client.ServerFacade;
+import ui.Session;
 
 import java.util.Arrays;
 
@@ -90,7 +90,7 @@ public class LobbyClient implements Client {
             updateGamesList();
             id = session.getGameId(position);
         } catch (Exception e){
-            throw new Exception("Error: Invalid game ID. Example: 'join 1 white'");
+            throw new Exception("Error in joining the game. Check availability by typing 'list'.");
         }
 
         // Validate color
@@ -106,7 +106,7 @@ public class LobbyClient implements Client {
             System.out.printf("Joining game %s\n", session.getGameName(position));
             return ClientState.GAME;
         } catch(Exception e){
-            throw new Exception("Invalid ID. Type 'list' for a list of valid games.");
+            throw new Exception("Error in joining the game. Check availability by typing 'list'.");
         }
     }
 
@@ -165,6 +165,7 @@ public class LobbyClient implements Client {
         }
         try{
             server.joinGame(session.getAuthToken(), null, id);
+            session.setColor(null);
             session.setGame(new ChessGame()); // Add functionality in Phase 6
             System.out.printf("Observing game %s\n", session.getGameName(position));
             return ClientState.GAME;

@@ -1,7 +1,6 @@
 package client;
 import com.google.gson.Gson;
-import service.*;
-import service.model.*;
+import client.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -133,9 +132,9 @@ public class ServerFacade {
 
     private void checkStatus(int code) throws Exception {
         switch(code){
-            case 400 -> throw new BadRequestException("Error: Invalid Request");
-            case 401 -> throw new UnauthorizedException("Error: Unauthorized");
-            case 403 -> throw new AlreadyTakenException("Error: Already Taken");
+            case 400 -> throw new Exception("Error: Invalid Request");
+            case 401 -> throw new Exception("Error: Unauthorized");
+            case 403 -> throw new Exception("Error: Already Taken");
             case 500 -> throw new Exception("Error: Connection failed");
         }
     }

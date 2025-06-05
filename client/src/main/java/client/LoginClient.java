@@ -1,6 +1,6 @@
-package ui;
+package client;
 
-import client.ServerFacade;
+import ui.Session;
 
 import java.util.Arrays;
 
