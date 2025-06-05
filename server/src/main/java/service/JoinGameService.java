@@ -9,7 +9,7 @@ import java.util.Set;
 public class JoinGameService {
     private final SqlAuthDao auth = new SqlAuthDao();
     private final SqlGameDao games = new SqlGameDao();
-    private static final Set<String> VALID_COLORS = Set.of("WHITE", "BLACK");
+    private static final Set<String> VALID_COLORS = Set.of("WHITE", "BLACK","OBSERVE");
 
     public void joinGame(JoinGameRequest request) throws DataAccessException {
         // Validate request
@@ -26,9 +26,11 @@ public class JoinGameService {
     }
 
     private void validateRequest(JoinGameRequest request) throws BadRequestException{
-        if(ServiceUtils.isBlank(request.authToken()) ||
-                request.gameID() < 0 ||
-                (request.playerColor() != null && !VALID_COLORS.contains(request.playerColor()))){
+        boolean badToken = ServiceUtils.isBlank(request.authToken());
+        boolean badId = request.gameID() == null || request.gameID() < 0;
+        boolean badColor = request.playerColor() == null || !VALID_COLORS.contains(request.playerColor());
+
+        if(badToken || badColor || badId){
             throw new BadRequestException("Invalid Request");
         }
     }
@@ -65,6 +67,6 @@ public class JoinGameService {
     }
 
     private boolean isPlayerJoinRequest(JoinGameRequest request){
-        return request.playerColor() != null;
+        return !request.playerColor().equals("OBSERVE");
     }
 }

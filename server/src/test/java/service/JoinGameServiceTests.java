@@ -76,7 +76,7 @@ class JoinGameServiceTests {
                 ServiceTestUtils.NEW_CHESS_GAME));
         assertDoesNotThrow(() -> joinGameService.joinGame(new JoinGameRequest(
                 "testToken",
-                null,
+                "OBSERVE",
                 id)));
     }
 
