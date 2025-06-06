@@ -4,7 +4,7 @@ import service.AlreadyTakenException;
 import service.BadRequestException;
 import service.JoinGameService;
 import service.UnauthorizedException;
-import service.model.JoinGameRequest;
+import model.JoinGameRequest;
 import spark.Request;
 import spark.Response;
 

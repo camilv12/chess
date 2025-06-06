@@ -4,9 +4,9 @@ import service.AuthService;
 import service.BadRequestException;
 import service.GameService;
 import service.UnauthorizedException;
-import service.model.AuthRequest;
-import service.model.CreateGameRequest;
-import service.model.CreateGameResult;
+import model.AuthRequest;
+import model.CreateGameRequest;
+import model.CreateGameResult;
 import spark.Request;
 import spark.Response;
 

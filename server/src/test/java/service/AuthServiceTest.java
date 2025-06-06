@@ -4,8 +4,7 @@ import dataaccess.DataAccessException;
 import dataaccess.NotFoundException;
 import dataaccess.SqlAuthDao;
 import dataaccess.SqlUserDao;
-import model.AuthData;
-import model.UserData;
+import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mindrot.jbcrypt.BCrypt;
-import service.model.*;
 
 import java.util.stream.Stream;
 

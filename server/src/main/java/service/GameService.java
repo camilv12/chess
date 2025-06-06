@@ -3,9 +3,9 @@ package service;
 import dataaccess.DataAccessException;
 import dataaccess.SqlGameDao;
 import model.GameData;
-import service.model.CreateGameRequest;
-import service.model.CreateGameResult;
-import service.model.ListGamesResult;
+import model.CreateGameRequest;
+import model.CreateGameResult;
+import model.ListGamesResult;
 
 
 public class GameService {

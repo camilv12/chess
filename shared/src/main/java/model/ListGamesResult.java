@@ -1,7 +1,4 @@
-package client.model;
-
-import model.GameData;
-
+package model;
 import java.util.Collection;
 
 public record ListGamesResult(

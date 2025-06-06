@@ -2,7 +2,7 @@ package server.handler;
 
 import service.AuthService;
 import service.UnauthorizedException;
-import service.model.AuthRequest;
+import model.AuthRequest;
 import spark.Request;
 import spark.Response;
 

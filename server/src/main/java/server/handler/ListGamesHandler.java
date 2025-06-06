@@ -1,8 +1,8 @@
 package server.handler;
 
 import service.*;
-import service.model.AuthRequest;
-import service.model.ListGamesResult;
+import model.AuthRequest;
+import model.ListGamesResult;
 import spark.Request;
 import spark.Response;
 

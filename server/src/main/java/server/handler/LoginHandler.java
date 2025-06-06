@@ -3,8 +3,8 @@ package server.handler;
 import service.AuthService;
 import service.BadRequestException;
 import service.UnauthorizedException;
-import service.model.LoginRequest;
-import service.model.LoginResult;
+import model.LoginRequest;
+import model.LoginResult;
 import spark.Request;
 import spark.Response;
 

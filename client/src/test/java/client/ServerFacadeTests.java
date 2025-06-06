@@ -1,8 +1,8 @@
 package client;
 
+import model.RegisterResult;
 import org.junit.jupiter.api.*;
 import server.Server;
-import client.model.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

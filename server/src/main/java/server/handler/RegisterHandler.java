@@ -2,8 +2,8 @@ package server.handler;
 import service.AlreadyTakenException;
 import service.AuthService;
 import service.BadRequestException;
-import service.model.RegisterRequest;
-import service.model.RegisterResult;
+import model.RegisterRequest;
+import model.RegisterResult;
 import spark.Request;
 
 import spark.Response;

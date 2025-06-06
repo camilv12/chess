@@ -1,6 +1,6 @@
 package client;
 import com.google.gson.Gson;
-import client.model.*;
+import model.*;
 
 import java.io.IOException;
 import java.io.InputStream;

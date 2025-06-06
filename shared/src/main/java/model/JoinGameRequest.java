@@ -1,4 +1,4 @@
-package client.model;
+package model;
 
 public record JoinGameRequest(
     String authToken,

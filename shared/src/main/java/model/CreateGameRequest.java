@@ -1,4 +1,4 @@
-package service.model;
+package model;
 
 public record CreateGameRequest(
         String gameName

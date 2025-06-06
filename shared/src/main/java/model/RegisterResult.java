@@ -1,6 +1,6 @@
-package client.model;
+package model;
 
-public record LoginResult(
+public record RegisterResult(
         String username,
         String authToken
 ) {}

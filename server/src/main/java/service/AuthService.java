@@ -3,10 +3,8 @@ import dataaccess.DataAccessException;
 import dataaccess.NotFoundException;
 import dataaccess.SqlAuthDao;
 import dataaccess.SqlUserDao;
-import model.AuthData;
-import model.UserData;
+import model.*;
 import org.mindrot.jbcrypt.BCrypt;
-import service.model.*;
 
 import java.util.UUID;
 

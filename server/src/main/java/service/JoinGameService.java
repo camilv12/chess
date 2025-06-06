@@ -2,7 +2,7 @@ package service;
 
 import dataaccess.*;
 import model.GameData;
-import service.model.JoinGameRequest;
+import model.JoinGameRequest;
 
 import java.util.Set;
 
