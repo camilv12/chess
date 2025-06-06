@@ -7,42 +7,66 @@
 - [X] Phase 2: Chess Design
 - [X] Phase 3: Chess Web-API
 - [X] Phase 4: Chess Database
-- [ ] Phase 5: Chess Pregame
-  - [X] Set up project and ServerFacade class
-    - [X] Add `ServerFacade` constructor
-    - [X] Make sure tests start/stop server and pass port to facade
-    - [X] Set up `ServerFacadeTest` skeleton
-    - [X] Implement `ServerFacade` class
-  - [X] Set up unit tests
-    - [X] Each public method in `ServerFacade` has one positive and one negative test
-    - [X] Each test has an assert statement
-  - [X] Implement Login Client
-    - [X] `help` - Displays text informing what the user can do
-    - [X] `login` - Prompts login info, calls server login API, transitions client to post-login UI
-    - [X] `register` - Prompts user to put in registration info, calls server register API and logs in user
-  - [X] Write the Post-Login UI commands
-    - [X] `help` - Displays text informing what the user can do
-    - [X] `logout` - Logs out the user, calls logout API
-    - [X] `create game` - Allows user to input a name for a game, calls create game API
-    - [X] `list games` - Lists available games, calls list games API
-    - [X] `play game` - Allows the user to join a game, calls join game API
-    - [X] `observe game` - Allows the user to specify a game to observe
-  - [X] Implement Gameplay UI skeleton (Functionality added in Phase 6) 
-    - [X] Draw initial chess board in terminal
-      - [X] Render chessboard with chess pieces, must be alternating colors and show coordinates
-      - [X] Support white and black perspectives
-      - [X] Make sure `h1` and `a8` are the light squares
-  - [ ] Implement REPL class
-    - [ ] Cycle between `LoginClient`, `LobbyClient`, and `GameClient`
-    - [ ] `quit` - Exits UI neatly
-  - [ ] Handle errors and messages
-    - [ ] Map HTTP errors to simple messages
-    - [ ] Follow UI requirements: Avoid raw JSON, AuthTokens, Status Codes, etc.
-    - [ ] Catch errors and handle bad input without crashing
-  - [ ] Final Checks:
-    - [ ] Local unit tests pass and make sense
-    - [ ] Program supports functionality
-    - [ ] Check for Code Quality
+- [X] Phase 5: Chess Pregame
 - [ ] Phase 6: Chess Gameplay
+  -[ ] Implement `WebSocketFacade`
+    - [ ] Add unit tests for WebSocket interactions
+    - [ ] Set up WebSocket client infrastructure
+    - [ ] Create `WebSocketFacade` class skeleton
+    - [ ] Add WebSocket dependency to build file
+    - [ ] Establish basic connection to server endpoint
+  - [ ] WebSocket Foundation
+    - [ ] Implement message serialization/deserialization
+      - [ ] Extend `UserGameCommand` for all required commands
+      - [ ] Extend `ServerMessage` for all response types
+    - [ ] Add basic error handling for WebSocket connection
+  - [ ] Game Connection Flow
+    - [ ] Implement `connect` command
+      - [ ] Player connection with color assignment
+      - [ ] Observer connection
+    - [ ] Handle initial `loadGame` response
+    - [ ] Send connection notifications to other clients
+  - [ ] Move Implementation
+    - [ ] Implement `makeMove` command
+      - [ ] Validate moves locally before sending
+      - [ ] Handle move notation for notifications
+    - [ ] Process `loadGame` updates after moves
+    - [ ] Implement check/checkmate notifications
+  - [ ] Leave/Resign Functionality
+      - [ ] Implement `leave` command
+        - [ ] For both players and observers
+        - [ ] Proper cleanup of WebSocket connection
+      - [ ] Implement `resign` command
+        - [ ] Confirmation prompt
+        - [ ] Game state termination
+  - [ ] UI Commands
+    - [ ] Implement `help` command with gameplay options
+    - [ ] Implement `redraw` command
+    - [ ] Add command parsing to GameClient
+  - [ ] Highlight Legal Moves
+    - [ ] Implement move highlighting
+      - [ ] Calculate legal moves for selected piece
+      - [ ] Visual distinction for legal squares
+      - [ ] Support for all piece types
+    - [ ] Add to help menu
+  - [ ] Notification System
+    - [ ] Display connection/disconnection notices
+    - [ ] Show move notifications with proper formatting
+    - [ ] Handle resignation/check/checkmate alerts
+    - [ ] Implement clean message formatting
+  - [ ] Error Handling
+    - [ ] Process WebSocket error messages
+    - [ ] Handle invalid move attempts
+    - [ ] Manage connection issues
+    - [ ] Prevent actions after game end
+  - [ ] Final Testing & Polish
+    - [ ] Verify all notification scenarios
+    - [ ] Test edge cases (multiple observers, etc.)
+    - [ ] Improve board redrawing performance
+  - [ ] Final Checks (Commit 11)
+    - [ ] Run all WebSocket tests
+    - [ ] Verify code quality standards
+    - [ ] Update documentation
+    - [ ] Final manual testing of all features
 
 ## Class Notes
