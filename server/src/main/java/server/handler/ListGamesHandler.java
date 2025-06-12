@@ -1,5 +1,6 @@
 package server.handler;
 
+import exception.UnauthorizedException;
 import service.*;
 import model.AuthRequest;
 import model.ListGamesResult;

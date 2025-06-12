@@ -1,9 +1,9 @@
 package server.handler;
 
 import service.AuthService;
-import service.BadRequestException;
+import exception.BadRequestException;
 import service.GameService;
-import service.UnauthorizedException;
+import exception.UnauthorizedException;
 import model.AuthRequest;
 import model.CreateGameRequest;
 import model.CreateGameResult;

@@ -1,9 +1,9 @@
 package server.handler;
 
-import service.AlreadyTakenException;
-import service.BadRequestException;
+import exception.AlreadyTakenException;
+import exception.BadRequestException;
 import service.JoinGameService;
-import service.UnauthorizedException;
+import exception.UnauthorizedException;
 import model.JoinGameRequest;
 import spark.Request;
 import spark.Response;

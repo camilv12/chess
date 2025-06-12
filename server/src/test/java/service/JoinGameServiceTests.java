@@ -4,6 +4,8 @@ import dataaccess.DataAccessException;
 import dataaccess.SqlAuthDao;
 import dataaccess.SqlGameDao;
 import dataaccess.SqlUserDao;
+import exception.AlreadyTakenException;
+import exception.BadRequestException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;

@@ -1,4 +1,4 @@
-package service;
+package exception;
 
 /**
  *  Indicates a requested value is already found

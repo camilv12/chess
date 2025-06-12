@@ -1,6 +1,9 @@
 package service;
 
 import dataaccess.*;
+import exception.AlreadyTakenException;
+import exception.BadRequestException;
+import exception.UnauthorizedException;
 import model.GameData;
 import model.JoinGameRequest;
 
@@ -25,7 +28,7 @@ public class JoinGameService {
         }
     }
 
-    private void validateRequest(JoinGameRequest request) throws BadRequestException{
+    private void validateRequest(JoinGameRequest request) throws BadRequestException {
         boolean badToken = ServiceUtils.isBlank(request.authToken());
         boolean badId = request.gameID() == null || request.gameID() < 0;
         boolean badColor = request.playerColor() == null || !VALID_COLORS.contains(request.playerColor());

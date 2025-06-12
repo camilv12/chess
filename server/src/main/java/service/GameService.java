@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.DataAccessException;
 import dataaccess.SqlGameDao;
+import exception.BadRequestException;
 import model.GameData;
 import model.CreateGameRequest;
 import model.CreateGameResult;

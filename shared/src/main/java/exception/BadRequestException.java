@@ -1,4 +1,4 @@
-package service;
+package exception;
 
 /**
  *  Indicates an error with processing the request

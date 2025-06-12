@@ -3,6 +3,9 @@ import dataaccess.DataAccessException;
 import dataaccess.NotFoundException;
 import dataaccess.SqlAuthDao;
 import dataaccess.SqlUserDao;
+import exception.AlreadyTakenException;
+import exception.BadRequestException;
+import exception.UnauthorizedException;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
 

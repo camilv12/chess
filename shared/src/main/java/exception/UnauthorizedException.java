@@ -1,4 +1,4 @@
-package service;
+package exception;
 
 /**
  *  Indicates an authToken was not found
