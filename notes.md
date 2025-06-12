@@ -10,7 +10,6 @@
 - [X] Phase 5: Chess Pregame
 - [ ] Phase 6: Chess Gameplay
   -[ ] Implement `WebSocketFacade`
-    - [ ] Add unit tests for WebSocket interactions
     - [ ] Set up WebSocket client infrastructure
     - [ ] Create `WebSocketFacade` class skeleton
     - [ ] Add WebSocket dependency to build file
