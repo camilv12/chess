@@ -80,15 +80,6 @@ public class ChessWebSocketHandler {
     }
 
     private void handleMakeMove(Session session, MakeMoveCommand makeMoveCmd) throws IOException {
-        /*
-            MakeMoveCommand
-            {
-              "commandType": "MAKE_MOVE",
-              "authToken": "tokengoeshere",
-              "gameID": "337",
-              "move": { "start": { "row": 3, "col": 3 }, "end": { "row": 5, "col": 5 } }
-            }
-         */
         try{
             // Validate command
             String token = makeMoveCmd.getAuthToken();
@@ -102,6 +93,7 @@ public class ChessWebSocketHandler {
             gameService.updateGame(id, game);
 
             // Send updates to all clients
+            session.getRemote().sendString(JsonUtils.toJson(new LoadGameMessage(game)));
             broadcastToGame(id, JsonUtils.toJson(new LoadGameMessage(game)));
             String moveNotation = getMoveNotation(makeMoveCmd.getMove(), game);
             String notification = username + " moved " + moveNotation;
@@ -122,14 +114,6 @@ public class ChessWebSocketHandler {
         } catch (Exception e) {
             session.getRemote().sendString(JsonUtils.errorResponse(e.getMessage()));
         }
-
-
-
-
-        // Process loadGame
-        ChessGame game = JsonUtils.fromJson(gameService.getGame(makeMoveCmd.getGameID()), ChessGame.class);
-        session.getRemote().sendString(JsonUtils.toJson(
-                new LoadGameMessage(game)));
     }
 
     private String getMoveNotation(ChessMove move, ChessGame game) {

@@ -25,12 +25,12 @@
       - [X] Observer connection
     - [X] Handle initial `loadGame` response
     - [X] Send connection notifications to other clients
-  - [ ] Move Implementation
-    - [ ] Implement `makeMove` command
-      - [ ] Validate moves locally before sending
-      - [ ] Handle move notation for notifications
-    - [ ] Process `loadGame` updates after moves
-    - [ ] Implement check/checkmate notifications
+  - [X] Move Implementation
+    - [X] Implement `makeMove` command
+      - [X] Validate moves locally before sending
+      - [X] Handle move notation for notifications
+    - [X] Process `loadGame` updates after moves
+    - [X] Implement check/checkmate notifications
   - [ ] Leave/Resign Functionality
       - [ ] Implement `leave` command
         - [ ] For both players and observers
