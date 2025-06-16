@@ -9,7 +9,7 @@ import model.JoinGameRequest;
 
 import java.util.Set;
 
-public class JoinGameService {
+public class GameSessionService {
     private final SqlAuthDao auth = new SqlAuthDao();
     private final SqlGameDao games = new SqlGameDao();
     private static final Set<String> VALID_COLORS = Set.of("WHITE", "BLACK","OBSERVE");
@@ -28,6 +28,35 @@ public class JoinGameService {
         }
     }
 
+    public void leaveGame(String authToken, int id) throws DataAccessException {
+        // Validate request
+        authorize(auth, authToken);
+
+        // Get requested game
+        GameData game = games.getGame(id);
+
+        // Remove user
+        String username = auth.getAuth(authToken).username();
+        removePlayerFromGame(username, game);
+    }
+
+    public void resignGame(String username, int gameID) throws DataAccessException {
+        GameData game = games.getGame(gameID);
+
+        // Only allow active players to resign
+        if (!username.equals(game.whiteUsername()) && !username.equals(game.blackUsername())) {
+            throw new IllegalArgumentException("Only players can resign");
+        }
+
+        GameData updated = new GameData(gameID,
+                null,
+                null,
+                game.gameName(),
+                game.game(),
+                true);
+        games.updateGame(updated);
+    }
+
     private void validateRequest(JoinGameRequest request) throws BadRequestException {
         boolean badToken = ServiceUtils.isBlank(request.authToken());
         boolean badId = request.gameID() == null || request.gameID() < 0;
@@ -36,6 +65,13 @@ public class JoinGameService {
         if(badToken || badColor || badId){
             throw new BadRequestException("Invalid Request");
         }
+    }
+
+    private void removePlayerFromGame(String username, GameData game) throws DataAccessException {
+        String newWhite = username.equals(game.whiteUsername()) ? game.whiteUsername() : null;
+        String newBlack = username.equals(game.blackUsername()) ? game.blackUsername() : null;
+        games.updateGame(new GameData(game.gameID(), newWhite, newBlack, game.gameName(), game.game(), false));
+
     }
 
     private void handlePlayerJoin(JoinGameRequest request, GameData game) throws DataAccessException {
@@ -58,7 +94,7 @@ public class JoinGameService {
         if(color.equals("WHITE")) { newWhite = username; }
         else { newBlack = username; }
 
-        return new GameData(game.gameID(), newWhite, newBlack, game.gameName(), game.game());
+        return new GameData(game.gameID(), newWhite, newBlack, game.gameName(), game.game(), false);
     }
 
     private void authorize(AuthDao authDao, String authToken) throws DataAccessException{

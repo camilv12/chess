@@ -34,7 +34,7 @@ public class ClearServiceTests {
                 "testUser",
                 null,
                 "Test Game",
-                ServiceTestUtils.NEW_CHESS_GAME));
+                ServiceTestUtils.NEW_CHESS_GAME, false));
 
         // Execute method
         clearService.clear();

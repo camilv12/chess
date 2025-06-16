@@ -49,12 +49,12 @@ class GameServiceTests {
                 null,
                 null,
                 "gameName1",
-                ServiceTestUtils.NEW_CHESS_GAME);
+                ServiceTestUtils.NEW_CHESS_GAME, false);
         GameData game2 = new GameData(0,
                 null,
                 null,
                 "gameName2",
-                ServiceTestUtils.NEW_CHESS_GAME);
+                ServiceTestUtils.NEW_CHESS_GAME, false);
         games.createGame(game1);
         games.createGame(game2);
         ListGamesResult result = gameService.listGames();

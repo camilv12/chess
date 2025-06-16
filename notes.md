@@ -64,7 +64,8 @@
     - [ ] Improve board redrawing performance
   - [ ] Final Checks (Commit 11)
     - [ ] Run all WebSocket tests
-    - [ ] Verify code quality standards
+    - [ ] Ve
+    - rify code quality standards
     - [ ] Update documentation
     - [ ] Final manual testing of all features
 

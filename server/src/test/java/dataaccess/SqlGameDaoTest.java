@@ -24,7 +24,7 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "testGame",
-                SqlDaoTestUtility.NEW_CHESS_GAME);
+                SqlDaoTestUtility.NEW_CHESS_GAME, false);
 
         // Execute
         int id = games.createGame(testGame);
@@ -42,7 +42,7 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "testGame",
-                SqlDaoTestUtility.NEW_CHESS_GAME);
+                SqlDaoTestUtility.NEW_CHESS_GAME, false);
         int gameID = games.createGame(game);
 
         // Execute
@@ -61,24 +61,24 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "Game1",
-                SqlDaoTestUtility.NEW_CHESS_GAME
-        ));
+                SqlDaoTestUtility.NEW_CHESS_GAME,
+                false));
         SqlDaoTestUtility.addUser("whitePlayer");
         games.createGame(new GameData(
                 0,
                 "whitePlayer",
                 null,
                 "Game2",
-                SqlDaoTestUtility.NEW_CHESS_GAME
-        ));
+                SqlDaoTestUtility.NEW_CHESS_GAME,
+                false));
         SqlDaoTestUtility.addUser("blackPlayer");
         games.createGame(new GameData(
                 0,
                 null,
                 "blackPlayer",
                 "Game3",
-                SqlDaoTestUtility.NEW_CHESS_GAME
-        ));
+                SqlDaoTestUtility.NEW_CHESS_GAME,
+                false));
 
         // Execute
         Collection<GameData> gamesList = games.listGames();
@@ -95,8 +95,8 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "test",
-                SqlDaoTestUtility.NEW_CHESS_GAME
-        );
+                SqlDaoTestUtility.NEW_CHESS_GAME,
+                false);
         int id = games.createGame(originalGame);
         SqlDaoTestUtility.addUser("whitePlayer");
         SqlDaoTestUtility.addUser("blackPlayer");
@@ -105,8 +105,8 @@ class SqlGameDaoTest {
                 "whitePlayer",
                 "blackPlayer",
                 "test",
-                SqlDaoTestUtility.NEW_CHESS_GAME
-        );
+                SqlDaoTestUtility.NEW_CHESS_GAME,
+                false);
 
         // Execute
         games.updateGame(updatedGame);
@@ -124,8 +124,8 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "ClearGame",
-                SqlDaoTestUtility.NEW_CHESS_GAME
-        ));
+                SqlDaoTestUtility.NEW_CHESS_GAME,
+                false));
 
         // Execute
         games.clear();
@@ -145,8 +145,8 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "DuplicateGame",
-                null
-        );
+                null,
+                false);
         // Assert + Execute
         assertThrows(DataAccessException.class, () -> games.createGame(game));
     }
@@ -175,8 +175,8 @@ class SqlGameDaoTest {
                 null,
                 null,
                 "FakeGame",
-                ""
-        );
+                "",
+                false);
         games.updateGame(fakeGame);
         // Assert + Execute
         assertThrows(NotFoundException.class, () -> games.getGame(9999));

@@ -4,9 +4,7 @@ import client.websocket.HttpCommunicator;
 import client.websocket.WebSocketCommunicator;
 import exception.CommunicationException;
 import model.*;
-import websocket.commands.JoinCommand;
-import websocket.commands.MakeMoveCommand;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.ServerMessageObserver;
 
 /**
@@ -108,11 +106,17 @@ public class ServerFacade {
     }
 
     public void resign(String authToken, int gameID){
-        websocket.send(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID));
+        if(websocket.isConnected()){
+            websocket.send(new ResignCommand(authToken, gameID));
+            websocket.disconnect();
+        }
     }
 
     public void leave(String authToken, int gameID){
-        websocket.send(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID));
+        if(websocket.isConnected()){
+            websocket.send(new LeaveCommand(authToken, gameID));
+            websocket.disconnect();
+        }
     }
 
     public void disconnectWebSocket(){

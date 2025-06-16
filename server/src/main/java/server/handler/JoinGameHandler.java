@@ -2,17 +2,17 @@ package server.handler;
 
 import exception.AlreadyTakenException;
 import exception.BadRequestException;
-import service.JoinGameService;
+import service.GameSessionService;
 import exception.UnauthorizedException;
 import model.JoinGameRequest;
 import spark.Request;
 import spark.Response;
 
 public class JoinGameHandler {
-    private final JoinGameService joinGameService;
+    private final GameSessionService gameSessionService;
 
-    public JoinGameHandler(JoinGameService joinGameService){
-        this.joinGameService = joinGameService;
+    public JoinGameHandler(GameSessionService gameSessionService){
+        this.gameSessionService = gameSessionService;
     }
 
     public Object handle(Request req, Response res){
@@ -20,7 +20,7 @@ public class JoinGameHandler {
             String authToken = req.headers("authorization");
             JoinGameRequest joinBody = JsonUtils.fromJson(req, JoinGameRequest.class);
             JoinGameRequest request = new JoinGameRequest(authToken, joinBody.playerColor(), joinBody.gameID());
-            joinGameService.joinGame(request);
+            gameSessionService.joinGame(request);
             res.status(200);
             res.type("application/json");
             return JsonUtils.toJson(new Object());

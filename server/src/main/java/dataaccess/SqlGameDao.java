@@ -77,7 +77,7 @@ public class SqlGameDao implements GameDao {
                     var white = rs.getString("white_username");
                     var black = rs.getString("black_username");
                     var state = rs.getString("game_state");
-                    return new GameData(id, white, black, name, state);
+                    return new GameData(id, white, black, name, state, false);
                 } else {
                     throw new NotFoundException("Game ID not found");
                 }
@@ -109,7 +109,7 @@ public class SqlGameDao implements GameDao {
                     var white = rs.getString("white_username");
                     var black = rs.getString("black_username");
                     var state = rs.getString("game_state");
-                    list.add(new GameData(id, white, black, name, state));
+                    list.add(new GameData(id, white, black, name, state, false));
                 }
                 return list;
             }

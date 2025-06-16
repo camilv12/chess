@@ -16,7 +16,7 @@ public class Server {
         AuthService authService = new AuthService();
         ClearService clearService = new ClearService();
         GameService gameService = new GameService();
-        JoinGameService joinGameService = new JoinGameService();
+        GameSessionService gameSessionService = new GameSessionService();
 
         // Handlers
         ClearHandler clearHandler = new ClearHandler(clearService);
@@ -25,7 +25,7 @@ public class Server {
         LogoutHandler logoutHandler = new LogoutHandler(authService);
         CreateGameHandler createGameHandler = new CreateGameHandler(authService, gameService);
         ListGamesHandler listGamesHandler = new ListGamesHandler(authService, gameService);
-        JoinGameHandler joinGameHandler = new JoinGameHandler(joinGameService);
+        JoinGameHandler joinGameHandler = new JoinGameHandler(gameSessionService);
 
         // Endpoints
         Spark.webSocket("/ws", ChessWebSocketHandler.class);

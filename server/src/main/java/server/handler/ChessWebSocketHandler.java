@@ -7,7 +7,7 @@ import org.eclipse.jetty.websocket.api.*;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import service.AuthService;
 import service.GameService;
-import service.JoinGameService;
+import service.GameSessionService;
 import websocket.commands.*;
 import websocket.messages.*;
 
@@ -20,12 +20,12 @@ public class ChessWebSocketHandler {
     private static final Map<Session, Integer> sessions = new ConcurrentHashMap<>();
     private final AuthService authService;
     private final GameService gameService;
-    private final JoinGameService joinGameService;
+    private final GameSessionService gameSessionService;
 
-    public ChessWebSocketHandler(AuthService authService, GameService gameService, JoinGameService joinGameService) {
+    public ChessWebSocketHandler(AuthService authService, GameService gameService, GameSessionService gameSessionService) {
         this.authService = authService;
         this.gameService = gameService;
-        this.joinGameService = joinGameService;
+        this.gameSessionService = gameSessionService;
     }
 
     @OnWebSocketConnect
@@ -48,6 +48,12 @@ public class ChessWebSocketHandler {
             else if(command instanceof MakeMoveCommand makeMoveCommand){
                 handleMakeMove(session, makeMoveCommand);
             }
+            else if(command instanceof LeaveCommand leaveCommand){
+                handleLeave(session, leaveCommand);
+            }
+            else if(command instanceof ResignCommand resignCommand){
+                handleResign(session, resignCommand);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,7 +63,7 @@ public class ChessWebSocketHandler {
         try{
             int id = joinCmd.getGameID();
             sessions.put(session, id);
-            joinGameService.joinGame(new JoinGameRequest(
+            gameSessionService.joinGame(new JoinGameRequest(
                     joinCmd.getAuthToken(),
                     joinCmd.getPlayerColor(),
                     joinCmd.getGameID()
@@ -103,11 +109,13 @@ public class ChessWebSocketHandler {
             if (game.isInCheckmate(game.getTeamTurn())) {
                 String checkmateMsg = "Checkmate! " + username + " wins!";
                 broadcastToGame(id, JsonUtils.toJson(new NotificationMessage(checkmateMsg)));
+                gameService.endGame(id);
             } else if (game.isInCheck(game.getTeamTurn())) {
                 String checkMsg = username + " is in check";
                 broadcastToGame(id, JsonUtils.toJson(new NotificationMessage(checkMsg)));
             } else if (game.isInStalemate(game.getTeamTurn())){
                 broadcastToGame(id, JsonUtils.toJson(new NotificationMessage("Stalemate")));
+                gameService.endGame(id);
             }
 
 
@@ -134,6 +142,48 @@ public class ChessWebSocketHandler {
 
     private String positionToNotation(ChessPosition position) {
         return (char)('a' + position.getColumn() - 1) + "" + position.getRow();
+    }
+
+    private void handleLeave(Session session, LeaveCommand leaveCmd) throws IOException {
+        try{
+            // Validate
+            authService.authenticate(new AuthRequest(leaveCmd.getAuthToken()));
+            String username = authService.getUsername(leaveCmd.getAuthToken());
+            int id = leaveCmd.getGameID();
+            // Execute
+            gameSessionService.leaveGame(leaveCmd.getAuthToken(), leaveCmd.getGameID());
+
+            // Notify
+            String notification = username + " left the game";
+            broadcastToGame(id, JsonUtils.toJson(
+                            new NotificationMessage(notification)));
+            session.close();
+        }catch(Exception e){
+            session.getRemote().sendString(JsonUtils.errorResponse(e.getMessage()));
+        }
+    }
+
+    private void handleResign(Session session, ResignCommand resignCmd) throws IOException {
+        try {
+            // Validate
+            authService.authenticate(new AuthRequest(resignCmd.getAuthToken()));
+            String username = authService.getUsername(resignCmd.getAuthToken());
+            int gameID = resignCmd.getGameID();
+
+            // Execute
+            gameSessionService.resignGame(username, gameID);
+
+            // Notify
+            String notification = username + " resigned. Game over.";
+            broadcastToGame(gameID, JsonUtils.toJson(
+                    new NotificationMessage(notification)));
+
+            // Optional
+            session.close();
+
+        } catch (Exception e) {
+            session.getRemote().sendString(JsonUtils.errorResponse(e.getMessage()));
+        }
     }
 
     private void broadcastToGame(int gameID, String json) {

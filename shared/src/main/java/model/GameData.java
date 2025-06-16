@@ -1,8 +1,9 @@
 package model;
 
-public record GameData(int gameID,
+public record GameData(
+                       int gameID,
                        String whiteUsername,
                        String blackUsername,
                        String gameName,
-                       String game
-) {}
+                       String game,
+                       boolean gameOver) {}

@@ -22,15 +22,15 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class JoinGameServiceTests {
+class GameSessionServiceTests {
     private final SqlUserDao users = new SqlUserDao();
     private final SqlAuthDao auth = new SqlAuthDao();
     private final SqlGameDao games = new SqlGameDao();
-    private JoinGameService joinGameService;
+    private GameSessionService gameSessionService;
 
     @BeforeEach
     void setUp() throws DataAccessException {
-        joinGameService = new JoinGameService();
+        gameSessionService = new GameSessionService();
         users.clear();
         auth.clear();
         games.clear();
@@ -50,8 +50,8 @@ class JoinGameServiceTests {
                 "whiteUser",
                 null,
                 "test",
-                ServiceTestUtils.NEW_CHESS_GAME));
-        joinGameService.joinGame(new JoinGameRequest(
+                ServiceTestUtils.NEW_CHESS_GAME, false));
+        gameSessionService.joinGame(new JoinGameRequest(
                 "testToken",
                 "BLACK",
                 id));
@@ -75,8 +75,8 @@ class JoinGameServiceTests {
                 "whiteUser",
                 null,
                 "test",
-                ServiceTestUtils.NEW_CHESS_GAME));
-        assertDoesNotThrow(() -> joinGameService.joinGame(new JoinGameRequest(
+                ServiceTestUtils.NEW_CHESS_GAME, false));
+        assertDoesNotThrow(() -> gameSessionService.joinGame(new JoinGameRequest(
                 "testToken",
                 "OBSERVE",
                 id)));
@@ -94,7 +94,7 @@ class JoinGameServiceTests {
     ) throws DataAccessException {
         // Verify exception
         assertThrows(BadRequestException.class, () ->
-                joinGameService.joinGame(new JoinGameRequest(authToken, playerColor, gameID)),
+                gameSessionService.joinGame(new JoinGameRequest(authToken, playerColor, gameID)),
                 "Failed validation for: " + description);
 
         // Verify data was not updated
@@ -128,16 +128,16 @@ class JoinGameServiceTests {
                 "whiteUser",
                 "blackUser",
                 "testGame",
-                ServiceTestUtils.NEW_CHESS_GAME));
+                ServiceTestUtils.NEW_CHESS_GAME, false));
         // Verify results
         assertThrows(AlreadyTakenException.class, () ->
-                joinGameService.joinGame(new JoinGameRequest(
+                gameSessionService.joinGame(new JoinGameRequest(
                         "testToken",
                         "WHITE",
                         id
                 )));
         assertThrows(AlreadyTakenException.class, () ->
-                joinGameService.joinGame(new JoinGameRequest(
+                gameSessionService.joinGame(new JoinGameRequest(
                         "testToken",
                         "BLACK",
                         id
