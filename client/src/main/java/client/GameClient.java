@@ -1,13 +1,24 @@
 package client;
 
 
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import ui.ChessBoardRenderer;
 import ui.Session;
+import websocket.messages.ServerMessageObserver;
+
+import java.util.Arrays;
+
 
 public class GameClient implements Client {
     private final Session session;
+    private final ServerFacade server;
 
-    public GameClient(Session session){
+    public GameClient(int port, Session session){
+        ServerMessageObserver observer = serverMessage -> {
+        };
+        server = new ServerFacade(port, observer);
         this.session = session;
     }
 
@@ -21,9 +32,22 @@ public class GameClient implements Client {
         try{
             var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             switch(cmd){
                 case "redraw" -> {
-                    return draw();
+                    return redraw();
+                }
+                case "move" -> {
+                    try{
+                        makeMove(params);
+                        return ClientState.GAME;
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                        return ClientState.GAME;
+                    }
+                }
+                case "resign" -> {
+                    return resign();
                 }
                 case "leave" -> {
                     return leave();
@@ -44,23 +68,94 @@ public class GameClient implements Client {
     @Override
     public void help(){
         System.out.print( """
-               Game Menu:
-               help - display menu
-               redraw - redraw board
-               leave - leave game
-               quit - exit program
+                Game Menu:
+                help - display menu
+                redraw - redraw board
+                move <from> <to> [promotion] - make a move (e.g. move e2 e4)
+                resign - resign from current game
+                leave - leave current game
+                quit - exit program
+
+                Movement notation:
+                - Positions use algebraic notation (e.g. e2, a1, h8)
+                - Optional promotion piece (Q/R/B/N) for pawn promotions
                """);
     }
 
     public ClientState leave(){
-        return ClientState.LOBBY; // No real functionality yet
+        server.leave(session.getAuthToken(), session.getGameID());
+        System.out.println("Left the game");
+        return ClientState.LOBBY;
     }
 
-    public ClientState draw(){
+    public ClientState resign(){
+        server.resign(session.getAuthToken(), session.getGameID());
+        System.out.println("You have resigned the game");
+        return ClientState.LOBBY;
+    }
+
+    public ClientState redraw(){
         boolean isWhitePerspective = (session.getColor() == null) || (session.getColor().equals("WHITE"));
         ChessBoardRenderer.render(session.getGame(), isWhitePerspective);
         return ClientState.GAME;
     }
+
+    private void makeMove(String... params) {
+        if(params.length < 2){
+            throw new IllegalArgumentException("Error: Please enter two positions and a promotion (if applicable)");
+        }
+        String fromPos = params[0];
+        String toPos = params[1];
+        String promotion = params.length >= 3 ? params[2] : null;
+        try {
+            ChessPosition from = parsePosition(fromPos);
+            ChessPosition to = parsePosition(toPos);
+            ChessMove move = new ChessMove(from, to,
+                    promotion != null ? parsePromotion(promotion) : null);
+
+            server.makeMove(
+                    session.getAuthToken(),
+                    session.getGameID(),
+                    move
+            );
+            System.out.println("Making move...");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid move: " + e.getMessage());
+        }
+    }
+
+    private ChessPosition parsePosition(String pos) {
+        if (pos.length() != 2) {
+            throw new IllegalArgumentException("Position must be 2 characters (e.g. e4)");
+        }
+        char file = pos.charAt(0);
+        char rank = pos.charAt(1);
+
+        if (file < 'a' || file > 'h') {
+            throw new IllegalArgumentException("File must be between a-h");
+        }
+        if (rank < '1' || rank > '8') {
+            throw new IllegalArgumentException("Rank must be between 1-8");
+        }
+
+        return new ChessPosition(
+                Character.getNumericValue(rank),
+                file - 'a' + 1
+        );
+    }
+
+    private ChessPiece.PieceType parsePromotion(String promo) {
+        return switch (promo.toUpperCase()) {
+            case "Q" -> ChessPiece.PieceType.QUEEN;
+            case "R" -> ChessPiece.PieceType.ROOK;
+            case "B" -> ChessPiece.PieceType.BISHOP;
+            case "N" -> ChessPiece.PieceType.KNIGHT;
+            default -> throw new IllegalArgumentException(
+                    "Promotion must be Q (queen), R (rook), B (bishop), or N (knight)");
+        };
+    }
+
+
 
 
 }

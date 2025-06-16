@@ -31,17 +31,16 @@
       - [X] Handle move notation for notifications
     - [X] Process `loadGame` updates after moves
     - [X] Implement check/checkmate notifications
-  - [ ] Leave/Resign Functionality
-      - [ ] Implement `leave` command
-        - [ ] For both players and observers
-        - [ ] Proper cleanup of WebSocket connection
-      - [ ] Implement `resign` command
-        - [ ] Confirmation prompt
-        - [ ] Game state termination
-  - [ ] UI Commands
-    - [ ] Implement `help` command with gameplay options
-    - [ ] Implement `redraw` command
-    - [ ] Add command parsing to GameClient
+  - [X] Leave/Resign Functionality
+      - [X] Implement `leave` command
+        - [X] For both players and observers
+        - [X] Proper cleanup of WebSocket connection
+      - [X] Implement `resign` command
+        - [X] Game state termination
+  - [X] UI Commands
+    - [X] Implement `help` command with gameplay options
+    - [X] Implement `redraw` command
+    - [X] Add command parsing to GameClient
   - [ ] Highlight Legal Moves
     - [ ] Implement move highlighting
       - [ ] Calculate legal moves for selected piece
@@ -64,8 +63,7 @@
     - [ ] Improve board redrawing performance
   - [ ] Final Checks (Commit 11)
     - [ ] Run all WebSocket tests
-    - [ ] Ve
-    - rify code quality standards
+    - [ ] Verify code quality standards
     - [ ] Update documentation
     - [ ] Final manual testing of all features
 

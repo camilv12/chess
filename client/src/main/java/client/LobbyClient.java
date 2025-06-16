@@ -1,7 +1,6 @@
 package client;
 import chess.ChessGame;
 import ui.Session;
-import websocket.messages.ServerMessage;
 import websocket.messages.ServerMessageObserver;
 
 import java.util.Arrays;
@@ -11,10 +10,7 @@ public class LobbyClient implements Client {
     private final Session session;
 
     public LobbyClient(int port, Session session){
-        ServerMessageObserver observer = new ServerMessageObserver() {
-            @Override
-            public void notify(ServerMessage serverMessage) {
-            }
+        ServerMessageObserver observer = serverMessage -> {
         };
         server = new ServerFacade(port, observer);
         this.session = session;
@@ -96,7 +92,8 @@ public class LobbyClient implements Client {
         try{
             position = Integer.parseInt(params[0]);
             updateGamesList();
-            id = session.getGameId(position);
+            id = session.getGameIdFromPosition(position);
+            session.setGameID(id);
         } catch (Exception e){
             throw new Exception("Error in joining the game. Check availability by typing 'list'.");
         }
@@ -164,7 +161,8 @@ public class LobbyClient implements Client {
         try{
             position = Integer.parseInt(params[0]);
             updateGamesList();
-            id = session.getGameId(position);
+            id = session.getGameIdFromPosition(position);
+            session.setGameID(id);
         } catch (Exception e){
             throw new Exception("""
                     Error: Failed to join game.

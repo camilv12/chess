@@ -19,7 +19,7 @@ public class Repl {
         final Session session = new Session();
         this.loginClient = new LoginClient(port, session);
         this.lobbyClient = new LobbyClient(port, session);
-        this.gameClient = new GameClient(session);
+        this.gameClient = new GameClient(port, session);
         client = loginClient;
     }
 
@@ -51,7 +51,7 @@ public class Repl {
 
     private void setState(ClientState state){
         if(state == ClientState.GAME && currentState != ClientState.GAME){
-            gameClient.draw();
+            gameClient.redraw();
         }
 
         this.currentState = state;

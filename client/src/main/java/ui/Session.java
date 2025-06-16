@@ -10,6 +10,7 @@ public class Session {
     private String username;
     private String authToken;
     private ChessGame game;
+    private int gameID;
     private String color;
     private Collection<GameData> gamesList;
     private final ConcurrentHashMap<Integer, GameData> gamesMap = new ConcurrentHashMap<>();
@@ -50,7 +51,15 @@ public class Session {
         this.gamesList = gamesList;
     }
 
-    public Integer getGameId(int position){
+    public int getGameID(){
+        return gameID;
+    }
+
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
+    }
+
+    public Integer getGameIdFromPosition(int position){
         updateMap();
         return gamesMap.get(position).gameID();
     }
