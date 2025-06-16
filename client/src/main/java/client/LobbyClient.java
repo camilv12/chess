@@ -69,6 +69,7 @@ public class LobbyClient implements Client {
                join <ID> [WHITE|BLACK] - join an existing game
                list - lists all games
                logout - log out of this session
+               observe <ID> - observe game
                quit - exit program
                """);
     }
@@ -179,7 +180,7 @@ public class LobbyClient implements Client {
         }catch(Exception e){
             throw new Exception("""
                     Error: Failed to join game.
-                    Please check if the game number exists (use 'list' to see available games).
+                    Please try again later.
                     """);
         }
     }

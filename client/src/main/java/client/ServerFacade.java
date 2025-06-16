@@ -88,8 +88,19 @@ public class ServerFacade {
         }
     }
 
-    public void observeGame(String token, int id){
-        websocket.send(new UserGameCommand(UserGameCommand.CommandType.CONNECT, token, id));
+    public void observeGame(String token, int id) {
+        if (!websocket.isConnected()) {
+            try {
+                websocket.connect();
+                websocket.send(new JoinCommand(token, id, "OBSERVE"));
+            } catch (CommunicationException e) {
+                if (e.shouldReconnect()) {
+                    websocket.reconnect();
+                } else {
+                    throw e;
+                }
+            }
+        }
     }
 
     public void makeMove(String authToken, int gameID, ChessMove move){

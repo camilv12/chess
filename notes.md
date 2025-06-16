@@ -20,11 +20,11 @@
       - [X] Extend `ServerMessage` for all response types
     - [X] Add basic error handling for WebSocket connection
   - [ ] Game Connection Flow
-    - [ ] Implement `connect` command
-      - [ ] Player connection with color assignment
-      - [ ] Observer connection
-    - [ ] Handle initial `loadGame` response
-    - [ ] Send connection notifications to other clients
+    - [X] Implement `connect` command
+      - [X] Player connection with color assignment
+      - [X] Observer connection
+    - [X] Handle initial `loadGame` response
+    - [X] Send connection notifications to other clients
   - [ ] Move Implementation
     - [ ] Implement `makeMove` command
       - [ ] Validate moves locally before sending

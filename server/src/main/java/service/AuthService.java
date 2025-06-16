@@ -69,6 +69,10 @@ public class AuthService {
         }
     }
 
+    public String getUsername(String authToken) throws DataAccessException{
+        return auth.getAuth(authToken).username();
+    }
+
     private boolean userExists(String username) throws DataAccessException{
         try{
             users.getUser(username);
