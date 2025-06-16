@@ -1,8 +1,13 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static ui.EscapeSequences.*;
 
@@ -13,10 +18,24 @@ public class ChessBoardRenderer {
     private static final String DARK_SQUARE = SET_BG_COLOR_DARK_BROWN;
     private static final String WHITE_PIECE_COLOR = SET_TEXT_COLOR_WHITE;
     private static final String BLACK_PIECE_COLOR = SET_TEXT_COLOR_BLACK;
+    private static final String HIGHLIGHT_COLOR = SET_BG_COLOR_MAGENTA;
     private static final String RESET_ALL = RESET_BG_COLOR + RESET_TEXT_COLOR;
 
-    public static void render(ChessGame game, boolean isWhitePerspective){
+    public static void render(ChessGame game, boolean isWhitePerspective, ChessPosition selectedPosition){
         StringBuilder display = new StringBuilder();
+        Set<ChessPosition> legalMoves = new HashSet<>();
+
+        // Calculate legal moves if a position is selected
+        if (selectedPosition != null) {
+            ChessPiece selectedPiece = game.getBoard().getPiece(selectedPosition);
+            if (selectedPiece != null && selectedPiece.getTeamColor() == game.getTeamTurn()) {
+                Collection<ChessMove> moves = game.validMoves(selectedPosition);
+                for (ChessMove move : moves) {
+                    legalMoves.add(move.getEndPosition());
+                }
+            }
+        }
+
 
         // Top Border
         drawColLabels(display, isWhitePerspective);
@@ -41,7 +60,15 @@ public class ChessBoardRenderer {
 
                 // Determine square color
                 boolean isLightSquare = (row + col) % 2 == 0;
-                String squareColor = isLightSquare ? DARK_SQUARE : LIGHT_SQUARE;
+                String squareColor;
+
+                if (position.equals(selectedPosition)) {
+                    squareColor = SET_BG_COLOR_GREEN;
+                } else if (legalMoves.contains(position)) {
+                    squareColor = HIGHLIGHT_COLOR;
+                } else {
+                    squareColor = isLightSquare ? DARK_SQUARE : LIGHT_SQUARE;
+                }
 
                 display.append(squareColor);
 

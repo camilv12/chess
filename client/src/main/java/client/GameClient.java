@@ -37,6 +37,9 @@ public class GameClient implements Client {
                 case "redraw" -> {
                     return redraw();
                 }
+                case "highlight" -> {
+                    return highlight(params);
+                }
                 case "move" -> {
                     try{
                         makeMove(params);
@@ -70,8 +73,9 @@ public class GameClient implements Client {
         System.out.print( """
                 Game Menu:
                 help - display menu
+                highlight <POSITION> - highlights legal moves for a piece
+                move <FROM> <TO> [PROMOTION] - make a move (e.g. move e2 e4)
                 redraw - redraw board
-                move <from> <to> [promotion] - make a move (e.g. move e2 e4)
                 resign - resign from current game
                 leave - leave current game
                 quit - exit program
@@ -94,9 +98,25 @@ public class GameClient implements Client {
         return ClientState.LOBBY;
     }
 
+    public ClientState highlight(String... params){
+        // Validate
+        if(params.length < 1){
+            throw new IllegalArgumentException("Error: Please enter a position");
+        }
+        var position = parsePosition(params[0]);
+        ChessPiece piece = session.getGame().getBoard().getPiece(position);
+        if (piece == null || piece.getTeamColor() != session.getGame().getTeamTurn()) {
+            System.out.println("No valid piece at this position");
+            return ClientState.GAME;
+        }
+        boolean isWhitePerspective = (session.getColor() == null) || (session.getColor().equals("WHITE"));
+        ChessBoardRenderer.render(session.getGame(), isWhitePerspective, position);
+        return ClientState.GAME;
+    }
+
     public ClientState redraw(){
         boolean isWhitePerspective = (session.getColor() == null) || (session.getColor().equals("WHITE"));
-        ChessBoardRenderer.render(session.getGame(), isWhitePerspective);
+        ChessBoardRenderer.render(session.getGame(), isWhitePerspective, null);
         return ClientState.GAME;
     }
 
