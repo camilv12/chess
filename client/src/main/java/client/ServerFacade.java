@@ -1,6 +1,9 @@
 package client;
+import client.websocket.HttpCommunicator;
+import client.websocket.WebSocketCommunicator;
 import com.google.gson.Gson;
 import model.*;
+import websocket.messages.ServerMessageObserver;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,10 +19,18 @@ import java.net.http.*;
 public class ServerFacade {
     private final String serverUrl;
     private final HttpClient httpClient;
+    private final WebSocketCommunicator websocket;
+    private final HttpCommunicator httpCommunicator;
 
-    public ServerFacade(int port){
-        this.serverUrl = "http://localhost:" + port;
-        this.httpClient = HttpClient.newHttpClient();
+    public ServerFacade(int port, ServerMessageObserver observer) {
+        try{
+            this.serverUrl = "http://localhost:" + port;
+            this.httpClient = HttpClient.newHttpClient();
+            this.httpCommunicator = new HttpCommunicator(this.serverUrl);22
+            this.websocket = new WebSocketCommunicator(this.serverUrl, observer);
+        } catch(Exception e){
+            throw new RuntimeException("Server connection failed");
+        }
     }
 
     /**
