@@ -23,6 +23,10 @@ public class ChessWebSocketHandler {
     private final GameService gameService;
     private final GameSessionService gameSessionService;
 
+    public ChessWebSocketHandler(){
+        this(null, null, null);
+    }
+
     public ChessWebSocketHandler(AuthService authService, GameService gameService, GameSessionService gameSessionService) {
         this.authService = authService;
         this.gameService = gameService;
@@ -31,11 +35,17 @@ public class ChessWebSocketHandler {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        sessions.put(session, null);
+        if (authService == null || gameService == null || gameSessionService == null) {
+            System.err.println("WebSocket services not initialized!");
+            session.close(1011, "Server configuration error");
+            return;
+        }
+
+        sessions.put(session, 0);
         try {
             session.getRemote().sendString("{\"serverMessageType\":\"CONNECTED\"}");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("WebSocket connection error: " + e.getMessage());
         }
     }
 
@@ -165,6 +175,7 @@ public class ChessWebSocketHandler {
             int id = leaveCmd.getGameID();
             // Execute
             gameSessionService.leaveGame(leaveCmd.getAuthToken(), leaveCmd.getGameID());
+            sessions.put(session, 0);
 
             // Notify
             String notification = NotificationHandler.playerLeft(username);
@@ -204,7 +215,7 @@ public class ChessWebSocketHandler {
             Session session = entry.getKey();
             int sessionGameID = entry.getValue();
 
-            if (sessionGameID == gameID && session.isOpen()) {
+            if (sessionGameID == gameID && sessionGameID > 0 && session.isOpen()) {
                 try {
                     session.getRemote().sendString(json);
                 } catch (IOException e) {

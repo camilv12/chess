@@ -4,6 +4,8 @@ import service.*;
 import spark.*;
 import server.handler.*;
 
+import static spark.Spark.webSocket;
+
 public class Server {
 
     public int run(int desiredPort) {
@@ -18,6 +20,15 @@ public class Server {
         GameService gameService = new GameService();
         GameSessionService gameSessionService = new GameSessionService();
 
+        // Create WebSocket handler
+        ChessWebSocketHandler chessWebSocketHandler = new ChessWebSocketHandler(
+                authService,
+                gameService,
+                gameSessionService);
+
+        // Register WebSocket endpoint
+        Spark.webSocket("/connect", chessWebSocketHandler);
+
         // Handlers
         ClearHandler clearHandler = new ClearHandler(clearService);
         RegisterHandler registerHandler = new RegisterHandler(authService);
@@ -28,7 +39,7 @@ public class Server {
         JoinGameHandler joinGameHandler = new JoinGameHandler(gameSessionService);
 
         // Endpoints
-        Spark.webSocket("/ws", ChessWebSocketHandler.class);
+        webSocket("/ws", chessWebSocketHandler);
         Spark.delete("/db", clearHandler::handle);
         Spark.post("/user", registerHandler::handle);
         Spark.post("/session", loginHandler::handle);
