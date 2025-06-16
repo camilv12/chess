@@ -1,16 +1,15 @@
 package server.handler;
 
-import chess.ChessGame;
+import chess.*;
+import model.AuthRequest;
 import model.JoinGameRequest;
 import org.eclipse.jetty.websocket.api.*;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import service.AuthService;
 import service.GameService;
 import service.JoinGameService;
-import websocket.commands.JoinCommand;
-import websocket.commands.UserGameCommand;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
+import websocket.commands.*;
+import websocket.messages.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -41,14 +40,14 @@ public class ChessWebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
-        // Minimal message handling
         try {
             UserGameCommand command = JsonUtils.commandFromJson(message);
             if(command instanceof JoinCommand joinCmd){
                 handleJoin(session, joinCmd);
             }
-
-
+            else if(command instanceof MakeMoveCommand makeMoveCommand){
+                handleMakeMove(session, makeMoveCommand);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,6 +77,79 @@ public class ChessWebSocketHandler {
         }
 
 
+    }
+
+    private void handleMakeMove(Session session, MakeMoveCommand makeMoveCmd) throws IOException {
+        /*
+            MakeMoveCommand
+            {
+              "commandType": "MAKE_MOVE",
+              "authToken": "tokengoeshere",
+              "gameID": "337",
+              "move": { "start": { "row": 3, "col": 3 }, "end": { "row": 5, "col": 5 } }
+            }
+         */
+        try{
+            // Validate command
+            String token = makeMoveCmd.getAuthToken();
+            authService.authenticate(new AuthRequest(token));
+            String username = authService.getUsername(token);
+            int id = makeMoveCmd.getGameID();
+            ChessGame game = JsonUtils.fromJson(gameService.getGame(id), ChessGame.class);
+
+            // Validate and execute move
+            game.makeMove(makeMoveCmd.getMove());
+            gameService.updateGame(id, game);
+
+            // Send updates to all clients
+            broadcastToGame(id, JsonUtils.toJson(new LoadGameMessage(game)));
+            String moveNotation = getMoveNotation(makeMoveCmd.getMove(), game);
+            String notification = username + " moved " + moveNotation;
+            broadcastToGame(id, JsonUtils.toJson(new NotificationMessage(notification)));
+
+            // Check for conditions
+            if (game.isInCheckmate(game.getTeamTurn())) {
+                String checkmateMsg = "Checkmate! " + username + " wins!";
+                broadcastToGame(id, JsonUtils.toJson(new NotificationMessage(checkmateMsg)));
+            } else if (game.isInCheck(game.getTeamTurn())) {
+                String checkMsg = username + " is in check";
+                broadcastToGame(id, JsonUtils.toJson(new NotificationMessage(checkMsg)));
+            } else if (game.isInStalemate(game.getTeamTurn())){
+                broadcastToGame(id, JsonUtils.toJson(new NotificationMessage("Stalemate")));
+            }
+
+
+        } catch (Exception e) {
+            session.getRemote().sendString(JsonUtils.errorResponse(e.getMessage()));
+        }
+
+
+
+
+        // Process loadGame
+        ChessGame game = JsonUtils.fromJson(gameService.getGame(makeMoveCmd.getGameID()), ChessGame.class);
+        session.getRemote().sendString(JsonUtils.toJson(
+                new LoadGameMessage(game)));
+    }
+
+    private String getMoveNotation(ChessMove move, ChessGame game) {
+        ChessPiece piece = game.getBoard().getPiece(move.getStartPosition());
+        String pieceChar = switch (piece.getPieceType()) {
+            case KING -> "K";
+            case QUEEN -> "Q";
+            case BISHOP -> "B";
+            case KNIGHT -> "N";
+            case ROOK -> "R";
+            case PAWN -> "";
+        };
+
+        return pieceChar + positionToNotation(move.getStartPosition()) +
+                (game.getBoard().getPiece(move.getEndPosition()) != null ? "x" : "") +
+                positionToNotation(move.getEndPosition());
+    }
+
+    private String positionToNotation(ChessPosition position) {
+        return (char)('a' + position.getColumn() - 1) + "" + position.getRow();
     }
 
     private void broadcastToGame(int gameID, String json) {

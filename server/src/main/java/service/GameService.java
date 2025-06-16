@@ -40,4 +40,15 @@ public class GameService {
         }
     }
 
+    public void updateGame(int id, ChessGame game) throws DataAccessException {
+        GameData old = games.getGame(id);
+        games.updateGame(new GameData(
+                id,
+                old.whiteUsername(),
+                old.blackUsername(),
+                old.gameName(),
+                ServiceUtils.serialize(game)
+        ));
+    }
+
 }
