@@ -171,7 +171,7 @@ public class LobbyClient implements Client {
                     """);
         }
         try{
-            server.joinGame(session.getAuthToken(), "OBSERVE", id);
+            server.observeGame(session.getAuthToken(), id);
             session.setColor(null);
             session.setGame(new ChessGame()); // Add functionality in Phase 6
             System.out.printf("Observing game %s\n", session.getGameName(position));

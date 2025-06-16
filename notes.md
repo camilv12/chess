@@ -9,16 +9,16 @@
 - [X] Phase 4: Chess Database
 - [X] Phase 5: Chess Pregame
 - [ ] Phase 6: Chess Gameplay
-  -[ ] Implement `WebSocketFacade`
-    - [ ] Set up WebSocket client infrastructure
-    - [ ] Create `WebSocketFacade` class skeleton
-    - [ ] Add WebSocket dependency to build file
-    - [ ] Establish basic connection to server endpoint
-  - [ ] WebSocket Foundation
-    - [ ] Implement message serialization/deserialization
-      - [ ] Extend `UserGameCommand` for all required commands
-      - [ ] Extend `ServerMessage` for all response types
-    - [ ] Add basic error handling for WebSocket connection
+  -[X] Implement `WebSocketFacade`
+    - [X] Set up WebSocket client infrastructure
+    - [X] Create `WebSocketFacade` class skeleton
+    - [X] Add WebSocket dependency to build file
+    - [X] Establish basic connection to server endpoint
+  - [X] WebSocket Foundation
+    - [X] Implement message serialization/deserialization
+      - [X] Extend `UserGameCommand` for all required commands
+      - [X] Extend `ServerMessage` for all response types
+    - [X] Add basic error handling for WebSocket connection
   - [ ] Game Connection Flow
     - [ ] Implement `connect` command
       - [ ] Player connection with color assignment

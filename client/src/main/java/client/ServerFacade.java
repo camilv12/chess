@@ -2,15 +2,12 @@ package client;
 import chess.ChessMove;
 import client.websocket.HttpCommunicator;
 import client.websocket.WebSocketCommunicator;
-import com.google.gson.Gson;
+import exception.CommunicationException;
 import model.*;
+import websocket.commands.JoinCommand;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessageObserver;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.*;
 
 /**
  * A class that encapsulates HTTP requests to the server and results from the server.
@@ -61,17 +58,33 @@ public class ServerFacade {
 
         // Connect websocket
         if(!websocket.isConnected()){
-            websocket.connect();
+            try{
+                websocket.connect();
+                websocket.send(new JoinCommand(token, id, color));
+            }catch(CommunicationException e){
+                if(e.shouldReconnect()){
+                    websocket.reconnect();
+                }
+                else{
+                    throw e;
+                }
+            }
         }
-
-        // Send command
-        websocket.send(new UserGameCommand(UserGameCommand.CommandType.CONNECT, token, id));
 
     }
 
     public void connectWebSocket(){
         if(!websocket.isConnected()){
-            websocket.connect();
+            try{
+                websocket.connect();
+            } catch (CommunicationException e) {
+                if(e.shouldReconnect()){
+                    websocket.reconnect();
+                }
+                else{
+                    throw e;
+                }
+            }
         }
     }
 
@@ -80,33 +93,32 @@ public class ServerFacade {
     }
 
     public void makeMove(String authToken, int gameID, ChessMove move){
-        websocket.send(new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID));
+        websocket.send(new MakeMoveCommand(authToken, gameID, move));
     }
 
     public void resign(String authToken, int gameID){
         websocket.send(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID));
     }
 
-    public void leaveWebSocket(String authToken, int gameID){
+    public void leave(String authToken, int gameID){
         websocket.send(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID));
     }
 
     public void disconnectWebSocket(){
         if(websocket.isConnected()){
-            websocket.disconnect();
+            try{
+                websocket.disconnect();
+            } catch (CommunicationException e) {
+                if(e.shouldReconnect()){
+                    websocket.reconnect();
+                } else{
+                    throw e;
+                }
+            }
         }
     }
 
     public void clear() throws Exception {
         httpCommunicator.delete("/db", null);
-    }
-
-    private void checkStatus(int code) throws Exception {
-        switch(code){
-            case 400 -> throw new Exception("Error: Invalid Request");
-            case 401 -> throw new Exception("Error: Unauthorized");
-            case 403 -> throw new Exception("Error: Already Taken");
-            case 500 -> throw new Exception("Error: Connection failed");
-        }
     }
 }

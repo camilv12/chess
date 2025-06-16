@@ -3,6 +3,7 @@ package client.websocket;
 import com.google.gson.Gson;
 import exception.CommunicationException;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.ServerMessage;
 import websocket.messages.ServerMessageObserver;
 
@@ -23,6 +24,9 @@ public class WebSocketCommunicator extends Endpoint {
     public WebSocketCommunicator(String serverUrl, ServerMessageObserver observer){
         this.observer = observer;
         this.uri = URI.create(serverUrl.replace("http","ws")+"/ws");
+        if (this.session != null){
+            this.session.setMaxIdleTimeout(30000);
+        }
     }
 
     @Override
@@ -31,10 +35,12 @@ public class WebSocketCommunicator extends Endpoint {
 
     public void connect() {
         if(isConnected()){
-            throw new CommunicationException("Already connected");
+            throw new CommunicationException("Already connected", false);
         }
         try{
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            container.setDefaultMaxSessionIdleTimeout(30000);
+
             ClientEndpointConfig config = ClientEndpointConfig.Builder.create()
                     .configurator(new ClientEndpointConfig.Configurator() {
                         @Override
@@ -43,55 +49,65 @@ public class WebSocketCommunicator extends Endpoint {
                         }
                     })
                     .build();
+
             this.session = container.connectToServer(this, config, uri);
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-                    observer.notify(notification);
+                    try{
+                        ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+                        observer.notify(serverMessage);
+                    } catch (Exception e){
+                        observer.notify(new ErrorMessage("Invalid message format: " + e.getMessage()));
+                    }
                 }
             });
-        } catch (Exception e) {
-            throw new CommunicationException("Connection Failed: " + e.getMessage());
-        }
-    }
-
-    public void send(UserGameCommand command){
-        if(!isConnected()){
-            throw new CommunicationException("Not connected to server");
-        }
-        try{
-            session.getBasicRemote().sendText(gson.toJson(command));
-        }catch (IOException e) {
-            throw new CommunicationException("Send Failed: " + e.getMessage());
-        }
-    }
-
-    public void leave(String authToken, Integer gameID){
-        if(!isConnected()){
-            throw new CommunicationException("Not connected to server");
-        }
-        try{
-            send(new UserGameCommand(
-                    UserGameCommand.CommandType.LEAVE,
-                    authToken,
-                    gameID
-            ));
+        } catch (DeploymentException e) {
+            throw new CommunicationException("Server rejected connection: " + e.getMessage(), true);
+        } catch (IOException e){
+            throw new CommunicationException("Network error: " + e.getMessage(), true);
         } catch (Exception e){
-            throw new CommunicationException("Leave Failed: " + e.getMessage());
+            throw new CommunicationException("Connection failed: " + e.getMessage(), false);
+        }
+    }
+
+    public void send(UserGameCommand command) throws CommunicationException {
+        if(!isConnected()) {
+            throw new CommunicationException("Not connected to server", false);
+        }
+
+        try {
+            if(command == null) {
+                throw new IllegalArgumentException("Command cannot be null");
+            }
+            String json = gson.toJson(command);
+            session.getBasicRemote().sendText(json);
+        } catch (IllegalArgumentException e) {
+            throw new CommunicationException("Invalid command: " + e.getMessage(), false);
+        } catch (IOException e) {
+            disconnect();
+            throw new CommunicationException("Network error while sending", true);
         }
     }
 
     public void disconnect(){
         try{
             if(isConnected()){
-                session.close();
+                session.close(new CloseReason(
+                        CloseReason.CloseCodes.NORMAL_CLOSURE,
+                        "Client initiated disconnect"
+                ));
             }
         }catch (Exception e){
-            throw new CommunicationException("Disconnect failed: " + e.getMessage());
+            throw new CommunicationException("Disconnect failed: " + e.getMessage(), false);
         } finally {
             session = null;
         }
+    }
+
+    public void reconnect() throws CommunicationException{
+        disconnect();
+        connect();
     }
 
     public boolean isConnected() {
