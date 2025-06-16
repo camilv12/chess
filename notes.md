@@ -41,12 +41,12 @@
     - [X] Implement `help` command with gameplay options
     - [X] Implement `redraw` command
     - [X] Add command parsing to GameClient
-  - [ ] Highlight Legal Moves
-    - [ ] Implement move highlighting
-      - [ ] Calculate legal moves for selected piece
-      - [ ] Visual distinction for legal squares
-      - [ ] Support for all piece types
-    - [ ] Add to help menu
+  - [X] Highlight Legal Moves
+    - [X] Implement move highlighting
+      - [X] Calculate legal moves for selected piece
+      - [X] Visual distinction for legal squares
+      - [X] Support for all piece types
+    - [X] Add to help menu
   - [ ] Notification System
     - [ ] Display connection/disconnection notices
     - [ ] Show move notifications with proper formatting

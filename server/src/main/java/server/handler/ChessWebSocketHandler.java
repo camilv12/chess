@@ -2,6 +2,7 @@ package server.handler;
 
 import chess.*;
 import model.AuthRequest;
+import model.GameData;
 import model.JoinGameRequest;
 import org.eclipse.jetty.websocket.api.*;
 import org.eclipse.jetty.websocket.api.annotations.*;
@@ -69,9 +70,9 @@ public class ChessWebSocketHandler {
                     joinCmd.getGameID()
             ));
             String username = authService.getUsername(joinCmd.getAuthToken());
-            String notification = (joinCmd.getPlayerColor().equals("OBSERVE")) ?
-                    JsonUtils.toJson(new NotificationMessage(username + " is now observing")) :
-                    JsonUtils.toJson(new NotificationMessage(username + " joined as " + joinCmd.getPlayerColor()));
+            String notification = joinCmd.getPlayerColor().equals("OBSERVE")
+                    ? NotificationHandler.observerJoined(username)
+                    : NotificationHandler.playerJoined(username, joinCmd.getPlayerColor());
             broadcastToGame(id, notification);
 
             ChessGame game = JsonUtils.fromJson(gameService.getGame(joinCmd.getGameID()), ChessGame.class);
@@ -102,19 +103,20 @@ public class ChessWebSocketHandler {
             session.getRemote().sendString(JsonUtils.toJson(new LoadGameMessage(game)));
             broadcastToGame(id, JsonUtils.toJson(new LoadGameMessage(game)));
             String moveNotation = getMoveNotation(makeMoveCmd.getMove(), game);
-            String notification = username + " moved " + moveNotation;
+            String notification = NotificationHandler.playerMoved(username, moveNotation);
             broadcastToGame(id, JsonUtils.toJson(new NotificationMessage(notification)));
 
             // Check for conditions
             if (game.isInCheckmate(game.getTeamTurn())) {
-                String checkmateMsg = "Checkmate! " + username + " wins!";
+                String winner = getOpponentUsername(game, id);
+                String checkmateMsg = NotificationHandler.checkmateAlert(winner);
                 broadcastToGame(id, JsonUtils.toJson(new NotificationMessage(checkmateMsg)));
                 gameService.endGame(id);
             } else if (game.isInCheck(game.getTeamTurn())) {
-                String checkMsg = username + " is in check";
+                String checkMsg = NotificationHandler.checkAlert(username);
                 broadcastToGame(id, JsonUtils.toJson(new NotificationMessage(checkMsg)));
             } else if (game.isInStalemate(game.getTeamTurn())){
-                broadcastToGame(id, JsonUtils.toJson(new NotificationMessage("Stalemate")));
+                broadcastToGame(id, JsonUtils.toJson(NotificationHandler.stalemateAlert()));
                 gameService.endGame(id);
             }
 
@@ -144,6 +146,17 @@ public class ChessWebSocketHandler {
         return (char)('a' + position.getColumn() - 1) + "" + position.getRow();
     }
 
+    private String getOpponentUsername(ChessGame game, int gameID) {
+        GameData gameData = JsonUtils.fromJson(gameService.getGame(gameID), GameData.class);
+        if (game.getTeamTurn() == ChessGame.TeamColor.WHITE) {
+            // Black wins
+            return gameData.blackUsername() != null ? gameData.blackUsername() : "Black";
+        } else {
+            // White wins
+            return gameData.whiteUsername() != null ? gameData.whiteUsername() : "White";
+        }
+    }
+
     private void handleLeave(Session session, LeaveCommand leaveCmd) throws IOException {
         try{
             // Validate
@@ -154,7 +167,7 @@ public class ChessWebSocketHandler {
             gameSessionService.leaveGame(leaveCmd.getAuthToken(), leaveCmd.getGameID());
 
             // Notify
-            String notification = username + " left the game";
+            String notification = NotificationHandler.playerLeft(username);
             broadcastToGame(id, JsonUtils.toJson(
                             new NotificationMessage(notification)));
             session.close();
@@ -174,7 +187,7 @@ public class ChessWebSocketHandler {
             gameSessionService.resignGame(username, gameID);
 
             // Notify
-            String notification = username + " resigned. Game over.";
+            String notification = NotificationHandler.playerResigned(username);
             broadcastToGame(gameID, JsonUtils.toJson(
                     new NotificationMessage(notification)));
 
@@ -204,11 +217,15 @@ public class ChessWebSocketHandler {
 
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) {
+        System.err.printf("WebSocket closed - Session: %s, Status: %d, Reason: %s%n",
+                session.getRemoteAddress(), statusCode, reason);
         sessions.remove(session);
     }
 
     @OnWebSocketError
     public void onError(Session session, Throwable error) {
+        System.err.printf("WebSocket error - Session: %s, Error: %s%n",
+                session.getRemoteAddress(), error.getMessage());
         sessions.remove(session);
         error.printStackTrace();
     }

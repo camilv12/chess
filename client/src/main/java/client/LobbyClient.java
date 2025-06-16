@@ -1,6 +1,9 @@
 package client;
 import chess.ChessGame;
 import ui.Session;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessageObserver;
 
 import java.util.Arrays;
@@ -10,8 +13,24 @@ public class LobbyClient implements Client {
     private final Session session;
 
     public LobbyClient(int port, Session session){
-        ServerMessageObserver observer = serverMessage -> {
+        ServerMessageObserver observer = new ServerMessageObserver() {
+            @Override
+            public void onNotification(NotificationMessage message) {
+                System.out.println("\n"  + message.getMessage() + "\n" + prompt());
+            }
+
+            @Override
+            public void onError(ErrorMessage message) {
+                System.err.println("\n"  + message.getErrorMessage() + "\n" + prompt());
+            }
+
+            @Override
+            public void onGameUpdate(LoadGameMessage message) {
+                session.setGame(message.getGame());
+                System.out.println("\nGame started! Redirecting to game...\n");
+            }
         };
+
         server = new ServerFacade(port, observer);
         this.session = session;
     }

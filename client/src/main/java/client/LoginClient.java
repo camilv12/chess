@@ -1,6 +1,8 @@
 package client;
 
 import ui.Session;
+import websocket.messages.ErrorMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessageObserver;
 
 import java.util.Arrays;
@@ -10,7 +12,17 @@ public class LoginClient implements Client {
     private final Session session;
 
     public LoginClient(int port, Session session){
-        ServerMessageObserver observer = serverMessage -> {
+        ServerMessageObserver observer = new ServerMessageObserver() {
+            @Override
+            public void onNotification(NotificationMessage message) {
+                System.out.println("\n"  + message.getMessage() + "\n" + prompt());
+            }
+
+            @Override
+            public void onError(ErrorMessage message) {
+                System.err.println("\n"  + message.getErrorMessage() + "\n" + prompt());
+            }
+
         };
         server = new ServerFacade(port, observer);
         this.session = session;

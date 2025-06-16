@@ -1,12 +1,10 @@
 package client;
 
 
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import ui.ChessBoardRenderer;
 import ui.Session;
-import websocket.messages.ServerMessageObserver;
+import websocket.messages.*;
 
 import java.util.Arrays;
 
@@ -16,7 +14,22 @@ public class GameClient implements Client {
     private final ServerFacade server;
 
     public GameClient(int port, Session session){
-        ServerMessageObserver observer = serverMessage -> {
+        ServerMessageObserver observer = new ServerMessageObserver() {
+            @Override
+            public void onNotification(NotificationMessage message) {
+                System.out.println("\n"  + message.getMessage() + "\n" + prompt());
+            }
+
+            @Override
+            public void onError(ErrorMessage message) {
+                System.err.println("\n"  + message.getErrorMessage() + "\n" + prompt());
+            }
+
+            @Override
+            public void onGameUpdate(LoadGameMessage message) {
+                session.setGame(message.getGame());
+                redraw();
+            }
         };
         server = new ServerFacade(port, observer);
         this.session = session;
@@ -133,15 +146,26 @@ public class GameClient implements Client {
             ChessMove move = new ChessMove(from, to,
                     promotion != null ? parsePromotion(promotion) : null);
 
+            String moveDescription = getMoveDescription(session.getGame(), move);
+
             server.makeMove(
                     session.getAuthToken(),
                     session.getGameID(),
                     move
             );
-            System.out.println("Making move...");
+            System.out.println("Making move: " + moveDescription);
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid move: " + e.getMessage());
         }
+    }
+
+    private String getMoveDescription(ChessGame game, ChessMove move) {
+        ChessPiece piece = game.getBoard().getPiece(move.getStartPosition());
+        String pieceName = getPieceName(piece);
+        String capture = game.getBoard().getPiece(move.getEndPosition()) != null ? "x" : "";
+        return pieceName + positionToNotation(move.getStartPosition()) +
+                capture + positionToNotation(move.getEndPosition()) +
+                (move.getPromotionPiece() != null ? "=" + getPieceName(new ChessPiece(piece.getTeamColor(), move.getPromotionPiece())) : "");
     }
 
     private ChessPosition parsePosition(String pos) {
@@ -173,6 +197,21 @@ public class GameClient implements Client {
             default -> throw new IllegalArgumentException(
                     "Promotion must be Q (queen), R (rook), B (bishop), or N (knight)");
         };
+    }
+
+    private String getPieceName(ChessPiece piece) {
+        return switch(piece.getPieceType()) {
+            case KING -> "K";
+            case QUEEN -> "Q";
+            case BISHOP -> "B";
+            case KNIGHT -> "N";
+            case ROOK -> "R";
+            case PAWN -> "";
+        };
+    }
+
+    private String positionToNotation(ChessPosition position) {
+        return (char)('a' + position.getColumn() - 1) + "" + position.getRow();
     }
 
 
