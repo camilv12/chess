@@ -1,15 +1,22 @@
 package client;
 import chess.ChessGame;
 import ui.Session;
+import websocket.messages.ServerMessage;
+import websocket.messages.ServerMessageObserver;
 
 import java.util.Arrays;
 
 public class LobbyClient implements Client {
     private final ServerFacade server;
     private final Session session;
-    
+
     public LobbyClient(int port, Session session){
-        server = new ServerFacade(port);
+        ServerMessageObserver observer = new ServerMessageObserver() {
+            @Override
+            public void notify(ServerMessage serverMessage) {
+            }
+        };
+        server = new ServerFacade(port, observer);
         this.session = session;
     }
 

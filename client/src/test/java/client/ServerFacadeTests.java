@@ -3,6 +3,8 @@ package client;
 import model.RegisterResult;
 import org.junit.jupiter.api.*;
 import server.Server;
+import websocket.messages.ServerMessage;
+import websocket.messages.ServerMessageObserver;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,8 +19,12 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade(port);
-        ServerFacadeTestUtils.setTestUrl(port);
+        ServerMessageObserver observer = new ServerMessageObserver() {
+            @Override
+            public void notify(ServerMessage serverMessage) {
+            }
+        };
+        facade = new ServerFacade(port, observer);
     }
 
     @AfterAll
@@ -28,8 +34,17 @@ public class ServerFacadeTests {
 
     // Register Tests
     @BeforeEach
-    public void clearDatabase() throws Exception {
-        ServerFacadeTestUtils.clear();
+    public void setUp() throws Exception {
+        facade.clear();
+    }
+
+    @AfterEach
+    public void tearDown(){
+        try{
+            facade.disconnectWebSocket();
+        } catch (Exception e){
+            throw new RuntimeException("Cleanup Warning: " + e.getMessage());
+        }
     }
 
     @Test
@@ -156,6 +171,8 @@ public class ServerFacadeTests {
         // Set up
         var oldToken = registerTestUser().authToken();
         int id = facade.createGame(oldToken,"TestGame").gameID();
+
+        facade.connectWebSocket();
         facade.joinGame(oldToken, "WHITE", id); // Player takes white
 
         var token = facade.register("myUser","p4ss","user@mail.com").authToken();

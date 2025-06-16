@@ -8,10 +8,13 @@ public class Server {
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
-
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+
+        // WebSocket
+        Spark.webSocket("/ws", new ChessWebSocketHandler());
+
 
         // Services
         AuthService authService = new AuthService();
@@ -28,6 +31,7 @@ public class Server {
         ListGamesHandler listGamesHandler = new ListGamesHandler(authService, gameService);
         JoinGameHandler joinGameHandler = new JoinGameHandler(joinGameService);
 
+        // Endpoints
         Spark.delete("/db", clearHandler::handle);
         Spark.post("/user", registerHandler::handle);
         Spark.post("/session", loginHandler::handle);

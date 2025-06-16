@@ -1,15 +1,16 @@
 package client;
+import chess.ChessMove;
 import client.websocket.HttpCommunicator;
 import client.websocket.WebSocketCommunicator;
 import com.google.gson.Gson;
 import model.*;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessageObserver;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
-import java.net.http.*;
 
 /**
  * A class that encapsulates HTTP requests to the server and results from the server.
@@ -17,128 +18,87 @@ import java.net.http.*;
  */
 
 public class ServerFacade {
-    private final String serverUrl;
-    private final HttpClient httpClient;
     private final WebSocketCommunicator websocket;
     private final HttpCommunicator httpCommunicator;
 
     public ServerFacade(int port, ServerMessageObserver observer) {
         try{
-            this.serverUrl = "http://localhost:" + port;
-            this.httpClient = HttpClient.newHttpClient();
-            this.httpCommunicator = new HttpCommunicator(this.serverUrl);22
-            this.websocket = new WebSocketCommunicator(this.serverUrl, observer);
+            String serverUrl = "http://localhost:" + port;
+            this.httpCommunicator = new HttpCommunicator(serverUrl);
+            this.websocket = new WebSocketCommunicator(serverUrl, observer);
         } catch(Exception e){
             throw new RuntimeException("Server connection failed");
         }
     }
 
-    /**
-     * Makes a call to the server login API using the login input from the client.
-     * @return Result (LoginResult) from the API call to the server.
-     */
     public LoginResult login(String username, String password) throws Exception {
         LoginRequest request = new LoginRequest(username, password);
-        return makeRequest("POST", "/session", null, request, LoginResult.class);
+        return httpCommunicator.post("/session", null, request, LoginResult.class);
     }
 
-    /**
-     * Makes a call to the server register API using the registration input from the client.
-     * @return Result (RegisterResult) from the API call to the server.
-     */
     public RegisterResult register(String username, String password, String email) throws Exception {
         RegisterRequest request = new RegisterRequest(username, password, email);
-        return makeRequest("POST", "/user", null, request, RegisterResult.class);
+        return httpCommunicator.post("/user", null, request, RegisterResult.class);
     }
 
-    /**
-     * Makes a call to the server logout API based on client credentials
-     */
     public void logout(String token) throws Exception{
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(serverUrl + "/session"))
-                .header("authorization", token)
-                .DELETE()
-                .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        checkStatus(response.statusCode());
+        httpCommunicator.delete("/session", token);
     }
 
-    /**
-     * Makes a call to the server game creation API based on the game creation input from the client
-     * @return Result (CreateGameResult) from the API call to the server.
-     */
     public CreateGameResult createGame(String token, String name) throws Exception{
         CreateGameRequest request = new CreateGameRequest(name);
-        return makeRequest("POST", "/game", token, request, CreateGameResult.class);
+        return httpCommunicator.post("/game",token,request,CreateGameResult.class);
     }
 
-    /**
-     * Makes a call to the server list API based on client credentials
-     * @return Result (ListGameResult) from the API call to the server
-     */
     public ListGamesResult listGames(String token) throws Exception{
-        return makeRequest("GET", "/game", token, null, ListGamesResult.class);
+        return httpCommunicator.get("/game", token, ListGamesResult.class);
     }
 
-    /**
-     * Makes a call to the server join game API based on input from the client.
-     */
     public void joinGame(String token, String color, int id) throws Exception{
+        // HTTP Join
         JoinGameRequest request = new JoinGameRequest(token, color, id);
-        makeRequest("PUT", "/game", token, request, null);
+        httpCommunicator.put("/game", token, request, Void.class);
+
+        // Connect websocket
+        if(!websocket.isConnected()){
+            websocket.connect();
+        }
+
+        // Send command
+        websocket.send(new UserGameCommand(UserGameCommand.CommandType.CONNECT, token, id));
+
     }
 
-    /**
-     * Makes an HTTP request to the server and returns the deserialized response.
-     *
-     * @param method HTTP method (GET, POST, PUT, DELETE)
-     * @param path URL path (ex: "/game")
-     * @param token AuthToken. Use null for no token.
-     * @param request Request body object (will be serialized to JSON). Use null for no body.
-     * @param responseClass Class object for response type (ex: Response.class)
-     * @return Deserialized response object of type T
-     * @param <T> Type of expected response
-     * @throws Exception if:
-     *                   - Server returns non-200 code
-     *                   - Network/Connection issues occur
-     *                   - Response parsing fails
-     */
-    private <T> T makeRequest(String method, String path, String token, Object request, Class<T> responseClass) throws Exception {
-        try{
-            URL url = (new URI(serverUrl + path)).toURL();
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
-            http.setRequestMethod(method);
-            http.setDoOutput(true);
-
-            if(token != null && !token.isBlank()){
-                http.setRequestProperty("authorization", token);
-            }
-
-            // Write request body
-            if(request != null){
-                try (OutputStream os = http.getOutputStream()){
-                    String json = new Gson().toJson(request);
-                    os.write(json.getBytes());
-                }
-            }
-
-            // Handle response
-            if (http.getResponseCode() >= 400){
-                checkStatus(http.getResponseCode());
-            }
-
-            if(responseClass == null){
-                return null;
-            }
-
-            try (InputStream is = http.getInputStream()){
-                String response = new String(is.readAllBytes());
-                return new Gson().fromJson(response, responseClass);
-            }
-        } catch (IOException e){
-            throw new Exception("Error: Connection failed");
+    public void connectWebSocket(){
+        if(!websocket.isConnected()){
+            websocket.connect();
         }
+    }
+
+    public void observeGame(String token, int id){
+        websocket.send(new UserGameCommand(UserGameCommand.CommandType.CONNECT, token, id));
+    }
+
+    public void makeMove(String authToken, int gameID, ChessMove move){
+        websocket.send(new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID));
+    }
+
+    public void resign(String authToken, int gameID){
+        websocket.send(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID));
+    }
+
+    public void leaveWebSocket(String authToken, int gameID){
+        websocket.send(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID));
+    }
+
+    public void disconnectWebSocket(){
+        if(websocket.isConnected()){
+            websocket.disconnect();
+        }
+    }
+
+    public void clear() throws Exception {
+        httpCommunicator.delete("/db", null);
     }
 
     private void checkStatus(int code) throws Exception {
