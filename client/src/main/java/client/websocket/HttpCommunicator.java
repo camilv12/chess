@@ -26,7 +26,7 @@ public class HttpCommunicator {
     }
 
     public <T> T put(String endpoint, String authToken, Object request, Class<T> responseClass) throws Exception{
-        makeRequest("PUT", endpoint, authToken, request, responseClass);
+        return makeRequest("PUT", endpoint, authToken, request, responseClass);
     }
 
     public void delete(String endpoint, String authToken) throws Exception {

@@ -12,10 +12,6 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
 
-        // WebSocket
-        Spark.webSocket("/ws", new ChessWebSocketHandler());
-
-
         // Services
         AuthService authService = new AuthService();
         ClearService clearService = new ClearService();
@@ -32,6 +28,7 @@ public class Server {
         JoinGameHandler joinGameHandler = new JoinGameHandler(joinGameService);
 
         // Endpoints
+        Spark.webSocket("/ws", ChessWebSocketHandler.class);
         Spark.delete("/db", clearHandler::handle);
         Spark.post("/user", registerHandler::handle);
         Spark.post("/session", loginHandler::handle);

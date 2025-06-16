@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.SqlGameDao;
 import exception.BadRequestException;
@@ -29,6 +30,14 @@ public class GameService {
 
     public ListGamesResult listGames() throws DataAccessException {
         return new ListGamesResult(games.listGames());
+    }
+
+    public String getGame(int id){
+        try{
+            return games.getGame(id).game();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
 }
